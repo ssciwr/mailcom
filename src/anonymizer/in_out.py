@@ -2,35 +2,34 @@ import os
 import email
 from email import policy
 from email.parser import BytesHeaderParser, BytesParser
-from cv2 import fillPoly
-import pandas as pd
+
+path = './data/test/'
 
 def list_of_files(path):
     """Get all the eml files in the directory and put them in a list."""
     email_list = [f for f in os.listdir(path) if f.endswith('.eml')]
     return email_list
 
-path = './data/'
-eml_files = list_of_files(path)
+def delete_header(text):
+    items_to_delete = ["Von:", "Gesendet:", "Betreff:", "An:", "Cc:"]
+    for line in text.splitlines():
+        # print([i in items_to_delete for i in line.strip().split(" ")])
+        if not any(i in items_to_delete for i in line.strip().split(" ")):
+            print(line)
 
-print("Found files: {}".format(eml_files))
+def write_file(text, name):
+    with open("{}.out".format(name), "w") as file:
+        file.write(text)
+        fp.close()
 
-keys_to_delete = ["From", "To", "Date", "Subject"]
-for file in eml_files:
-    with open(path+file, 'rb') as fp:
-        name = fp.name  
-        msg = BytesParser(policy=policy.default).parse(fp)
-        # clean the header information
-        for mykey in keys_to_delete:
-            if mykey not in msg.keys():
-                print("Could not delete key {}".format(mykey))
-                print("Not one of {}".format(msg.keys()))
-            msg.__delitem__(mykey)
-        text = msg.get_body(preferencelist='plain').get_content()
-        print(text)
-        with open("{}.out".format(name), "w") as file:
-            file.write(text)
-    fp.close()
-
-# df_eml = pd.DataFrame([file_names, texts]).T
-# df_eml.columns = ['file_name', 'text']
+if __name__ == "__main__":
+    eml_files = list_of_files(path)
+    print("Found files: {}".format(eml_files))
+    for file in eml_files:
+        with open(path+file, 'rb') as fp:
+            msg = BytesParser(policy=policy.default).parse(fp)
+            fp.close()
+            text = msg.get_body(preferencelist='plain').get_content()
+            # print(text)
+            delete_header(text)
+            exit()
