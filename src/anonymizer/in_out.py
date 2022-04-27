@@ -29,7 +29,7 @@ for file in eml_files:
         text = msg.get_body(preferencelist='plain').get_content()
         print(text)
         with open("{}.out".format(name), "w") as file:
-            file.write()
+            file.write(text)
     fp.close()
 
 # df_eml = pd.DataFrame([file_names, texts]).T
