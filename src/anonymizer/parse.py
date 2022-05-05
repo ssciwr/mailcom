@@ -6,21 +6,20 @@ import in_out as in_out
 lang = "es"
 path = "./data/test/"
 
-def process_doc(doc):
+def get_sentences(doc):
     # we are only interested in first and last sentence
     # remove any named entities from first and last sentence
     i = 0
     # spacy
-    # sentences = []
-    # for sent in doc.sents:
-        # sentences.append(str(sent))
-        # if i==0:
-            # print(sent, i)
-            # print(sent.ents)
-            # for token in sent:
-                # print(token, token.lemma_, token.tag_, token.ent_type_)
-        # i = i + 1
+    # unfortunately need to iterate through sents the way the 
+    # attribute is defined in spacy
+    text = []
+    for sent in doc.sents:
+        text.append(str(sent))
+    print(text[0])
+    return text
         
+def process_doc(doc):
     # stanza
     for i, sentence in enumerate(doc.sentences):
         if i==0:
@@ -44,26 +43,31 @@ def init_spacy(lang):
         exit()
     # initialize nlp pipeline
     try:
-        nlp = sp.load(model)
+        # disable not needed components
+        nlp = sp.load(model, exclude = ['morphologizer', 'attribute_ruler', 'lemmatizer', 'ner'])
     except OSError:
         raise OSError("Could not find {} in standard directory.".format(model))
     nlp = sp.load(model)
     # find which processors are available in model
-    components = [component[0] for component in nlp.components]
-    print("Loading components {} from {}.".format(components, model))
+    # components = [component[0] for component in nlp.components]
+    # print("Loading components {} from {}.".format(components, model))
     return nlp
 
 def init_stanza(lang):
-    nlp = sa.Pipeline(lang=lang, processors='tokenize,mwt,pos,lemma,ner')
+    nlp = sa.Pipeline(lang=lang, processors='tokenize,mwt,pos,lemma,ner', tokenize_no_ssplit=True)
     return nlp
 
 if __name__ == "__main__":
-    # nlp = init_spacy(lang)
-    nlp = init_stanza(lang)
+    nlp_spacy = init_spacy(lang)
+    nlp_stanza = init_stanza(lang)
     # process the text
     eml_files = in_out.list_of_files(path)
     for file in eml_files:
         text = in_out.get_text(path+file)
         text = in_out.delete_header(text)
-        doc = nlp(text)
-        process_doc(doc)
+        doc_spacy = nlp_spacy(text)
+        text = get_sentences(doc_spacy)
+        # start with first line
+        # we still need to remove lines with "@" as well
+        doc_stanza = nlp_stanza(text[0])
+        process_doc(doc_stanza)
