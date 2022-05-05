@@ -33,7 +33,10 @@ def delete_header(text):
     lines_to_delete = []
     text_out_list = text.splitlines()
     for index, line in enumerate(text_out_list):
-        if any(i in items_to_delete for i in line.strip().split(" ")):
+        if any(i == "@" for i in line):
+            # print("found @: {}".format(line))
+            lines_to_delete.append(index)
+        elif any(i in items_to_delete for i in line.strip().split(" ")):
             lines_to_delete.append(index)
             # print("Deleting {}".format(line))
     # delete lines

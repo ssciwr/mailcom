@@ -24,7 +24,8 @@ def process_doc(doc):
         entlist = [ent.text for ent in sent.ents]
         wordlist = [word.text for word in sent.words]
         # now remove all entlist strings from wordlist
-    return wordlist, entlist
+        newlist = [i for i in wordlist if i not in entlist]
+    return newlist
 
 
 def init_spacy(lang):
@@ -73,4 +74,6 @@ if __name__ == "__main__":
         # start with first line
         # we still need to remove lines with "@" as well
         doc_stanza = nlp_stanza(text[0])
-        wordlist, entlist = process_doc(doc_stanza)
+        newlist = process_doc(doc_stanza)
+        # print("{}: {}".format(file, newlist))
+        in_out.write_file(" ".join(newlist), "./data/out/" + file)
