@@ -22,12 +22,11 @@ def delete_header(text):
     for index, line in enumerate(text_out_list):
         if any(i in items_to_delete for i in line.strip().split(" ")):
             lines_to_delete.append(index)
-            print("Deleting {}".format(line))
+            # print("Deleting {}".format(line))
     # delete lines
     for i in reversed(lines_to_delete):
         # print("xxxxx {}".format(text_out_list[i]))
         del text_out_list[i]
-    print(" ".join(text_out_list))
     return " ".join(text_out_list)
 
 def write_file(text, name):
