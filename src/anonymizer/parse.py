@@ -16,19 +16,14 @@ def get_sentences(doc):
     text = []
     for sent in doc.sents:
         text.append(str(sent))
-    print(text[0])
     return text
         
 def process_doc(doc):
     # stanza
-    for i, sentence in enumerate(doc.sentences):
-        if i==0:
-            for word in sentence.words:
-                print('{} {} {}'.format(word.text, word.upos, word.lemma))
-            print("*************")
-            for ent in sentence.ents:
-                print("#{} {}".format(ent.text, ent.type))
-            print("lllllllllllllll")
+    for sent in doc.sentences:
+        entlist = [ent.text for ent in sent.ents]
+        wordlist = [word.text for word in sent.words]
+        # now remove all entlist strings from wordlist
 
 def init_spacy(lang):
     if lang == "es":
