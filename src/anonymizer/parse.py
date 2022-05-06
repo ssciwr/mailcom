@@ -2,40 +2,47 @@ import spacy as sp
 import stanza as sa
 import in_out as in_out
 
-lang = "es"
+# lang = "es"
+lang = "fr"
 path = "./data/test/"
 
 
 def get_sentences(doc):
     # we are only interested in first and last sentence
-    # remove any named entities from first and last sentence
     # spacy
-    # unfortunately need to iterate through sents the way the
-    # attribute is defined in spacy
     text = []
     for sent in doc.sents:
         text.append(str(sent))
+    # print("Line 0: {}".format(repr(text[0])))
+    # print("Line 1: {}".format(repr(text[1])))
     return text
 
 
 def process_doc(doc):
+    # remove any named entities from first and last sentence
     # stanza
     for sent in doc.sentences:
         entlist = [ent.text for ent in sent.ents]
+        print(entlist)
         wordlist = [word.text for word in sent.words]
         # now remove all entlist strings from wordlist
+        # there may be multi-word entities so this needs to be changed
         newlist = [i for i in wordlist if i not in entlist]
     return newlist
 
 
 def init_spacy(lang):
+    # the md models seem most accurate
     if lang == "es":
         # model = "es_core_news_sm"
         model = "es_core_news_md"
         # model = "es_core_news_lg"
         # model = "es_dep_news_trf"
     elif lang == "fr":
+        # model = "fr_core_news_sm"
         model = "fr_core_news_md"
+        # model = "fr_core_news_lg"
+        # model = "fr_dep_news_trf"
     else:
         print("model not found, aborting")
         exit()
@@ -48,9 +55,6 @@ def init_spacy(lang):
     except OSError:
         raise OSError("Could not find {} in standard directory.".format(model))
     nlp = sp.load(model)
-    # find which processors are available in model
-    # components = [component[0] for component in nlp.components]
-    # print("Loading components {} from {}.".format(components, model))
     return nlp
 
 
@@ -69,11 +73,13 @@ if __name__ == "__main__":
     for file in eml_files:
         text = in_out.get_text(path + file)
         text = in_out.delete_header(text)
+        # print(file)
+        # print(repr(text))
         doc_spacy = nlp_spacy(text)
         text = get_sentences(doc_spacy)
         # start with first line
-        # we still need to remove lines with "@" as well
         doc_stanza = nlp_stanza(text[0])
         newlist = process_doc(doc_stanza)
-        # print("{}: {}".format(file, newlist))
+        print("Old {}: {}".format(file, text[0]))
+        print("new {}: {}".format(file, " ".join(newlist)))
         in_out.write_file(" ".join(newlist), "./data/out/" + file)
