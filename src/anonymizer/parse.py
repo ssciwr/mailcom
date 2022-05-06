@@ -2,7 +2,7 @@ import spacy as sp
 import stanza as sa
 import in_out as in_out
 
-lang = "fr"
+lang = "es"
 path = "./data/test/"
 
 
@@ -15,8 +15,8 @@ def get_sentences(doc):
     text = []
     for sent in doc.sents:
         text.append(str(sent))
-    print("Line 0: {}".format(text[0]))
-    print("Line 1: {}".format(text[1]))
+    print("Line 0: {}".format(repr(text[0])))
+    print("Line 1: {}".format(repr(text[1])))
     return text
 
 
@@ -74,6 +74,7 @@ if __name__ == "__main__":
     for file in eml_files:
         text = in_out.get_text(path + file)
         text = in_out.delete_header(text)
+        print(file)
         print(repr(text))
         doc_spacy = nlp_spacy(text)
         text = get_sentences(doc_spacy)

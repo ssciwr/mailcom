@@ -24,11 +24,14 @@ def delete_header(text):
         "Betreff:",
         "An:",
         "Cc:",
-        "Sujet",
-        "Date",
-        "De",
-        "Pour",
-        "Copie ",
+        "Sujet :",
+        "Date :",
+        "De :",
+        "Pour :",
+        "Copie :",
+        "Mailbeispiel",
+        "Mailbeispil",
+        "transféré",
     ]
     lines_to_delete = []
     text_out_list = text.splitlines()
@@ -39,7 +42,7 @@ def delete_header(text):
         elif any(i == ">" for i in line):
             lines_to_delete.append(index)
             # print("Deleting: found >: {}".format(line))
-        elif any(i in items_to_delete for i in line.strip().split(" ")):
+        elif any(i in line for i in items_to_delete):
             lines_to_delete.append(index)
             # print("Deleting {}".format(line))
     # check if any lines have been found
@@ -48,15 +51,16 @@ def delete_header(text):
         for i in reversed(lines_to_delete):
             # print("xxxxx {}".format(text_out_list[i]))
             del text_out_list[i]
-    # delete empty lines
-    text_out_list = [i for i in text_out_list if i]
     # reduce whitespace not to confuse spacy
     # remove tabs and outer whitespace
-    text_out_list = [i.replace("\t", " ").strip() for i in text_out_list]
+    text_out_list = [line.replace("\t", " ").strip() for line in text_out_list]
     # remove hyphens - this is risky though -
-    # text_out_list = [i.replace("-", " ").strip() for i in text_out_list]
+    text_out_list = [line.replace("-", " ").strip() for line in text_out_list]
+    text_out_list = [line.replace("_", " ").strip() for line in text_out_list]
     # reduce whitespace to one
-    text_out_list = [" ".join(i.split()) for i in text_out_list]
+    text_out_list = [" ".join(line.split()) for line in text_out_list]
+    # delete empty lines
+    text_out_list = [line for line in text_out_list if line]
     return " ".join(text_out_list)
 
 
@@ -71,4 +75,3 @@ if __name__ == "__main__":
     for file in eml_files:
         text = get_text(path + file)
         text = delete_header(text)
-        # still need to delete email addresses in "blabla wrote:"
