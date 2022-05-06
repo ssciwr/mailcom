@@ -2,7 +2,7 @@ import os
 from email import policy
 from email.parser import BytesParser
 
-path = "./data/"
+path = "./data/test/"
 
 
 def list_of_files(path):
@@ -34,15 +34,27 @@ def delete_header(text):
     text_out_list = text.splitlines()
     for index, line in enumerate(text_out_list):
         if any(i == "@" for i in line):
-            # print("found @: {}".format(line))
+            # print("Deleting: found @: {}".format(line))
             lines_to_delete.append(index)
+        elif any(i == ">" for i in line):
+            lines_to_delete.append(index)
+            # print("Deleting: found >: {}".format(line))
         elif any(i in items_to_delete for i in line.strip().split(" ")):
             lines_to_delete.append(index)
             # print("Deleting {}".format(line))
-    # delete lines
-    for i in reversed(lines_to_delete):
-        # print("xxxxx {}".format(text_out_list[i]))
-        del text_out_list[i]
+    # check if any lines have been found
+    if lines_to_delete:
+        # delete lines
+        for i in reversed(lines_to_delete):
+            # print("xxxxx {}".format(text_out_list[i]))
+            del text_out_list[i]
+    # delete empty lines
+    text_out_list = [i for i in text_out_list if i]
+    # reduce whitespace not to confuse spacy
+    # remove tabs and outer whitespace
+    text_out_list = [i.replace("\t", " ").strip() for i in text_out_list]
+    # reduce whitespace to one
+    text_out_list = [" ".join(i.split()) for i in text_out_list]
     return " ".join(text_out_list)
 
 
