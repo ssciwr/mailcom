@@ -53,6 +53,8 @@ def delete_header(text):
     # reduce whitespace not to confuse spacy
     # remove tabs and outer whitespace
     text_out_list = [i.replace("\t", " ").strip() for i in text_out_list]
+    # remove hyphens - this is risky though -
+    # text_out_list = [i.replace("-", " ").strip() for i in text_out_list]
     # reduce whitespace to one
     text_out_list = [" ".join(i.split()) for i in text_out_list]
     return " ".join(text_out_list)

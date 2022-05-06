@@ -37,8 +37,10 @@ def init_spacy(lang):
         # model = "es_core_news_lg"
         # model = "es_dep_news_trf"
     elif lang == "fr":
-        model = "fr_core_news_sm"
-        # model = "fr_core_news_md"
+        # model = "fr_core_news_sm"
+        model = "fr_core_news_md"
+        # model = "fr_core_news_lg"
+        # model = "fr_dep_news_trf"
     else:
         print("model not found, aborting")
         exit()
@@ -73,11 +75,9 @@ if __name__ == "__main__":
         text = in_out.get_text(path + file)
         text = in_out.delete_header(text)
         print(repr(text))
-        print("ggggggggggggg")
         doc_spacy = nlp_spacy(text)
         text = get_sentences(doc_spacy)
         # start with first line
-        # we still need to remove lines with "@" as well
         doc_stanza = nlp_stanza(text[0])
         # newlist = process_doc(doc_stanza)
         # print("{}: {}".format(file, newlist))
