@@ -2,8 +2,8 @@ import spacy as sp
 import stanza as sa
 import in_out as in_out
 
-# lang = "es"
-lang = "fr"
+lang = "es"
+# lang = "fr"
 path = "./data/test/"
 
 
@@ -22,12 +22,15 @@ def process_doc(doc):
     # remove any named entities from first and last sentence
     # stanza
     for sent in doc.sentences:
+        # entity can be more than one word
         entlist = [ent.text for ent in sent.ents]
-        print(entlist)
-        wordlist = [word.text for word in sent.words]
-        # now remove all entlist strings from wordlist
-        # there may be multi-word entities so this needs to be changed
-        newlist = [i for i in wordlist if i not in entlist]
+        if entlist:
+            for ent in entlist:
+                # find substring in string and replace
+                my_sentence = sent.text.replace(ent, "")
+        else:
+            my_sentence = sent.text
+        newlist = my_sentence.split(" ")
     return newlist
 
 
@@ -78,8 +81,13 @@ if __name__ == "__main__":
         doc_spacy = nlp_spacy(text)
         text = get_sentences(doc_spacy)
         # start with first line
-        doc_stanza = nlp_stanza(text[0])
-        newlist = process_doc(doc_stanza)
-        print("Old {}: {}".format(file, text[0]))
+        newlist = []
+        max_i = 1
+        for i in range(0, max_i):
+            doc_stanza = nlp_stanza(text[i])
+            newlist.append(process_doc(doc_stanza))
+            newlist[i] = " ".join(newlist[i])
+        # print to console for report
+        print("Old {}: {}".format(file, " ".join(text[0:max_i])))
         print("new {}: {}".format(file, " ".join(newlist)))
         in_out.write_file(" ".join(newlist), "./data/out/" + file)
