@@ -23,11 +23,11 @@ def process_doc(doc):
     # stanza
     for sent in doc.sentences:
         entlist = [ent.text for ent in sent.ents]
-        print(entlist)
-        wordlist = [word.text for word in sent.words]
-        # now remove all entlist strings from wordlist
-        # there may be multi-word entities so this needs to be changed
-        newlist = [i for i in wordlist if i not in entlist]
+        # entity can be more than one word
+        for ent in entlist:
+            # find substring in string and replace
+            my_sentence = sent.text.replace(ent, "")
+        newlist = my_sentence.split(" ")
     return newlist
 
 
