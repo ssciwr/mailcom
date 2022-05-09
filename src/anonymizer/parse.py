@@ -4,6 +4,7 @@ import in_out as in_out
 
 lang = "es"
 # lang = "fr"
+lang = "fr"
 path = "./data/test/"
 
 
