@@ -4,7 +4,7 @@ import in_out as in_out
 
 # lang = "es"
 lang = "fr"
-path = "./data/fr-emails/test/"
+path = "./data/"
 
 
 def get_sentences(doc):
