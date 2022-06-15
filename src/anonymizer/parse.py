@@ -2,9 +2,9 @@ import spacy as sp
 import stanza as sa
 import in_out as in_out
 
-lang = "es"
-# lang = "fr"
-path = "./data/test/"
+# lang = "es"
+lang = "fr"
+path = "./data/fr-emails/test/"
 
 
 def get_sentences(doc):
@@ -26,6 +26,7 @@ def process_doc(doc):
         entlist = [ent.text for ent in sent.ents]
         if entlist:
             for ent in entlist:
+                print(ent)
                 # find substring in string and replace
                 my_sentence = sent.text.replace(ent, "")
         else:
@@ -62,9 +63,16 @@ def init_spacy(lang):
 
 
 def init_stanza(lang):
-    nlp = sa.Pipeline(
-        lang=lang, processors="tokenize,mwt,pos,lemma,ner", tokenize_no_ssplit=True
-    )
+    if lang == "fr":
+        nlp = sa.Pipeline(
+            lang=lang, processors={"ner": "wikiner"}, tokenize_no_ssplit=True
+        )
+    elif lang == "es":
+        nlp = sa.Pipeline(
+            lang=lang, processors={"ner": "CoNLL02"}, tokenize_no_ssplit=True
+        )
+    else:
+        ValueError("Language {} not found for Stanza!".format(lang))
     return nlp
 
 
@@ -82,12 +90,15 @@ if __name__ == "__main__":
         text = get_sentences(doc_spacy)
         # start with first line
         newlist = []
-        max_i = 1
+        max_i = 2
         for i in range(0, max_i):
             doc_stanza = nlp_stanza(text[i])
             newlist.append(process_doc(doc_stanza))
             newlist[i] = " ".join(newlist[i])
         # print to console for report
-        print("Old {}: {}".format(file, " ".join(text[0:max_i])))
-        print("new {}: {}".format(file, " ".join(newlist)))
-        in_out.write_file(" ".join(newlist), "./data/out/" + file)
+        # print("Old {}: {}".format(file, " ".join(text[0:max_i])))
+        # print("new {}: {}".format(file, " ".join(newlist)))
+        # join the new and old lines for comparison
+        printout = "New: " + " ".join(newlist) + "\n"
+        printout = printout + "Old: " + " ".join(text[0:max_i])
+        in_out.write_file(printout, "./data/out/" + file)

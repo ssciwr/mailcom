@@ -131,3 +131,6 @@ dmypy.json
 # sample data 
 *.eml*
 *.xml*
+
+# models
+test/models

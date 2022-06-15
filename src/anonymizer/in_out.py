@@ -2,8 +2,6 @@ import os
 from email import policy
 from email.parser import BytesParser
 
-path = "./data/test/"
-
 
 def list_of_files(path):
     """Get all the eml files in the directory and put them in a list."""
@@ -14,6 +12,8 @@ def list_of_files(path):
 def get_text(name):
     with open(name, "rb") as fp:
         msg = BytesParser(policy=policy.default).parse(fp)
+        if msg.get_body(preferencelist="plain") is None:
+            raise ValueError("Could not parse email {}".format(name))
     return msg.get_body(preferencelist="plain").get_content()
 
 
@@ -32,6 +32,7 @@ def delete_header(text):
         "Mailbeispiel",
         "Mailbeispil",
         "transféré",
+        "Sent:",
     ]
     lines_to_delete = []
     text_out_list = text.splitlines()
@@ -39,9 +40,9 @@ def delete_header(text):
         if any(i == "@" for i in line):
             # print("Deleting: found @: {}".format(line))
             lines_to_delete.append(index)
-        elif any(i == ">" for i in line):
-            lines_to_delete.append(index)
-            # print("Deleting: found >: {}".format(line))
+        # elif any(i == ">" for i in line):
+        # lines_to_delete.append(index)
+        # print("Deleting: found >: {}".format(line))
         elif any(i in line for i in items_to_delete):
             lines_to_delete.append(index)
             # print("Deleting {}".format(line))
@@ -67,11 +68,3 @@ def delete_header(text):
 def write_file(text, name):
     with open("{}.out".format(name), "w") as file:
         file.write(text)
-
-
-if __name__ == "__main__":
-    eml_files = list_of_files(path)
-    print("Found files: {}".format(eml_files))
-    for file in eml_files:
-        text = get_text(path + file)
-        text = delete_header(text)
