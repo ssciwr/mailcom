@@ -9,7 +9,7 @@ You will also need to download the French and Spanish models for spaCy and Stanz
 
 `./get-models.sh`
 
-For an overview over the available languages and models, check the [spaCy]() and [Stanza](https://stanfordnlp.github.io/stanza/available_models.html) websites.
+For an overview over the available languages and models, check the [spaCy](https://spacy.io/usage/models) and [Stanza](https://stanfordnlp.github.io/stanza/available_models.html) websites.
 
 # Usage
 The package uses spaCy for sentencizing, based on the default language models, and Stanza for NER recognition, using the NER wikiNER model for French and CoNLL02 model for Spanish.
