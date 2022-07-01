@@ -38,6 +38,9 @@ def delete_header(text):
         "Mailbeispil",
         "transféré",
         "Sent:",
+        "https:",
+        "Von meinem iPhone gesendet",
+        "Anfang der weitergeleiteten",
     ]
     lines_to_delete = []
     text_out_list = text.splitlines()

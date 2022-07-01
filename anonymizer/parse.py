@@ -6,12 +6,17 @@ from flair.models import SequenceTagger
 import in_out as in_out
 
 # please modify this section depending on your setup
+# input language - either "es" or "fr"
 # lang = "es"
 lang = "fr"
-path_input = "./data/fr-emails/test/"
+# path where the input files can be found
+path_input = "./data/NL-fr/"
+# path where the output files should be written to
+# this is generated if not present yet
 path_output = "./data/out/"
+# the ner tool - either "flair" or "stanza"
 tool = "flair"
-# please do not modify below this section
+# please do not modify below this section unless you know what you are doing
 
 
 def get_sentences(doc):
