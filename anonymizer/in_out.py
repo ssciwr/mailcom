@@ -13,8 +13,13 @@ def get_text(name):
     with open(name, "rb") as fp:
         msg = BytesParser(policy=policy.default).parse(fp)
         if msg.get_body(preferencelist="plain") is None:
-            raise ValueError("Could not parse email {}".format(name))
-    return msg.get_body(preferencelist="plain").get_content()
+            print("ATTENTION ATTENTION ATTENTION")
+            print("Could not parse email {}".format(name))
+            print("ATTENTION ATTENTION ATTENTION")
+            content = None
+        else:
+            content = msg.get_body(preferencelist="plain").get_content()
+    return content
 
 
 def delete_header(text):

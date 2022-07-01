@@ -8,7 +8,7 @@ import in_out as in_out
 # please modify this section depending on your setup
 # lang = "es"
 lang = "fr"
-path_input = "./data/test/"
+path_input = "./data/fr-emails/test/"
 path_output = "./data/out/"
 tool = "flair"
 # please do not modify below this section
@@ -26,7 +26,7 @@ def get_sentences(doc):
 def process_doc(doc, ner_tool="stanza"):
     # remove any named entities
     # stanza
-    if tool == "stanza":
+    if ner_tool == "stanza":
         for sent in doc.sentences:
             # entity can be more than one word
             entlist = [ent.text for ent in sent.ents]
@@ -38,7 +38,7 @@ def process_doc(doc, ner_tool="stanza"):
                     if etype != "MISC":
                         my_sentence = my_sentence.replace(ent, "[{}]".format(etype))
             newlist = my_sentence.split(" ")
-    elif tool == "flair":
+    elif ner_tool == "flair":
         entlist = [
             ent.shortstring.split("/")[0].replace('"', "")
             for ent in doc.get_labels("ner")
@@ -137,6 +137,9 @@ if __name__ == "__main__":
     eml_files = in_out.list_of_files(path_input)
     for file in eml_files:
         text = in_out.get_text(path_input + file)
+        # skip this text if email could not be parsed
+        if not text:
+            continue
         text = in_out.delete_header(text)
         doc_spacy = nlp_spacy(text)
         text = get_sentences(doc_spacy)
