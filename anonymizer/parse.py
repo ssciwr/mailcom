@@ -1,13 +1,17 @@
+import os
 import spacy as sp
 import stanza as sa
 from flair.data import Sentence
 from flair.models import SequenceTagger
 import in_out as in_out
 
+# please modify this section depending on your setup
 # lang = "es"
 lang = "fr"
-path = "./data/test/"
+path_input = "./data/test/"
+path_output = "./data/out/"
 tool = "flair"
+# please do not modify below this section
 
 
 def get_sentences(doc):
@@ -106,15 +110,33 @@ def init_flair(lang):
     return nlp
 
 
+def check_dir(path):
+    # check if directory is there
+    return os.path.isdir(path)
+
+
+def make_dir(path):
+    # make directory at path
+    os.makedirs(path + "/")
+
+
 if __name__ == "__main__":
     nlp_spacy = init_spacy(lang)
     nlp_stanza = init_stanza(lang)
     nlp_flair = init_flair(lang)
 
+    # check that input dir is there
+    if not check_dir(path_input):
+        raise ValueError("Could not find input directory with eml files! Aborting ...")
+
+    # check that the output dir is there, if not generate
+    if not check_dir(path_output):
+        print("Generating output directory/ies.")
+        make_dir(path_output)
     # process the text
-    eml_files = in_out.list_of_files(path)
+    eml_files = in_out.list_of_files(path_input)
     for file in eml_files:
-        text = in_out.get_text(path + file)
+        text = in_out.get_text(path_input + file)
         text = in_out.delete_header(text)
         doc_spacy = nlp_spacy(text)
         text = get_sentences(doc_spacy)
@@ -132,4 +154,4 @@ if __name__ == "__main__":
         # join the new and old lines for comparison
         printout = "New: " + " ".join(newlist) + "\n"
         printout = printout + "Old: " + " ".join(text[0:max_i])
-        in_out.write_file(printout, "./data/out/" + file)
+        in_out.write_file(printout, path_output + "/" + file)
