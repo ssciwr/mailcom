@@ -5,7 +5,7 @@ Tool to parse email body from email text (eml file), and retains only the saluta
 First you need to install [spaCy](https://spacy.io/) and [Stanza](https://stanfordnlp.github.io/stanza/) through  
 `python -m pip install -r requirements.txt`
 
-You will also need to download the French and Spanish models for spaCy and Stanza using the provided script 
+You will also need to download the French and Spanish models for spaCy and Stanza using the provided script - run this in the terminal:
 
 `./get-models.sh`
 
