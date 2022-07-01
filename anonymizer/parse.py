@@ -13,22 +13,25 @@ def get_sentences(doc):
     text = []
     for sent in doc.sents:
         text.append(str(sent))
-    # print("Line 0: {}".format(repr(text[0])))
-    # print("Line 1: {}".format(repr(text[1])))
     return text
 
 
 def process_doc(doc):
     # remove any named entities from first and last sentence
     # stanza
+    # this needs to be refactored
     for sent in doc.sentences:
         # entity can be more than one word
         entlist = [ent.text for ent in sent.ents]
+        enttype = [ent.type for ent in sent.ents]
         if entlist:
-            for ent in entlist:
+            for ent, etype in zip(entlist, enttype):
                 print(ent)
                 # find substring in string and replace
-                my_sentence = sent.text.replace(ent, "")
+                if etype != "MISC":
+                    my_sentence = sent.text.replace(ent, "[{}]".format(etype))
+                else:
+                    my_sentence = sent.text
         else:
             my_sentence = sent.text
         newlist = my_sentence.split(" ")
