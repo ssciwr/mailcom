@@ -1,10 +1,13 @@
 import spacy as sp
 import stanza as sa
+from flair.data import Sentence
+from flair.models import SequenceTagger
 import in_out as in_out
 
 # lang = "es"
 lang = "fr"
-path = "./data/"
+path = "./data/test/"
+tool = "flair"
 
 
 def get_sentences(doc):
@@ -16,24 +19,33 @@ def get_sentences(doc):
     return text
 
 
-def process_doc(doc):
-    # remove any named entities from first and last sentence
+def process_doc(doc, ner_tool="stanza"):
+    # remove any named entities
     # stanza
-    # this needs to be refactored
-    for sent in doc.sentences:
-        # entity can be more than one word
-        entlist = [ent.text for ent in sent.ents]
-        enttype = [ent.type for ent in sent.ents]
+    if tool == "stanza":
+        for sent in doc.sentences:
+            # entity can be more than one word
+            entlist = [ent.text for ent in sent.ents]
+            enttype = [ent.type for ent in sent.ents]
+            my_sentence = sent.text
+            if entlist:
+                for ent, etype in zip(entlist, enttype):
+                    # find substring in string and replace
+                    if etype != "MISC":
+                        my_sentence = my_sentence.replace(ent, "[{}]".format(etype))
+            newlist = my_sentence.split(" ")
+    elif tool == "flair":
+        entlist = [
+            ent.shortstring.split("/")[0].replace('"', "")
+            for ent in doc.get_labels("ner")
+        ]
+        enttype = [ent.value for ent in doc.get_labels("ner")]
+        my_sentence = doc.text
         if entlist:
             for ent, etype in zip(entlist, enttype):
-                print(ent)
                 # find substring in string and replace
                 if etype != "MISC":
-                    my_sentence = sent.text.replace(ent, "[{}]".format(etype))
-                else:
-                    my_sentence = sent.text
-        else:
-            my_sentence = sent.text
+                    my_sentence = my_sentence.replace(ent, "[{}]".format(etype))
         newlist = my_sentence.split(" ")
     return newlist
 
@@ -79,28 +91,44 @@ def init_stanza(lang):
     return nlp
 
 
+def init_flair(lang):
+    if lang == "fr":
+        ner_string = "fr-ner"
+    elif lang == "es":
+        ner_string = "es-ner-large"
+    else:
+        raise ValueError(
+            "Currently only en and de models for flair! You selected language {}".format(
+                lang
+            )
+        )
+    nlp = SequenceTagger.load(ner_string)
+    return nlp
+
+
 if __name__ == "__main__":
     nlp_spacy = init_spacy(lang)
     nlp_stanza = init_stanza(lang)
+    nlp_flair = init_flair(lang)
+
     # process the text
     eml_files = in_out.list_of_files(path)
     for file in eml_files:
         text = in_out.get_text(path + file)
         text = in_out.delete_header(text)
-        # print(file)
-        # print(repr(text))
         doc_spacy = nlp_spacy(text)
         text = get_sentences(doc_spacy)
         # start with first line
         newlist = []
         max_i = 2
         for i in range(0, max_i):
-            doc_stanza = nlp_stanza(text[i])
-            newlist.append(process_doc(doc_stanza))
+            if tool == "stanza":
+                doc = nlp_stanza(text[i])
+            if tool == "flair":
+                doc = Sentence(text[i])
+                nlp_flair.predict(doc)
+            newlist.append(process_doc(doc, ner_tool=tool))
             newlist[i] = " ".join(newlist[i])
-        # print to console for report
-        # print("Old {}: {}".format(file, " ".join(text[0:max_i])))
-        # print("new {}: {}".format(file, " ".join(newlist)))
         # join the new and old lines for comparison
         printout = "New: " + " ".join(newlist) + "\n"
         printout = printout + "Old: " + " ".join(text[0:max_i])
