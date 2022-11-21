@@ -1,2 +1,3 @@
 spacy
 stanza
+flair
