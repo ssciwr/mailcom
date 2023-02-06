@@ -1,8 +1,8 @@
 import os
 import spacy as sp
 import stanza as sa
-from flair.data import Sentence
-from flair.models import SequenceTagger
+# from flair.data import Sentence
+# from flair.models import SequenceTagger
 from transformers import pipeline
 import in_out as in_out
 
@@ -134,8 +134,8 @@ def init_flair(lang):
                 lang
             )
         )
-    nlp = SequenceTagger.load(ner_string)
-    return nlp
+    # nlp = SequenceTagger.load(ner_string)
+    # return nlp
 
 
 def init_transformers():
