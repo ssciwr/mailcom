@@ -1,21 +1,24 @@
 import os
 import spacy as sp
 import stanza as sa
-from flair.data import Sentence
-from flair.models import SequenceTagger
+# from flair.data import Sentence
+# from flair.models import SequenceTagger
+from transformers import pipeline
 import in_out as in_out
 
 # please modify this section depending on your setup
 # input language - either "es" or "fr"
-# lang = "es"
-lang = "fr"
+lang = "es"
+# lang = "fr"
 # path where the input files can be found
-path_input = "./data/NL-fr/"
+path_input = "./data/SGsp/"
 # path where the output files should be written to
 # this is generated if not present yet
 path_output = "./data/out/"
 # the ner tool - either "flair" or "stanza"
-tool = "flair"
+# tool = "flair"
+# tool = "stanza"
+tool = "transformers"
 # please do not modify below this section unless you know what you are doing
 
 
@@ -28,7 +31,7 @@ def get_sentences(doc):
     return text
 
 
-def process_doc(doc, ner_tool="stanza"):
+def process_doc(doc, ner_tool="stanza", text=None):
     # remove any named entities
     # stanza
     if ner_tool == "stanza":
@@ -56,6 +59,26 @@ def process_doc(doc, ner_tool="stanza"):
                 if etype != "MISC":
                     my_sentence = my_sentence.replace(ent, "[{}]".format(etype))
         newlist = my_sentence.split(" ")
+    elif ner_tool == "transformers":
+        if doc:
+            # found named entities
+            entlist = []
+            newtext = text
+            for entity in doc:
+                ent_string = entity["entity"]
+                # here we could check that string is "I-PER"
+                ent_conf = entity["score"]
+                ent_position = entity["start"], entity["end"]
+                # Here we have to be careful - tokenization with
+                # transformers is quite different from spacy/stanza/flair
+                # here we get character ids
+                entlist.append(ent_position)
+                # now replace respective characters
+                newtext = newtext[:ent_position[0]] + "x"*(ent_position[1]-ent_position[0]) + newtext[ent_position[1]:]
+            newlist = [newtext]
+        else:
+            # no named entities found
+            newlist = [text]
     return newlist
 
 
@@ -111,9 +134,14 @@ def init_flair(lang):
                 lang
             )
         )
-    nlp = SequenceTagger.load(ner_string)
-    return nlp
+    # nlp = SequenceTagger.load(ner_string)
+    # return nlp
 
+
+def init_transformers():
+    # ner_recognizer = pipeline("token-classification")
+    ner_recognizer = pipeline("token-classification", model="xlm-roberta-large-finetuned-conll03-english")
+    return ner_recognizer
 
 def check_dir(path):
     # check if directory is there
@@ -129,6 +157,7 @@ if __name__ == "__main__":
     nlp_spacy = init_spacy(lang)
     nlp_stanza = init_stanza(lang)
     nlp_flair = init_flair(lang)
+    nlp_transformers = init_transformers()
 
     # check that input dir is there
     if not check_dir(path_input):
@@ -157,7 +186,10 @@ if __name__ == "__main__":
             if tool == "flair":
                 doc = Sentence(text[i])
                 nlp_flair.predict(doc)
-            newlist.append(process_doc(doc, ner_tool=tool))
+            if tool == "transformers":
+                nlps = nlp_transformers(text[i])
+                doc = nlps
+            newlist.append(process_doc(doc, ner_tool=tool, text=text[i]))
             newlist[i] = " ".join(newlist[i])
         # join the new and old lines for comparison
         printout = "New: " + " ".join(newlist) + "\n"
