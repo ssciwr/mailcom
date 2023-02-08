@@ -11,7 +11,7 @@ import in_out as in_out
 lang = "es"
 # lang = "fr"
 # path where the input files can be found
-path_input = "./data/SGsp/"
+path_input = "./data/test/"
 # path where the output files should be written to
 # this is generated if not present yet
 path_output = "./data/out/"
@@ -179,7 +179,7 @@ if __name__ == "__main__":
         text = get_sentences(doc_spacy)
         # start with first line
         newlist = []
-        max_i = 2
+        max_i = len(text)
         for i in range(0, max_i):
             if tool == "stanza":
                 doc = nlp_stanza(text[i])
