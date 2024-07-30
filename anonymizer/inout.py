@@ -1,11 +1,14 @@
 import os
 from email import policy
 from email.parser import BytesParser
+from glob import glob
+from pathlib import Path
 
 
-def list_of_files(path):
+def list_of_files(path:Path, ending:str):
     """Get all the eml files in the directory and put them in a list."""
-    email_list = [f for f in os.listdir(path) if f.endswith(".eml")]
+    # email_list = [f for f in os.listdir(path) if f.endswith(".eml")]
+    email_list = path.glob('*.' + ending)
     return email_list
 
 
