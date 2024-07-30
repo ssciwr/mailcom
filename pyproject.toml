@@ -6,10 +6,12 @@ build-backend = "hatchling.build"
 name = "anonymizer"
 license = {text = "MIT License"}
 readme = "README.md"
+description = "Pseudonymize email content in Romance languages"
 authors = [
-  { name="Inga Ulusoy", email="inga.ulusoy@uni-heidelberg.de" },
+  { name="Inga Ulusoy", email="ssc@iwr.uni-heidelberg.de" },
+  { name="Thore Olthoff", email="ssc@iwr.uni-heidelberg.de" },
 ]
-version = "0.a1"
+version = "0.0.1"
 
 dependencies = [
   "spacy",
@@ -21,3 +23,7 @@ dev = [
     "pre-commit",
     "pytest",
 ]
+
+[project.urls]
+Homepage = "https://github.com/ssciwr/anonymize"
+Issues = "https://github.com/ssciwr/anonymize/issues"
