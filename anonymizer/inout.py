@@ -5,7 +5,10 @@ from glob import glob
 from pathlib import Path
 
 
-def list_of_files(path:Path, ending:str):
+def list_of_files(directory_name: str) -> list[Path]:
+    mypath = Path(directory_name)
+    pattern = [".eml", ".html"]  # we would not change the file type through user input
+    email_list = [ mp.resolve() for mp in mypath.glob("**/*") if mp.suffix in pattern]
     """Get all the eml files in the directory and put them in a list."""
     # email_list = [f for f in os.listdir(path) if f.endswith(".eml")]
     email_list = path.glob('*.' + ending)
