@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "anonymizer"
+license = {text = "MIT License"}
+readme = "README.md"
+authors = [
+  { name="Inga Ulusoy", email="inga.ulusoy@uni-heidelberg.de" },
+]
+version = "0.a1"
+
+dependencies = [
+  "spacy",
+  "transformers",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "pytest",
+]

@@ -91,12 +91,12 @@ def init_transformers():
     return ner_recognizer
 
 
-def check_dir(path):
+def check_dir(path: Path):
     # check if directory is there
     return path.exists()
 
 
-def make_dir(path):
+def make_dir(path: Path):
     # make directory at path
     os.makedirs(path + "/")
 
