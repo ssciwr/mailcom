@@ -1,4 +1,2 @@
 spacy
-stanza
-flair
 transformers
