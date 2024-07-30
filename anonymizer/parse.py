@@ -1,6 +1,7 @@
 import os
 import spacy as sp
 from transformers import pipeline
+from pathlib import Path
 import inout as inout
 
 # please modify this section depending on your setup
@@ -9,10 +10,10 @@ import inout as inout
 lang = "es"
 # lang = "fr"
 # path where the input files can be found
-path_input = "./data/in/"
+path_input = Path("./data/in/")
 # path where the output files should be written to
 # this is generated if not present yet
-path_output = "./data/out/"
+path_output = Path("./data/out/")
 # the ner tool - currently only "transformers"
 tool = "transformers"
 # please do not modify below this section unless you know what you are doing
@@ -90,12 +91,12 @@ def init_transformers():
     return ner_recognizer
 
 
-def check_dir(path):
+def check_dir(path: Path):
     # check if directory is there
-    return os.path.isdir(path)
+    return path.exists()
 
 
-def make_dir(path):
+def make_dir(path: Path):
     # make directory at path
     os.makedirs(path + "/")
 
@@ -113,9 +114,10 @@ if __name__ == "__main__":
         print("Generating output directory/ies.")
         make_dir(path_output)
     # process the text
-    eml_files = inout.list_of_files(path_input)
+    eml_files = inout.list_of_files(path_input, 'eml')
+    html_files = inout.list_of_files(path_input, 'html')
     for file in eml_files:
-        text = inout.get_text(path_input + file)
+        text = inout.get_text(file)
         # skip this text if email could not be parsed
         if not text:
             continue

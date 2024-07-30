@@ -128,8 +128,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# sample data folder
-data/
+# sample data 
+*.eml*
+*.xml*
+*.html*
 
 # models
 test/models
