@@ -1,29 +1,24 @@
 import os
 import spacy as sp
-import stanza as sa
-# from flair.data import Sentence
-# from flair.models import SequenceTagger
 from transformers import pipeline
-import in_out as in_out
+import inout as inout
 
 # please modify this section depending on your setup
 # input language - either "es" or "fr"
+# will also need pt
 lang = "es"
 # lang = "fr"
 # path where the input files can be found
-path_input = "./data/test/"
+path_input = "./data/in/"
 # path where the output files should be written to
 # this is generated if not present yet
 path_output = "./data/out/"
-# the ner tool - either "flair" or "stanza"
-# tool = "flair"
-# tool = "stanza"
+# the ner tool - currently only "transformers"
 tool = "transformers"
 # please do not modify below this section unless you know what you are doing
 
 
 def get_sentences(doc):
-    # we are only interested in first and last sentence
     # spacy
     text = []
     for sent in doc.sents:
@@ -31,50 +26,28 @@ def get_sentences(doc):
     return text
 
 
-def process_doc(doc, ner_tool="stanza", text=None):
+def process_doc(doc, ner_tool="transformers", text=None):
     # remove any named entities
-    # stanza
-    if ner_tool == "stanza":
-        for sent in doc.sentences:
-            # entity can be more than one word
-            entlist = [ent.text for ent in sent.ents]
-            enttype = [ent.type for ent in sent.ents]
-            my_sentence = sent.text
-            if entlist:
-                for ent, etype in zip(entlist, enttype):
-                    # find substring in string and replace
-                    if etype != "MISC":
-                        my_sentence = my_sentence.replace(ent, "[{}]".format(etype))
-            newlist = my_sentence.split(" ")
-    elif ner_tool == "flair":
-        entlist = [
-            ent.shortstring.split("/")[0].replace('"', "")
-            for ent in doc.get_labels("ner")
-        ]
-        enttype = [ent.value for ent in doc.get_labels("ner")]
-        my_sentence = doc.text
-        if entlist:
-            for ent, etype in zip(entlist, enttype):
-                # find substring in string and replace
-                if etype != "MISC":
-                    my_sentence = my_sentence.replace(ent, "[{}]".format(etype))
-        newlist = my_sentence.split(" ")
-    elif ner_tool == "transformers":
+    if ner_tool == "transformers":
         if doc:
             # found named entities
             entlist = []
             newtext = text
             for entity in doc:
-                ent_string = entity["entity"]
+                ent_string = entity["entity"]  # noqa
                 # here we could check that string is "I-PER"
-                ent_conf = entity["score"]
+                ent_conf = entity["score"]  # noqa
                 ent_position = entity["start"], entity["end"]
                 # Here we have to be careful - tokenization with
                 # transformers is quite different from spacy/stanza/flair
                 # here we get character ids
                 entlist.append(ent_position)
                 # now replace respective characters
-                newtext = newtext[:ent_position[0]] + "x"*(ent_position[1]-ent_position[0]) + newtext[ent_position[1]:]
+                newtext = (
+                    newtext[: ent_position[0]]
+                    + "x" * (ent_position[1] - ent_position[0])
+                    + newtext[ent_position[1] :]  # noqa
+                )
             newlist = [newtext]
         else:
             # no named entities found
@@ -109,39 +82,13 @@ def init_spacy(lang):
     return nlp
 
 
-def init_stanza(lang):
-    if lang == "fr":
-        nlp = sa.Pipeline(
-            lang=lang, processors={"ner": "wikiner"}, tokenize_no_ssplit=True
-        )
-    elif lang == "es":
-        nlp = sa.Pipeline(
-            lang=lang, processors={"ner": "CoNLL02"}, tokenize_no_ssplit=True
-        )
-    else:
-        ValueError("Language {} not found for Stanza!".format(lang))
-    return nlp
-
-
-def init_flair(lang):
-    if lang == "fr":
-        ner_string = "fr-ner"
-    elif lang == "es":
-        ner_string = "es-ner-large"
-    else:
-        raise ValueError(
-            "Currently only en and de models for flair! You selected language {}".format(
-                lang
-            )
-        )
-    # nlp = SequenceTagger.load(ner_string)
-    # return nlp
-
-
 def init_transformers():
     # ner_recognizer = pipeline("token-classification")
-    ner_recognizer = pipeline("token-classification", model="xlm-roberta-large-finetuned-conll03-english")
+    ner_recognizer = pipeline(
+        "token-classification", model="xlm-roberta-large-finetuned-conll03-english"
+    )
     return ner_recognizer
+
 
 def check_dir(path):
     # check if directory is there
@@ -155,8 +102,6 @@ def make_dir(path):
 
 if __name__ == "__main__":
     nlp_spacy = init_spacy(lang)
-    nlp_stanza = init_stanza(lang)
-    nlp_flair = init_flair(lang)
     nlp_transformers = init_transformers()
 
     # check that input dir is there
@@ -168,24 +113,20 @@ if __name__ == "__main__":
         print("Generating output directory/ies.")
         make_dir(path_output)
     # process the text
-    eml_files = in_out.list_of_files(path_input)
+    eml_files = inout.list_of_files(path_input)
     for file in eml_files:
-        text = in_out.get_text(path_input + file)
+        text = inout.get_text(path_input + file)
         # skip this text if email could not be parsed
         if not text:
             continue
-        text = in_out.delete_header(text)
+        text = inout.delete_header(text)
         doc_spacy = nlp_spacy(text)
         text = get_sentences(doc_spacy)
         # start with first line
+        # here you can limit the number of sentences to parse
         newlist = []
         max_i = len(text)
         for i in range(0, max_i):
-            if tool == "stanza":
-                doc = nlp_stanza(text[i])
-            if tool == "flair":
-                doc = Sentence(text[i])
-                nlp_flair.predict(doc)
             if tool == "transformers":
                 nlps = nlp_transformers(text[i])
                 doc = nlps
@@ -194,4 +135,4 @@ if __name__ == "__main__":
         # join the new and old lines for comparison
         printout = "New: " + " ".join(newlist) + "\n"
         printout = printout + "Old: " + " ".join(text[0:max_i])
-        in_out.write_file(printout, path_output + "/" + file)
+        inout.write_file(printout, path_output + "/" + file)
