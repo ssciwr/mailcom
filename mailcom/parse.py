@@ -96,7 +96,7 @@ def check_dir(path: str):
     return os.path.exists(path) 
 
 
-def make_dir(path: str:
+def make_dir(path: str):
     # make directory at path
     os.makedirs(path + "/")
 
