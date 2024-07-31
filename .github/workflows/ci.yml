@@ -1,11 +1,8 @@
 # Name of the workflow in the Actions tab
 name: CI
-
-on:
-  [push]
+on: [push]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
 jobs:
   clean-and-test:
     # The type of runner that the job will run on
