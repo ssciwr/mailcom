@@ -2,7 +2,7 @@ import os
 import spacy as sp
 from transformers import pipeline
 from pathlib import Path
-import inout as inout
+from .inout import get_text, delete_header, list_of_files, write_file
 
 # please modify this section depending on your setup
 # input language - either "es" or "fr"
@@ -114,14 +114,14 @@ if __name__ == "__main__":
         print("Generating output directory/ies.")
         make_dir(path_output)
     # process the text
-    eml_files = inout.list_of_files(path_input, "eml")
-    html_files = inout.list_of_files(path_input, "html")
+    eml_files = list_of_files(path_input, "eml")
+    html_files = list_of_files(path_input, "html")
     for file in eml_files:
-        text = inout.get_text(file)
+        text = get_text(file)
         # skip this text if email could not be parsed
         if not text:
             continue
-        text = inout.delete_header(text)
+        text = delete_header(text)
         doc_spacy = nlp_spacy(text)
         text = get_sentences(doc_spacy)
         # start with first line
@@ -137,4 +137,4 @@ if __name__ == "__main__":
         # join the new and old lines for comparison
         printout = "New: " + " ".join(newlist) + "\n"
         printout = printout + "Old: " + " ".join(text[0:max_i])
-        inout.write_file(printout, path_output + "/" + file)
+        write_file(printout, path_output + "/" + file)
