@@ -1,7 +1,5 @@
-import os
 from email import policy
 from email.parser import BytesParser
-from glob import glob
 from pathlib import Path
 
 
@@ -9,7 +7,7 @@ def list_of_files(directory_name: str) -> list[Path]:
     """Get all the eml files in the directory and put them in a list."""
     mypath = Path(directory_name)
     pattern = [".eml", ".html"]  # we would not change the file type through user input
-    email_list = [ mp.resolve() for mp in mypath.glob("**/*") if mp.suffix in pattern]
+    email_list = [mp.resolve() for mp in mypath.glob("**/*") if mp.suffix in pattern]
     return email_list
 
 

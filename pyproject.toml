@@ -3,10 +3,16 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "anonymizer"
+name = "mailcom"
 license = {text = "MIT License"}
 readme = "README.md"
 description = "Pseudonymize email content in Romance languages"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
 authors = [
   { name="Inga Ulusoy", email="ssc@iwr.uni-heidelberg.de" },
   { name="Thore Olthoff", email="ssc@iwr.uni-heidelberg.de" },
@@ -25,5 +31,5 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ssciwr/anonymize"
-Issues = "https://github.com/ssciwr/anonymize/issues"
+Homepage = "https://github.com/ssciwr/mailcom"
+Issues = "https://github.com/ssciwr/mailcom/issues"

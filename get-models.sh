@@ -1,5 +1,5 @@
 #!/bin/bash
-test_dir=./anonymizer/test
+test_dir=./mailcom/test
 
 models_dir=$test_dir/models
 mkdir -p $models_dir

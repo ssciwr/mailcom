@@ -1,6 +1,6 @@
 {
     "python.testing.pytestArgs": [
-        "anonymizer"
+        "mailcom"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true
