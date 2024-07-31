@@ -7,6 +7,12 @@ name = "mailcom"
 license = {text = "MIT License"}
 readme = "README.md"
 description = "Pseudonymize email content in Romance languages"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
 authors = [
   { name="Inga Ulusoy", email="ssc@iwr.uni-heidelberg.de" },
   { name="Thore Olthoff", email="ssc@iwr.uni-heidelberg.de" },
