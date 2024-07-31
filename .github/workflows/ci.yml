@@ -1,4 +1,3 @@
-# Name of the workflow in the Actions tab
 name: CI Check
 on: [push]
   # Allows you to run this workflow manually from the Actions tab
