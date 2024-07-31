@@ -1,6 +1,8 @@
 import parse as pe
 
 
+# these worked when we were using strings
+# with the update to Path, we need to change the tests
 def test_check_dir(tmpdir):
     mydir = tmpdir.mkdir("sub")
     assert pe.check_dir(str(mydir))

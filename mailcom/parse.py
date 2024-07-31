@@ -114,8 +114,8 @@ if __name__ == "__main__":
         print("Generating output directory/ies.")
         make_dir(path_output)
     # process the text
-    eml_files = inout.list_of_files(path_input, 'eml')
-    html_files = inout.list_of_files(path_input, 'html')
+    eml_files = inout.list_of_files(path_input, "eml")
+    html_files = inout.list_of_files(path_input, "html")
     for file in eml_files:
         text = inout.get_text(file)
         # skip this text if email could not be parsed
