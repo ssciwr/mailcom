@@ -10,6 +10,9 @@ def test_list_of_files_empty(tmp_path):
     with pytest.raises(ValueError):
         list_of_files(tmp_path)
 
+def test_list_of_files_dir_not_existing():
+    with pytest.raises(OSError):
+        list_of_files("nonexistingDir")
 
 def test_list_of_files_correct_format(tmp_path):
     p = tmp_path / "test.eml"
