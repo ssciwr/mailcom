@@ -8,7 +8,7 @@ def test_check_dir(tmpdir):
     mydir = tmpdir.mkdir("sub")
     assert check_dir(str(mydir))
     with pytest.raises(OSError):
-        assert not check_dir(str(tmpdir.join("sub2")))
+        check_dir(str(tmpdir.join("sub2")))
 
 
 def test_make_dir(tmpdir):
