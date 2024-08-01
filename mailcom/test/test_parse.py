@@ -16,6 +16,6 @@ def test_make_dir(tmpdir):
     make_dir(str(mydir))
     assert mydir.check()
 
-def test_check_dir_fail(tempdir):
+def test_check_dir_fail():
     with pytest.raises(OSError):
         check_dir(str("mydir"))
