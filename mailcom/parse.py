@@ -93,7 +93,7 @@ def init_transformers():
 
 def check_dir(path: str) -> bool:
     if not os.path.exists(path):
-        raise OSError("Path {} does not exist")
+        raise OSError("Path {} does not exist".format(path))
     else:
         return True
 
