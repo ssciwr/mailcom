@@ -1,4 +1,5 @@
 from mailcom.parse import make_dir, check_dir
+import pytest
 
 
 # these worked when we were using strings
@@ -13,3 +14,7 @@ def test_make_dir(tmpdir):
     mydir = tmpdir.join("sub")
     make_dir(str(mydir))
     assert mydir.check()
+
+def test_check_dir_fail(tempdir):
+    with pytest.raises(OSError):
+        check_dir(str("mydir"))

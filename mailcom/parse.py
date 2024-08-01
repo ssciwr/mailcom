@@ -91,9 +91,11 @@ def init_transformers():
     return ner_recognizer
 
 
-def check_dir(path: str):
-    # check if directory is there
-    return os.path.exists(path) 
+def check_dir(path: str) -> bool:
+    if not os.path.exists(path):
+        raise OSError("Path {} does not exist")
+    else:
+        return True
 
 
 def make_dir(path: str):

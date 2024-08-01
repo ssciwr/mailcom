@@ -8,6 +8,8 @@ def list_of_files(directory_name: str) -> list[Path]:
     mypath = Path(directory_name)
     pattern = [".eml", ".html"]  # we would not change the file type through user input
     email_list = [mp.resolve() for mp in mypath.glob("**/*") if mp.suffix in pattern]
+    if len(email_list) == 0:
+        raise ValueError("The directory {} does not contain .eml or .html files")
     return email_list
 
 
