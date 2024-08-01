@@ -1,13 +1,17 @@
 from email import policy
 from email.parser import BytesParser
 from pathlib import Path
+import os
 
 
 def list_of_files(directory_name: str) -> list[Path]:
-    """Get all the eml files in the directory and put them in a list."""
+    if not os.path.exists(directory_name): # check if given dir exists raises error otherwise
+        raise OSError("Path {} does not exist".format(directory_name))
     mypath = Path(directory_name)
     pattern = [".eml", ".html"]  # we would not change the file type through user input
     email_list = [mp.resolve() for mp in mypath.glob("**/*") if mp.suffix in pattern]
+    if len(email_list) == 0:
+        raise ValueError("The directory {} does not contain .eml or .html files. Please check that the directory is containing the email data files".format(mypath))
     return email_list
 
 
