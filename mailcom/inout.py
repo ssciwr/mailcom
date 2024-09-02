@@ -16,8 +16,8 @@ def list_of_files(directory_name: str) -> list[Path]:
     return email_list
 
 
-def get_text(name):
-    with open(name, 'rb') as fhdl:
+def get_text(file):
+    with open(file, 'rb') as fhdl:
         raw_email = fhdl.read()
     ep = eml_parser.EmlParser(include_raw_body=True)
     parsed_eml = ep.decode_email_bytes(raw_email)
@@ -35,7 +35,6 @@ def get_text(name):
                  "attachement type": attachmenttypes
                  }
     return(email_content["content"])
-    return content
 
 
 def delete_header(text):

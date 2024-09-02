@@ -22,6 +22,7 @@ version = "0.0.1"
 dependencies = [
   "spacy",
   "transformers",
+  "eml_parser"
 ]
 
 [project.optional-dependencies]
