@@ -2,6 +2,7 @@ from email import policy
 from email.parser import BytesParser
 from pathlib import Path
 import os
+import eml_parser
 
 
 def list_of_files(directory_name: str) -> list[Path]:
@@ -16,15 +17,24 @@ def list_of_files(directory_name: str) -> list[Path]:
 
 
 def get_text(name):
-    with open(name, "rb") as fp:
-        msg = BytesParser(policy=policy.default).parse(fp)
-        if msg.get_body(preferencelist="plain") is None:
-            print("ATTENTION ATTENTION ATTENTION")
-            print("Could not parse email {}".format(name))
-            print("ATTENTION ATTENTION ATTENTION")
-            content = None
-        else:
-            content = msg.get_body(preferencelist="plain").get_content()
+    with open(name, 'rb') as fhdl:
+        raw_email = fhdl.read()
+    ep = eml_parser.EmlParser(include_raw_body=True)
+    parsed_eml = ep.decode_email_bytes(raw_email)
+    attachments = 0
+    attachmenttypes = []
+    if "attachment" in parsed_eml:
+        attachments = len(parsed_eml["attachment"])
+        if attachments > 0:
+            for i in range(attachments):
+                attachmenttypes.append(parsed_eml["attachment"][i]["extension"])
+        
+    email_content = {"content": parsed_eml["body"][0]["content"], 
+                 "date": parsed_eml["header"]["date"], 
+                 "attachment": attachments, 
+                 "attachement type": attachmenttypes
+                 }
+    return(email_content["content"])
     return content
 
 
