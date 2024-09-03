@@ -2,7 +2,7 @@ import os
 import spacy as sp
 from transformers import pipeline
 from pathlib import Path
-from .inout import get_text, delete_header, list_of_files, write_file
+from mailcom.inout import get_text, list_of_files, write_file
 
 # please modify this section depending on your setup
 # input language - either "es" or "fr"
@@ -10,10 +10,10 @@ from .inout import get_text, delete_header, list_of_files, write_file
 lang = "es"
 # lang = "fr"
 # path where the input files can be found
-path_input = Path("./data/in/")
+path_input = Path("./test/data/")
 # path where the output files should be written to
 # this is generated if not present yet
-path_output = Path("./data/out/")
+path_output = Path("../data/out/")
 # the ner tool - currently only "transformers"
 tool = "transformers"
 # please do not modify below this section unless you know what you are doing
@@ -104,8 +104,8 @@ def make_dir(path: str):
 
 
 if __name__ == "__main__":
-    nlp_spacy = init_spacy(lang)
-    nlp_transformers = init_transformers()
+    # nlp_spacy = init_spacy(lang)
+    # nlp_transformers = init_transformers()
 
     # check that input dir is there
     if not check_dir(path_input):
@@ -116,27 +116,27 @@ if __name__ == "__main__":
         print("Generating output directory/ies.")
         make_dir(path_output)
     # process the text
-    eml_files = list_of_files(path_input, "eml")
-    html_files = list_of_files(path_input, "html")
+    eml_files = list_of_files(path_input)
+    # html_files = list_of_files(path_input, "html")
     for file in eml_files:
         text = get_text(file)
+        print(text)
         # skip this text if email could not be parsed
         if not text:
             continue
-        text = delete_header(text)
-        doc_spacy = nlp_spacy(text)
-        text = get_sentences(doc_spacy)
+        # doc_spacy = nlp_spacy(text)
+        # text = get_sentences(doc_spacy)
         # start with first line
         # here you can limit the number of sentences to parse
-        newlist = []
-        max_i = len(text)
-        for i in range(0, max_i):
-            if tool == "transformers":
-                nlps = nlp_transformers(text[i])
-                doc = nlps
-            newlist.append(process_doc(doc, ner_tool=tool, text=text[i]))
-            newlist[i] = " ".join(newlist[i])
+        # newlist = []
+        # max_i = len(text)
+        # for i in range(0, max_i):
+        #     if tool == "transformers":
+        #         nlps = nlp_transformers(text[i])
+        #         doc = nlps
+        #     newlist.append(process_doc(doc, ner_tool=tool, text=text[i]))
+        #     newlist[i] = " ".join(newlist[i])
         # join the new and old lines for comparison
-        printout = "New: " + " ".join(newlist) + "\n"
-        printout = printout + "Old: " + " ".join(text[0:max_i])
-        write_file(printout, path_output + "/" + file)
+        # printout = "New: " + " ".join(newlist) + "\n"
+        # printout = printout + "Old: " + " ".join(text[0:max_i])
+        # write_file(printout, path_output + "/" + file)
