@@ -2,7 +2,7 @@ import os
 import spacy as sp
 from transformers import pipeline
 from pathlib import Path
-from mailcom.inout import get_text, list_of_files, write_file
+from mailcom.inout import get_text, list_of_files, get_html_text
 
 # please modify this section depending on your setup
 # input language - either "es" or "fr"
@@ -120,6 +120,8 @@ if __name__ == "__main__":
     # html_files = list_of_files(path_input, "html")
     for file in eml_files:
         text = get_text(file)
+        # if detect_html(text):
+        text = get_html_text(text)
         print(text)
         # skip this text if email could not be parsed
         if not text:

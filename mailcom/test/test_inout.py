@@ -1,4 +1,4 @@
-from mailcom.inout import list_of_files
+from mailcom.inout import list_of_files, get_text, get_html_text
 import pytest
 
 def test_list_of_files_found(tmp_path):
@@ -22,3 +22,16 @@ def test_list_of_files_correct_format(tmp_path):
     p = tmp_path / "test3.xml"
     p.write_text("test3")
     assert tmp_path / "test3.xml" not in list_of_files(tmp_path)
+
+def test_get_text(tmp_path):
+    p = tmp_path / "test.eml"
+    p.write_text("test")
+    assert get_text(p) == 'test'
+
+def test_get_text_err():
+    with pytest.raises(OSError):
+        list_of_files("nonexistingDir")
+
+def test_get_html_text():
+    html = """<html><head><title>Test</title></head></html>"""
+    assert get_html_text(html) == 'Test'
