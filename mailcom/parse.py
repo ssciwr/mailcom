@@ -120,7 +120,6 @@ if __name__ == "__main__":
     # html_files = list_of_files(path_input, "html")
     for file in eml_files:
         text = get_text(file)
-        # if detect_html(text):
         text = get_html_text(text)
         print(text)
         # skip this text if email could not be parsed

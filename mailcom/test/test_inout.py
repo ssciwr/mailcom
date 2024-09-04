@@ -1,5 +1,6 @@
 from mailcom.inout import list_of_files, get_text, get_html_text
 import pytest
+from pathlib import Path
 
 def test_list_of_files_found(tmp_path):
     p = tmp_path / "test.eml"
@@ -35,3 +36,12 @@ def test_get_text_err():
 def test_get_html_text():
     html = """<html><head><title>Test</title></head></html>"""
     assert get_html_text(html) == 'Test'
+
+def test_get_html_text_noHtml():
+    noHtml = """Test"""
+    assert get_html_text(noHtml) == 'Test'
+
+def test_get_text_no_file(tmp_path):
+    p = tmp_path / "test.eml"
+    with pytest.raises(OSError):
+        get_text(p)
