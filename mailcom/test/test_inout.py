@@ -1,9 +1,11 @@
 from mailcom.inout import list_of_files, get_text, get_html_text
 import pytest
 from pathlib import Path
+from importlib import resources
 
+pkg = resources.files("mailcom")
 
-FILE_PATH = Path("mailcom/test/data/Bonjour Agathe.eml")
+FILE_PATH = Path(pkg / "test" / "data" / "Bonjour Agathe.eml")
 TEXT_REF = "J'espère que tu vas bien!"
 
 def test_list_of_files_found(tmp_path):
