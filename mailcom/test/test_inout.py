@@ -2,6 +2,10 @@ from mailcom.inout import list_of_files, get_text, get_html_text
 import pytest
 from pathlib import Path
 
+
+FILE_PATH = Path("mailcom/test/data/Bonjour Agathe.eml")
+TEXT_REF = "J'espère que tu vas bien!"
+
 def test_list_of_files_found(tmp_path):
     p = tmp_path / "test.eml"
     p.write_text("test")
@@ -28,6 +32,9 @@ def test_get_text(tmp_path):
     p = tmp_path / "test.eml"
     p.write_text("test")
     assert get_text(p) == 'test'
+    text = get_text(FILE_PATH)
+    print(text[0:25])
+    assert text[0:25] == TEXT_REF
 
 def test_get_text_err():
     with pytest.raises(OSError):
