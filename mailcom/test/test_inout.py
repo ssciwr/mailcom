@@ -1,5 +1,12 @@
-from mailcom.inout import list_of_files
+from mailcom.inout import list_of_files, get_text, get_html_text
 import pytest
+from pathlib import Path
+from importlib import resources
+
+pkg = resources.files("mailcom")
+
+FILE_PATH = Path(pkg / "test" / "data" / "Bonjour Agathe.eml")
+TEXT_REF = "J'espère que tu vas bien!"
 
 def test_list_of_files_found(tmp_path):
     p = tmp_path / "test.eml"
@@ -22,3 +29,28 @@ def test_list_of_files_correct_format(tmp_path):
     p = tmp_path / "test3.xml"
     p.write_text("test3")
     assert tmp_path / "test3.xml" not in list_of_files(tmp_path)
+
+def test_get_text(tmp_path):
+    p = tmp_path / "test.eml"
+    p.write_text("test")
+    assert get_text(p) == 'test'
+    text = get_text(FILE_PATH)
+    print(text[0:25])
+    assert text[0:25] == TEXT_REF
+
+def test_get_text_err():
+    with pytest.raises(OSError):
+        list_of_files("nonexistingDir")
+
+def test_get_html_text():
+    html = """<html><head><title>Test</title></head></html>"""
+    assert get_html_text(html) == 'Test'
+
+def test_get_html_text_noHtml():
+    noHtml = """Test"""
+    assert get_html_text(noHtml) == 'Test'
+
+def test_get_text_no_file(tmp_path):
+    p = tmp_path / "test.eml"
+    with pytest.raises(OSError):
+        get_text(p)

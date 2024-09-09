@@ -1,10 +1,16 @@
-from email import policy
-from email.parser import BytesParser
 from pathlib import Path
 import os
-
+import eml_parser
+from bs4 import BeautifulSoup
 
 def list_of_files(directory_name: str) -> list[Path]:
+    """Function to create a list of files that are present in a directory as path objects.
+    
+    Args: 
+        directory_name (str): The directory where the files are located.
+    
+    Returns:
+        list[Path]: A list of Path objects that represent the files in the directory."""
     if not os.path.exists(directory_name): # check if given dir exists raises error otherwise
         raise OSError("Path {} does not exist".format(directory_name))
     mypath = Path(directory_name)
@@ -14,71 +20,52 @@ def list_of_files(directory_name: str) -> list[Path]:
         raise ValueError("The directory {} does not contain .eml or .html files. Please check that the directory is containing the email data files".format(mypath))
     return email_list
 
+def get_html_text(text_check: str) -> str:
+    """Clean up a string if it contains html content.
+    Args:
+        text_check (str): The string that may contain html content.
+        
+    Returns:
+        str: The (potentially) cleaned up string."""
+    soup = BeautifulSoup(text_check , 'html.parser')
+    if soup.find():
+        text_check = soup.get_text()
+    return text_check
 
-def get_text(name):
-    with open(name, "rb") as fp:
-        msg = BytesParser(policy=policy.default).parse(fp)
-        if msg.get_body(preferencelist="plain") is None:
-            print("ATTENTION ATTENTION ATTENTION")
-            print("Could not parse email {}".format(name))
-            print("ATTENTION ATTENTION ATTENTION")
-            content = None
-        else:
-            content = msg.get_body(preferencelist="plain").get_content()
-    return content
-
-
-def delete_header(text):
-    items_to_delete = [
-        "Von:",
-        "Gesendet:",
-        "Betreff:",
-        "An:",
-        "Cc:",
-        "Sujet :",
-        "Date :",
-        "De :",
-        "Pour :",
-        "Copie :",
-        "Mailbeispiel",
-        "Mailbeispil",
-        "transféré",
-        "Sent:",
-        "https:",
-        "Von meinem iPhone gesendet",
-        "Anfang der weitergeleiteten",
-    ]
-    lines_to_delete = []
-    text_out_list = text.splitlines()
-    for index, line in enumerate(text_out_list):
-        if any(i == "@" for i in line):
-            # print("Deleting: found @: {}".format(line))
-            lines_to_delete.append(index)
-        # elif any(i == ">" for i in line):
-        # lines_to_delete.append(index)
-        # print("Deleting: found >: {}".format(line))
-        elif any(i in line for i in items_to_delete):
-            lines_to_delete.append(index)
-            # print("Deleting {}".format(line))
-    # check if any lines have been found
-    if lines_to_delete:
-        # delete lines
-        for i in reversed(lines_to_delete):
-            # print("xxxxx {}".format(text_out_list[i]))
-            del text_out_list[i]
-    # reduce whitespace not to confuse spacy
-    # remove tabs and outer whitespace
-    text_out_list = [line.replace("\t", " ").strip() for line in text_out_list]
-    # remove hyphens - this is risky though -
-    text_out_list = [line.replace("-", " ").strip() for line in text_out_list]
-    text_out_list = [line.replace("_", " ").strip() for line in text_out_list]
-    # reduce whitespace to one
-    text_out_list = [" ".join(line.split()) for line in text_out_list]
-    # delete empty lines
-    text_out_list = [line for line in text_out_list if line]
-    return " ".join(text_out_list)
+def get_text(file: Path) -> str:
+    """Function to extract the textual content and other metadata from an email file.
+    
+    Args:
+        file (Path): The path to the email file.
+        
+    Returns:
+        str: The textual content of the email. In the future, this will return the 
+        complete dictionary with the metadata."""
+    if not file.is_file(): # check if given file exists raises error otherwise
+        raise OSError("File {} does not exist".format(file))
+    with open(file, 'rb') as fhdl:
+        raw_email = fhdl.read()
+    ep = eml_parser.EmlParser(include_raw_body=True)
+    parsed_eml = ep.decode_email_bytes(raw_email)
+    attachmenttypes = []
+    # find if there are any attachements, and if yes, how many
+    attachments = len(parsed_eml["attachment"]) if "attachment" in parsed_eml else 0
+    # find the types of attachements
+    if attachments > 0:
+        attachmenttypes = [parsed_eml["attachment"][i]["extension"] for i in range(attachments)]
+    email_content = {"content": parsed_eml["body"][0]["content"], 
+                 "date": parsed_eml["header"]["date"], 
+                 "attachment": attachments, 
+                 "attachement type": attachmenttypes
+                 }
+    return(email_content["content"])
 
 
-def write_file(text, name):
+def write_file(text: str, name: str)-> None:
+    """Write the extracted string to a text file.
+    
+    Args:
+        text (str): The string to be written to the file.
+        name (str): The name of the file to be written."""
     with open("{}.out".format(name), "w") as file:
         file.write(text)
