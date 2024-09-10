@@ -2,7 +2,7 @@ import os
 import spacy as sp
 from transformers import pipeline
 from pathlib import Path
-from mailcom.inout import get_text, list_of_files, get_html_text
+from mailcom import inout
 
 # please modify this section depending on your setup
 # input language - either "es" or "fr"
@@ -116,11 +116,12 @@ if __name__ == "__main__":
         print("Generating output directory/ies.")
         make_dir(path_output)
     # process the text
-    eml_files = list_of_files(path_input)
+    io = inout.InoutHandler()
+    eml_files = io.list_of_files(path_input)
     # html_files = list_of_files(path_input, "html")
     for file in eml_files:
-        text = get_text(file)
-        text = get_html_text(text)
+        text = io.get_text(file)
+        text = io.get_html_text(text)
         print(text)
         # skip this text if email could not be parsed
         if not text:
