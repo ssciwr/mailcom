@@ -4,26 +4,27 @@ import eml_parser
 from bs4 import BeautifulSoup
 
 class InoutHandler:
-    @staticmethod
-    def list_of_files(directory_name: str) -> list[Path]:
-        """Function to create a list of files that are present in a directory as path objects.
+    def __init__(self, directory_name: str):
+        """Constructor for the InoutHandler class.
         
         Args: 
             directory_name (str): The directory where the files are located.
-        
-        Returns:
-            list[Path]: A list of Path objects that represent the files in the directory."""
-        if not os.path.exists(directory_name): # check if given dir exists raises error otherwise
-            raise OSError("Path {} does not exist".format(directory_name))
-        mypath = Path(directory_name)
-        pattern = [".eml", ".html"]  # we would not change the file type through user input
-        email_list = [mp.resolve() for mp in mypath.glob("**/*") if mp.suffix in pattern]
-        if len(email_list) == 0:
-            raise ValueError("The directory {} does not contain .eml or .html files. Please check that the directory is containing the email data files".format(mypath))
-        return email_list
+        """        
+        self.directory_name = directory_name
+        # presets
+        self.pattern = [".eml", ".html"]
 
-    @staticmethod
-    def get_html_text(text_check: str) -> str:
+    def list_of_files(self):
+        """Method to create a list of Path objects (files) that are present 
+        in a directory."""
+        if not os.path.exists(self.directory_name):  # check if given dir exists raises error otherwise
+            raise OSError("Path {} does not exist".format(self.directory_name))
+        mypath = Path(self.directory_name)
+        self.email_list = [mp.resolve() for mp in mypath.glob("**/*") if mp.suffix in self.pattern]
+        if len(self.email_list) == 0:
+            raise ValueError("The directory {} does not contain .eml or .html files. Please check that the directory is containing the email data files".format(mypath))
+
+    def get_html_text(self, text_check: str) -> str:
         """Clean up a string if it contains html content.
         Args:
             text_check (str): The string that may contain html content.
@@ -35,8 +36,7 @@ class InoutHandler:
             text_check = soup.get_text()
         return text_check
 
-    @staticmethod
-    def get_text(file: Path) -> str:
+    def get_text(self, file: Path) -> str:
         """Function to extract the textual content and other metadata from an email file.
         
         Args:
@@ -57,24 +57,24 @@ class InoutHandler:
         # find the types of attachements
         if attachments > 0:
             attachmenttypes = [parsed_eml["attachment"][i]["extension"] for i in range(attachments)]
-        email_content = {"content": parsed_eml["body"][0]["content"], 
+        self.email_content = {"content": parsed_eml["body"][0]["content"], 
                     "date": parsed_eml["header"]["date"], 
                     "attachment": attachments, 
                     "attachement type": attachmenttypes
                     }
-        return(email_content["content"])
+        return(self.email_content["content"])
 
-    def validate_data():
-        return
+    def validate_data(self):
+        pass
     
-    def data_to_xml():
-        return
+    def data_to_xml(self):
+        pass
 
-def write_file(text: str, name: str)-> None:
-    """Write the extracted string to a text file.
-    
-    Args:
-        text (str): The string to be written to the file.
-        name (str): The name of the file to be written."""
-    with open("{}.out".format(name), "w") as file:
-        file.write(text)
+    def write_file(self, text: str, name: str)-> None:
+        """Write the extracted string to a text file.
+
+        Args:
+            text (str): The string to be written to the file.
+            name (str): The name of the file to be written."""
+        with open("{}.out".format(name), "w") as file:
+            file.write(text)
