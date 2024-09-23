@@ -3,6 +3,8 @@ import spacy as sp
 from transformers import pipeline
 from pathlib import Path
 from mailcom.inout import InoutHandler
+from dicttoxml import dicttoxml
+from xml.dom.minidom import parseString
 
 # please modify this section depending on your setup
 # input language - either "es" or "fr"
@@ -118,17 +120,27 @@ if __name__ == "__main__":
     # process the text
     io = InoutHandler(path_input)
     io.list_of_files()
+    io = InoutHandler(path_input)
+    io.list_of_files()
     # html_files = list_of_files(path_input, "html")
     for file in io.email_list:
         text = io.get_text(file)
         text = io.get_html_text(text)
-        print(text)
-        print(io.email_content["date"])
-        print(io.email_content["attachment"])
-        print(io.email_content["attachement type"])
+        # print(text)
+        # print(io.email_content["date"])
+        # print(io.email_content["attachment"])
+        # print(io.email_content["attachement type"])
         # skip this text if email could not be parsed
         if not text:
             continue
+    xml = dicttoxml(io.email_content["content"])
+    # xml = dicttoxml(io.email_content)  Different options for review
+    xml_decode = xml.decode()
+    xmlfile = open(path_output / "dict.xml", "w")
+    xmlfile.write(xml_decode)
+    xmlfile.close()
+    print(parseString(xml).toprettyxml())
+    
         # doc_spacy = nlp_spacy(text)
         # text = get_sentences(doc_spacy)
         # start with first line
