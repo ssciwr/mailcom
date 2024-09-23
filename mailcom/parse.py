@@ -136,9 +136,11 @@ if __name__ == "__main__":
     xml = dicttoxml(io.email_content["content"])
     # xml = dicttoxml(io.email_content)  Different options for review
     xml_decode = xml.decode()
-    xmlfile = open(path_output / "dict.xml", "w")
-    xmlfile.write(xml_decode)
-    xmlfile.close()
+    
+    if check_dir(path_output):
+        xmlfile = open(path_output / "dict.xml", "w")
+        xmlfile.write(xml_decode)
+        xmlfile.close()
     print(parseString(xml).toprettyxml())
     
         # doc_spacy = nlp_spacy(text)
