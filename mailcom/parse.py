@@ -120,6 +120,8 @@ if __name__ == "__main__":
     # process the text
     io = InoutHandler(path_input)
     io.list_of_files()
+    io = InoutHandler(path_input)
+    io.list_of_files()
     # html_files = list_of_files(path_input, "html")
     for file in io.email_list:
         text = io.get_text(file)
