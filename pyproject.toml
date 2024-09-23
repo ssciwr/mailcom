@@ -24,7 +24,7 @@ dependencies = [
   "transformers",
   "eml_parser",
   "bs4",
-  "xml.dom.minidom",
+  "dict2xml",
   "dicttoxml"
 ]
 
