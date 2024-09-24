@@ -136,6 +136,7 @@ dmypy.json
 *.xml*
 *.html*
 !mailcom/test/data/*.eml
+!mailcom/test/data/*.xml
 
 # models
 test/models

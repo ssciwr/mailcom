@@ -70,7 +70,7 @@ class InoutHandler:
     
     def data_to_xml(self, text):
         my_item_func = lambda x: 'content'
-        xml = dicttoxml(text, custom_root='email', item_func = my_item_func)  # Different options for review
+        xml = dicttoxml(text, custom_root='email', item_func = my_item_func)
         return xml.decode()
 
     def write_file(self, text: str, name: str)-> None:
