@@ -9,6 +9,7 @@ pkg = resources.files("mailcom")
 FILE_PATH = Path(pkg / "test" / "data" / "Bonjour Agathe.eml")
 
 TEXT_REF = "J'espère que tu vas bien!"
+XML_REF = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><email><content type=\"str\">"
 
 @pytest.fixture()
 def get_instant(tmp_path):
@@ -43,9 +44,13 @@ def test_get_text(get_instant):
     assert get_instant.email_content["attachement type"] == ['jpg', 'jpg']
     with pytest.raises(OSError):
         get_instant.get_text(get_instant.directory_name / "nonexisting.eml")
+    return text
 
 def test_get_html_text(get_instant):
     html = """<html><head><title>Test</title></head></html>"""
     assert get_instant.get_html_text(html) == 'Test'
     noHtml = """Test"""
     assert get_instant.get_html_text(noHtml) == 'Test'
+    
+def test_data_to_xml(get_instant):
+    assert get_instant.data_to_xml(test_get_text)[0:66] == XML_REF
