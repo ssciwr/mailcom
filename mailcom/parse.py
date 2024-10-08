@@ -19,6 +19,45 @@ tool = "transformers"
 # please do not modify below this section unless you know what you are doing
 
 
+class Pseudonymize:
+    def __init__(self, text: str):
+        self.text = text
+
+        self.spacy_default_model_dict = {
+            "es": "es_core_news_md",
+            "fr": "fr_core_news_md",
+        }
+
+    def init_spacy(self, language: str, model="default"):
+        if model == "default":
+            model = self.spacy_default_model_dict[language]
+        else:
+            # TODO: check if model passed as parameter exists
+            pass
+
+        try:
+            # disable not needed components
+            self.nlp_spacy = sp.load(
+                model, exclude=["morphologizer", "attribute_ruler", "lemmatizer", "ner"]
+            )
+        except OSError:
+            raise OSError("Could not find {} in standard directory.".format(model))
+
+        self.nlp_spacy = sp.load(model)
+
+    def init_transformers(self, model="default", model_revision_number="default"):
+        if model == "default":
+            model = "xlm-roberta-large-finetuned-conll03-english"
+        else:
+            # TODO: check if model passed as parameter exists
+            pass
+
+        # TODO: Model revision number
+
+        # ner_recognizer = pipeline("token-classification")
+        self.ner_recognizer = pipeline("token-classification", model=model)
+
+
 def get_sentences(doc):
     # spacy
     text = []
@@ -145,3 +184,8 @@ if __name__ == "__main__":
         # printout = "New: " + " ".join(newlist) + "\n"
         # printout = printout + "Old: " + " ".join(text[0:max_i])
         # write_file(printout, path_output + "/" + file)
+
+        # Test functionality of Pseudonymize class
+        pseudonymizer = Pseudonymize(text)
+        pseudonymizer.init_spacy("es")
+        pseudonymizer.init_transformers()
