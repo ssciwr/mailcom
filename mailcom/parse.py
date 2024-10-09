@@ -20,8 +20,7 @@ tool = "transformers"
 
 
 class Pseudonymize:
-    def __init__(self, text: str):
-        self.text = text
+    def __init__(self):
 
         self.spacy_default_model_dict = {
             "es": "es_core_news_md",
@@ -163,8 +162,8 @@ class Pseudonymize:
     def concatenate(self, sentences):
         return " ".join(sentences)
 
-    def pseudonymize(self):
-        sentences = self.get_sentences(self.text)
+    def pseudonymize(self, text: str):
+        sentences = self.get_sentences(text)
         pseudonymized_sentences = []
         for sent in sentences:
             ner = self.get_ner(sent)
@@ -273,6 +272,9 @@ if __name__ == "__main__":
     io = InoutHandler(path_input)
     io.list_of_files()
     # html_files = list_of_files(path_input, "html")
+    pseudonymizer = Pseudonymize()
+    pseudonymizer.init_spacy("fr")
+    pseudonymizer.init_transformers()
     for file in io.email_list:
         text = io.get_text(file)
         text = io.get_html_text(text)
@@ -301,10 +303,6 @@ if __name__ == "__main__":
         # write_file(printout, path_output + "/" + file)
 
         # Test functionality of Pseudonymize class
-        pseudonymizer = Pseudonymize(text)
-        pseudonymizer.init_spacy("fr")
-        pseudonymizer.init_transformers()
-
-        output_text = pseudonymizer.pseudonymize()
+        output_text = pseudonymizer.pseudonymize(text)
         print("New text:", output_text)
         print("Old text:", text)
