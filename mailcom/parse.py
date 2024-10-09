@@ -57,6 +57,56 @@ class Pseudonymize:
         # ner_recognizer = pipeline("token-classification")
         self.ner_recognizer = pipeline("token-classification", model=model)
 
+    def get_sentences(self, input_text):
+        doc = self.nlp_spacy(input_text)
+        text_as_sents = []
+        for sent in doc.sents:
+            text_as_sents.append(str(sent))
+        return text_as_sents
+
+    def get_ner(self, sentence):
+        ner = self.ner_recognizer(sentence)
+        return ner
+
+    def pseudonymize_sentence(self, ner, sentence):
+        # remove any named entities
+        if ner:
+            # found named entities
+            entlist = []
+            new_sentence = sentence
+            for entity in ner:
+                ent_string = entity["entity"]  # noqa
+                # here we could check that string is "I-PER"
+                ent_conf = entity["score"]  # noqa
+                ent_position = entity["start"], entity["end"]
+                # Here we have to be careful - tokenization with
+                # transformers is quite different from spacy/stanza/flair
+                # here we get character ids
+                entlist.append(ent_position)
+                # now replace respective characters
+                new_sentence = (
+                    new_sentence[: ent_position[0]]
+                    + "x" * (ent_position[1] - ent_position[0])
+                    + new_sentence[ent_position[1] :]  # noqa
+                )
+            newlist = [new_sentence]
+        else:
+            # no named entities found
+            newlist = [sentence]
+        return newlist
+
+    def concatenate(self, sentences):
+        return " ".join(sentences)
+
+    def pseudonymize(self):
+        sentences = self.get_sentences(self.text)
+        pseudonymized_sentences = []
+        for sent in sentences:
+            ner = self.get_ner(sent)
+            ps_sent = self.pseudonymize_sentence(ner, sent)
+            pseudonymized_sentences.append(ps_sent)
+        return self.concatenate(pseudonymized_sentences)
+
 
 def get_sentences(doc):
     # spacy
@@ -189,3 +239,5 @@ if __name__ == "__main__":
         pseudonymizer = Pseudonymize(text)
         pseudonymizer.init_spacy("es")
         pseudonymizer.init_transformers()
+
+        output_text = pseudonymizer.pseudonymize()
