@@ -28,13 +28,39 @@ class Pseudonymize:
             "fr": "fr_core_news_md",
         }
 
+        self.pseudo_first_names = {
+            "es": [
+                "ES_FIRST_NAME_1",
+                "ES_FIRST_NAME_2",
+                "ES_FIRST_NAME_3",
+                "ES_FIRST_NAME_4",
+            ],
+            "fr": [
+                "FR_FIRST_NAME_1",
+                "FR_FIRST_NAME_2",
+                "FR_FIRST_NAME_3",
+                "FR_FIRST_NAME_4",
+            ],
+        }
+
+        self.pseudo_last_names = {
+            "es": [
+                "ES_LAST_NAME_1",
+                "ES_LAST_NAME_2",
+                "ES_LAST_NAME_3",
+                "ES_LAST_NAME_4",
+            ],
+            "fr": [
+                "FR_LAST_NAME_1",
+                "FR_LAST_NAME_2",
+                "FR_LAST_NAME_3",
+                "FR_LAST_NAME_4",
+            ],
+        }
+
     def init_spacy(self, language: str, model="default"):
         if model == "default":
             model = self.spacy_default_model_dict[language]
-        else:
-            # TODO: check if model passed as parameter exists
-            pass
-
         try:
             # disable not needed components
             self.nlp_spacy = sp.load(
@@ -48,10 +74,6 @@ class Pseudonymize:
     def init_transformers(self, model="default", model_revision_number="default"):
         if model == "default":
             model = "xlm-roberta-large-finetuned-conll03-english"
-        else:
-            # TODO: check if model passed as parameter exists
-            pass
-
         # TODO: Model revision number
 
         # ner_recognizer = pipeline("token-classification")
@@ -74,21 +96,64 @@ class Pseudonymize:
             # found named entities
             entlist = []
             new_sentence = sentence
-            for entity in ner:
+            additional_sentence_length = 0
+            for i in range(len(ner)):
+                entity = ner[i]
+                # check whether this entity has already been processed
+                # because it is part of a previous word
+                if entity.get("replaced", False):
+                    continue
+                entity["replaced"] = True
                 ent_string = entity["entity"]  # noqa
                 # here we could check that string is "I-PER"
                 ent_conf = entity["score"]  # noqa
                 ent_position = entity["start"], entity["end"]
+                print(entity)
                 # Here we have to be careful - tokenization with
                 # transformers is quite different from spacy/stanza/flair
                 # here we get character ids
                 entlist.append(ent_position)
                 # now replace respective characters
-                new_sentence = (
-                    new_sentence[: ent_position[0]]
-                    + "x" * (ent_position[1] - ent_position[0])
-                    + new_sentence[ent_position[1] :]  # noqa
-                )
+                # replace I-PER
+                if ent_string == "I-PER":
+                    # add all following entities to this name
+                    j = i
+                    word_end = entity["end"]
+                    if j < len(ner) - 1:
+                        while ner[j]["end"] == ner[j + 1]["start"]:
+                            ner[j + 1]["replaced"] = True
+                            word_end = ner[j + 1]["end"]
+                            j += 1
+                            if j == len(ner) - 1:
+                                break
+                    # replace the entire name
+                    # if there is another entity before this name with one char inbetween,
+                    # this is likely a last name
+                    # TODO: get the language information
+                    if i > 0 and entity["start"] - ner[i - 1]["end"] == 1:
+                        pseudonym = self.pseudo_last_names["fr"][0]
+                    else:
+                        pseudonym = self.pseudo_first_names["fr"][0]
+                    new_sentence = (
+                        new_sentence[: ent_position[0] + additional_sentence_length]
+                        + pseudonym
+                        + new_sentence[
+                            (word_end + additional_sentence_length) :  # noqa
+                        ]
+                    )
+                    # since the position of chars in the sentence now changes,
+                    # record the additional sentence length
+                    additional_sentence_length += len(pseudonym) - (
+                        word_end - ent_position[0]
+                    )
+                else:
+                    new_sentence = (
+                        new_sentence[: (ent_position[0] + additional_sentence_length)]
+                        + "x" * (ent_position[1] - ent_position[0])
+                        + new_sentence[
+                            (ent_position[1] + additional_sentence_length) :  # noqa
+                        ]
+                    )
             newlist = [new_sentence]
         else:
             # no named entities found
@@ -211,10 +276,10 @@ if __name__ == "__main__":
     for file in io.email_list:
         text = io.get_text(file)
         text = io.get_html_text(text)
-        print(text)
-        print(io.email_content["date"])
-        print(io.email_content["attachment"])
-        print(io.email_content["attachement type"])
+        # print(text)
+        # print(io.email_content["date"])
+        # print(io.email_content["attachment"])
+        # print(io.email_content["attachement type"])
         # skip this text if email could not be parsed
         if not text:
             continue
@@ -237,7 +302,7 @@ if __name__ == "__main__":
 
         # Test functionality of Pseudonymize class
         pseudonymizer = Pseudonymize(text)
-        pseudonymizer.init_spacy("es")
+        pseudonymizer.init_spacy("fr")
         pseudonymizer.init_transformers()
 
         output_text = pseudonymizer.pseudonymize()
