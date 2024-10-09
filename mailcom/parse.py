@@ -14,6 +14,7 @@ path_input = Path("./test/data/")
 # path where the output files should be written to
 # this is generated if not present yet
 path_output = Path("../data/out/")
+output_filename = "dict"
 # the ner tool - currently only "transformers"
 tool = "transformers"
 # please do not modify below this section unless you know what you are doing
@@ -122,22 +123,26 @@ if __name__ == "__main__":
     for file in io.email_list:
         text = io.get_text(file)
         text = io.get_html_text(text)
-        print(text)
-        print(io.email_content["date"])
-        print(io.email_content["attachment"])
-        print(io.email_content["attachement type"])
+        xml = io.data_to_xml(text)
+        io.write_file(xml, path_output / output_filename)
+        # print(text)
+        # print(io.email_content["date"])
+        # print(io.email_content["attachment"])
+        # print(io.email_content["attachement type"])
         # skip this text if email could not be parsed
         if not text:
-            continue
-        # doc_spacy = nlp_spacy(text)
+            continue 
+        ### nlp = init_spacy(sprache)   
+        # doc_spacy = nlp_spacy(text) ### fehlt - alte version
         # text = get_sentences(doc_spacy)
         # start with first line
         # here you can limit the number of sentences to parse
         # newlist = []
-        # max_i = len(text)
+        # max_i = len(text) ### weg
+        ### init transformers
         # for i in range(0, max_i):
-        #     if tool == "transformers":
-        #         nlps = nlp_transformers(text[i])
+        #     if tool == "transformers": ### gibt nur eins
+        #         nlps = nlp_transformers(text[i]) ### fehlty bzw process_doc
         #         doc = nlps
         #     newlist.append(process_doc(doc, ner_tool=tool, text=text[i]))
         #     newlist[i] = " ".join(newlist[i])
