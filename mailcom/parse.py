@@ -104,7 +104,7 @@ class Pseudonymize:
         for sent in sentences:
             ner = self.get_ner(sent)
             ps_sent = self.pseudonymize_sentence(ner, sent)
-            pseudonymized_sentences.append(ps_sent)
+            pseudonymized_sentences.append(" ".join(ps_sent))
         return self.concatenate(pseudonymized_sentences)
 
 
@@ -241,3 +241,5 @@ if __name__ == "__main__":
         pseudonymizer.init_transformers()
 
         output_text = pseudonymizer.pseudonymize()
+        print("New text:", output_text)
+        print("Old text:", text)
