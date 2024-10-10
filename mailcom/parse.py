@@ -33,12 +33,24 @@ class Pseudonymize:
                 "ES_FIRST_NAME_2",
                 "ES_FIRST_NAME_3",
                 "ES_FIRST_NAME_4",
+                "ES_FIRST_NAME_5",
+                "ES_FIRST_NAME_6",
+                "ES_FIRST_NAME_7",
+                "ES_FIRST_NAME_8",
+                "ES_FIRST_NAME_9",
+                "ES_FIRST_NAME_10",
             ],
             "fr": [
                 "FR_FIRST_NAME_1",
                 "FR_FIRST_NAME_2",
                 "FR_FIRST_NAME_3",
                 "FR_FIRST_NAME_4",
+                "FR_FIRST_NAME_5",
+                "FR_FIRST_NAME_6",
+                "FR_FIRST_NAME_7",
+                "FR_FIRST_NAME_8",
+                "FR_FIRST_NAME_9",
+                "FR_FIRST_NAME_10",
             ],
         }
 
@@ -48,14 +60,36 @@ class Pseudonymize:
                 "ES_LAST_NAME_2",
                 "ES_LAST_NAME_3",
                 "ES_LAST_NAME_4",
+                "ES_LAST_NAME_5",
+                "ES_LAST_NAME_6",
+                "ES_LAST_NAME_7",
+                "ES_LAST_NAME_8",
+                "ES_LAST_NAME_9",
+                "ES_LAST_NAME_10",
             ],
             "fr": [
                 "FR_LAST_NAME_1",
                 "FR_LAST_NAME_2",
                 "FR_LAST_NAME_3",
                 "FR_LAST_NAME_4",
+                "FR_LAST_NAME_5",
+                "FR_LAST_NAME_6",
+                "FR_LAST_NAME_7",
+                "FR_LAST_NAME_8",
+                "FR_LAST_NAME_9",
+                "FR_LAST_NAME_10",
             ],
         }
+        # records the already replaced names in an email
+        self.used_first_names = {}
+        self.used_last_names = {}
+
+        # forms of address that indicate last names
+        # TODO add pt and es
+        self.ln_forms_of_adress = [
+            "Madame",
+            "Monsieur",
+        ]
 
     def init_spacy(self, language: str, model="default"):
         if model == "default":
@@ -125,14 +159,47 @@ class Pseudonymize:
                             j += 1
                             if j == len(ner) - 1:
                                 break
-                    # replace the entire name
+                    name_to_replace = new_sentence[
+                        entity["start"]
+                        + additional_sentence_length : word_end  # noqa
+                        + additional_sentence_length
+                    ]
+                    # distinguish between first and last names
+                    is_last_name = False
                     # if there is another entity before this name with one char inbetween,
                     # this is likely a last name
-                    # TODO: get the language information
                     if i > 0 and entity["start"] - ner[i - 1]["end"] == 1:
-                        pseudonym = self.pseudo_last_names["fr"][0]
+                        is_last_name = True
+                    # if there is a form of address in front
+                    # of this name that indicates last names,
+                    # this is likely a last name
+                    region_to_search_for_foa = new_sentence[
+                        entity["start"] - 10 : entity["start"]  # noqa
+                    ]
+                    if any(
+                        foa in region_to_search_for_foa
+                        for foa in self.ln_forms_of_adress
+                    ):
+                        is_last_name = True
+
+                    if is_last_name:
+                        # if this name has been replaced before, choose the same pseudonym
+                        pseudonym = self.used_last_names.get(name_to_replace, "")
+                        # if not, choose a new pseudonym
+                        if pseudonym == "":
+                            pseudonym = self.pseudo_last_names["fr"][
+                                len(self.used_last_names)
+                            ]
+                            self.used_last_names[name_to_replace] = pseudonym
                     else:
-                        pseudonym = self.pseudo_first_names["fr"][0]
+                        pseudonym = self.used_first_names.get(name_to_replace, "")
+                        if pseudonym == "":
+                            pseudonym = self.pseudo_first_names["fr"][
+                                len(self.used_first_names)
+                            ]
+                            self.used_first_names[name_to_replace] = pseudonym
+                    # replace the name
+                    print("Replacing", name_to_replace, "with", pseudonym)
                     new_sentence = (
                         new_sentence[: ent_position[0] + additional_sentence_length]
                         + pseudonym
@@ -163,6 +230,9 @@ class Pseudonymize:
         return " ".join(sentences)
 
     def pseudonymize(self, text: str):
+        # clear the already identified names
+        self.used_first_names.clear()
+        # pseudonymize new email
         sentences = self.get_sentences(text)
         pseudonymized_sentences = []
         for sent in sentences:
