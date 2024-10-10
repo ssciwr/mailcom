@@ -112,6 +112,11 @@ class Pseudonymize:
         # ner_recognizer = pipeline("token-classification")
         self.ner_recognizer = pipeline("token-classification", model=model)
 
+    def reset(self):
+        # reset used names for processing a new email
+        self.used_first_names.clear()
+        self.used_last_names.clear()
+
     def get_sentences(self, input_text):
         doc = self.nlp_spacy(input_text)
         text_as_sents = []
@@ -230,10 +235,7 @@ class Pseudonymize:
         return " ".join(sentences)
 
     def pseudonymize(self, text: str):
-        # clear the already identified names
-        self.used_first_names.clear()
-        self.used_last_names.clear()
-        # pseudonymize new email
+        self.reset()
         sentences = self.get_sentences(text)
         pseudonymized_sentences = []
         for sent in sentences:
