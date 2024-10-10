@@ -232,6 +232,7 @@ class Pseudonymize:
     def pseudonymize(self, text: str):
         # clear the already identified names
         self.used_first_names.clear()
+        self.used_last_names.clear()
         # pseudonymize new email
         sentences = self.get_sentences(text)
         pseudonymized_sentences = []
