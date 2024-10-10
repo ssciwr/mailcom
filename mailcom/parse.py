@@ -29,55 +29,55 @@ class Pseudonymize:
 
         self.pseudo_first_names = {
             "es": [
-                "ES_FIRST_NAME_1",
-                "ES_FIRST_NAME_2",
-                "ES_FIRST_NAME_3",
-                "ES_FIRST_NAME_4",
-                "ES_FIRST_NAME_5",
-                "ES_FIRST_NAME_6",
-                "ES_FIRST_NAME_7",
-                "ES_FIRST_NAME_8",
-                "ES_FIRST_NAME_9",
-                "ES_FIRST_NAME_10",
+                "José",
+                "Angel",
+                "Alex",
+                "Ariel",
+                "Cruz",
+                "Fran",
+                "Arlo",
+                "Adri",
+                "Marce",
+                "Mati",
             ],
             "fr": [
-                "FR_FIRST_NAME_1",
-                "FR_FIRST_NAME_2",
-                "FR_FIRST_NAME_3",
-                "FR_FIRST_NAME_4",
-                "FR_FIRST_NAME_5",
-                "FR_FIRST_NAME_6",
-                "FR_FIRST_NAME_7",
-                "FR_FIRST_NAME_8",
-                "FR_FIRST_NAME_9",
-                "FR_FIRST_NAME_10",
+                "Claude",
+                "Dominique",
+                "Claude",
+                "Camille",
+                "Charlie",
+                "Florence",
+                "Francis",
+                "Maxime",
+                "Remy",
+                "Cécile",
             ],
         }
 
         self.pseudo_last_names = {
             "es": [
-                "ES_LAST_NAME_1",
-                "ES_LAST_NAME_2",
-                "ES_LAST_NAME_3",
-                "ES_LAST_NAME_4",
-                "ES_LAST_NAME_5",
-                "ES_LAST_NAME_6",
-                "ES_LAST_NAME_7",
-                "ES_LAST_NAME_8",
-                "ES_LAST_NAME_9",
-                "ES_LAST_NAME_10",
+                "García",
+                "Fernández",
+                "González",
+                "Rodríguez",
+                "López",
+                "Martínez",
+                "Sánchez",
+                "Pérez",
+                "Martín",
+                "Gómez",
             ],
             "fr": [
-                "FR_LAST_NAME_1",
-                "FR_LAST_NAME_2",
-                "FR_LAST_NAME_3",
-                "FR_LAST_NAME_4",
-                "FR_LAST_NAME_5",
-                "FR_LAST_NAME_6",
-                "FR_LAST_NAME_7",
-                "FR_LAST_NAME_8",
-                "FR_LAST_NAME_9",
-                "FR_LAST_NAME_10",
+                "Martin",
+                "Bernard",
+                "Dubois",
+                "Thomas",
+                "Robert",
+                "Richard",
+                "Petit",
+                "Durand",
+                "Leroy",
+                "Moreau",
             ],
         }
         # records the already replaced names in an email
@@ -188,21 +188,28 @@ class Pseudonymize:
                         is_last_name = True
 
                     if is_last_name:
-                        # if this name has been replaced before, choose the same pseudonym
-                        pseudonym = self.used_last_names.get(name_to_replace, "")
-                        # if not, choose a new pseudonym
-                        if pseudonym == "":
-                            pseudonym = self.pseudo_last_names["fr"][
-                                len(self.used_last_names)
-                            ]
-                            self.used_last_names[name_to_replace] = pseudonym
+                        nm_list = self.used_last_names
+                        pseudo_list = self.pseudo_last_names
                     else:
-                        pseudonym = self.used_first_names.get(name_to_replace, "")
-                        if pseudonym == "":
-                            pseudonym = self.pseudo_first_names["fr"][
-                                len(self.used_first_names)
-                            ]
-                            self.used_first_names[name_to_replace] = pseudonym
+                        nm_list = self.used_first_names
+                        pseudo_list = self.pseudo_first_names
+                    pseudonym = ""
+                    k = 0
+                    name_variations = [
+                        name_to_replace,
+                        name_to_replace.lower(),
+                        name_to_replace.title(),
+                    ]
+                    # if this name has been replaced before, choose the same pseudonym
+                    while pseudonym == "":
+                        pseudonym = nm_list.get(name_variations[k], "")
+                        k += 1
+                        if k == len(name_variations):
+                            break
+                    # if none is found, choose a new pseudonym
+                    if pseudonym == "":
+                        pseudonym = pseudo_list["fr"][len(nm_list)]
+                        nm_list[name_to_replace] = pseudonym
                     # replace the name
                     print("Replacing", name_to_replace, "with", pseudonym)
                     new_sentence = (
