@@ -155,15 +155,12 @@ class Pseudonymize:
                 # replace I-PER
                 if ent_string == "I-PER":
                     # add all following entities to this name
-                    j = i
                     word_end = entity["end"]
-                    if j < len(ner) - 1:
-                        while ner[j]["end"] == ner[j + 1]["start"]:
-                            ner[j + 1]["replaced"] = True
-                            word_end = ner[j + 1]["end"]
-                            j += 1
-                            if j == len(ner) - 1:
-                                break
+                    for j in range(i, len(ner) - 1):
+                        if ner[j]["end"] != ner[j + 1]["start"]:
+                            break
+                        ner[j + 1]["replaced"] = True
+                        word_end = ner[j + 1]["end"]
                     name_to_replace = new_sentence[
                         entity["start"]
                         + additional_sentence_length : word_end  # noqa
