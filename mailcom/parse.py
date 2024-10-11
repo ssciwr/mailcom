@@ -128,7 +128,7 @@ class Pseudonymize:
         ner = self.ner_recognizer(sentence)
         return ner
 
-    def pseudonymize_sentence(self, ner, sentence):
+    def pseudonymize_ne(self, ner, sentence):
         # remove any named entities
         if ner:
             # found named entities
@@ -233,6 +233,11 @@ class Pseudonymize:
             newlist = [sentence]
         return newlist
 
+    def pseudonymize_numbers(self, sentence):
+        sent_as_list = list(sentence)
+        sent_as_list = [char if not char.isdigit() else "x" for char in sent_as_list]
+        return "".join(sent_as_list)
+
     def concatenate(self, sentences):
         return " ".join(sentences)
 
@@ -242,8 +247,9 @@ class Pseudonymize:
         pseudonymized_sentences = []
         for sent in sentences:
             ner = self.get_ner(sent)
-            ps_sent = self.pseudonymize_sentence(ner, sent)
-            pseudonymized_sentences.append(" ".join(ps_sent))
+            ps_sent = " ".join(self.pseudonymize_ne(ner, sent))
+            ps_sent = self.pseudonymize_numbers(ps_sent)
+            pseudonymized_sentences.append(ps_sent)
         return self.concatenate(pseudonymized_sentences)
 
 
