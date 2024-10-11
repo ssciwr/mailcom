@@ -194,17 +194,15 @@ class Pseudonymize:
                         nm_list = self.used_first_names
                         pseudo_list = self.pseudo_first_names
                     pseudonym = ""
-                    k = 0
                     name_variations = [
                         name_to_replace,
                         name_to_replace.lower(),
                         name_to_replace.title(),
                     ]
                     # if this name has been replaced before, choose the same pseudonym
-                    while pseudonym == "":
-                        pseudonym = nm_list.get(name_variations[k], "")
-                        k += 1
-                        if k == len(name_variations):
+                    for nm_var in name_variations:
+                        pseudonym = nm_list.get(nm_var, "")
+                        if pseudonym != "":
                             break
                     # if none is found, choose a new pseudonym
                     if pseudonym == "":
