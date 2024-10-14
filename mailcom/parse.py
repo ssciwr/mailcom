@@ -136,6 +136,9 @@ class Pseudonymize:
             # found named entities
             entlist = []
             new_sentence = sentence
+            # record the additional sentence length by
+            # Pseudonyms being shorter or longer as
+            # replaced names
             additional_sentence_length = 0
             for i in range(len(ner)):
                 entity = ner[i]
@@ -184,7 +187,7 @@ class Pseudonymize:
                         for foa in self.ln_forms_of_adress
                     ):
                         is_last_name = True
-
+                    # choose the pseudonym
                     if is_last_name:
                         nm_list = self.used_last_names
                         pseudo_list = self.pseudo_last_names
@@ -220,6 +223,7 @@ class Pseudonymize:
                         word_end - ent_position[0]
                     )
                 else:
+                    # Locations and Organizations
                     new_sentence = (
                         new_sentence[: (ent_position[0] + additional_sentence_length)]
                         + "x" * (ent_position[1] - ent_position[0])
