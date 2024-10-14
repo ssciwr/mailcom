@@ -148,7 +148,6 @@ class Pseudonymize:
                 # here we could check that string is "I-PER"
                 ent_conf = entity["score"]  # noqa
                 ent_position = entity["start"], entity["end"]
-                print(entity)
                 # Here we have to be careful - tokenization with
                 # transformers is quite different from spacy/stanza/flair
                 # here we get character ids
@@ -208,7 +207,6 @@ class Pseudonymize:
                         pseudonym = pseudo_list["fr"][len(nm_list)]
                         nm_list[name_to_replace] = pseudonym
                     # replace the name
-                    print("Replacing", name_to_replace, "with", pseudonym)
                     new_sentence = (
                         new_sentence[: ent_position[0] + additional_sentence_length]
                         + pseudonym
