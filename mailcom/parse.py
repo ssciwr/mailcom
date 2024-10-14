@@ -104,9 +104,11 @@ class Pseudonymize:
 
         self.nlp_spacy = sp.load(model)
 
-    def init_transformers(self, model="default", model_revision_number="default"):
-        if model == "default":
-            model = "xlm-roberta-large-finetuned-conll03-english"
+    def init_transformers(
+        self,
+        model="xlm-roberta-large-finetuned-conll03-english",
+        model_revision_number="default",
+    ):
         # TODO: Model revision number
 
         # ner_recognizer = pipeline("token-classification")
