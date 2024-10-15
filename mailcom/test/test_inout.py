@@ -3,12 +3,15 @@ import pytest
 from pathlib import Path
 from importlib import resources
 import datetime
+import filecmp
 
 pkg = resources.files("mailcom")
 
 FILE_PATH = Path(pkg / "test" / "data" / "Bonjour Agathe.eml")
+XML_PATH = Path(pkg / "test" / "data" / "test.out")
 
 TEXT_REF = "J'espère que tu vas bien!"
+XML_REF = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><email><content type=\"str\">"
 
 @pytest.fixture()
 def get_instant(tmp_path):
@@ -49,3 +52,13 @@ def test_get_html_text(get_instant):
     assert get_instant.get_html_text(html) == 'Test'
     noHtml = """Test"""
     assert get_instant.get_html_text(noHtml) == 'Test'
+    
+def test_data_to_xml(get_instant,tmp_path):
+    xml_content = {"content": "This is nothing more than a test", 
+                    "date": "2024-04-17T15:13:56+00:00", 
+                    "attachment": 2, 
+                    "attachement type": {'jpg', 'jpg'}
+                    }
+    xml = get_instant.data_to_xml(xml_content)
+    get_instant.write_file(xml, tmp_path / "test")
+    assert filecmp.cmp(XML_PATH, tmp_path / "test.out")

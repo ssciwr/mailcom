@@ -24,6 +24,7 @@ dependencies = [
   "transformers",
   "eml_parser",
   "bs4",
+  "dicttoxml",
 ]
 
 [project.optional-dependencies]

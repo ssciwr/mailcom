@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 import eml_parser
 from bs4 import BeautifulSoup
+from dicttoxml import dicttoxml
 
 class InoutHandler:
     def __init__(self, directory_name: str):
@@ -67,8 +68,10 @@ class InoutHandler:
     def validate_data(self):
         pass
     
-    def data_to_xml(self):
-        pass
+    def data_to_xml(self, text):
+        my_item_func = lambda x: 'content'
+        xml = dicttoxml(text, custom_root='email', item_func = my_item_func)
+        return xml.decode()
 
     def write_file(self, text: str, name: str)-> None:
         """Write the extracted string to a text file.
@@ -78,3 +81,4 @@ class InoutHandler:
             name (str): The name of the file to be written."""
         with open("{}.out".format(name), "w") as file:
             file.write(text)
+            
