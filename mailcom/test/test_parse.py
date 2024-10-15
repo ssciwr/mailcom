@@ -78,3 +78,10 @@ def test_reset(get_default_fr, get_sample_texts):
 def test_get_sentences(get_default_fr):
     text = "ceci est un exemple de texte. Il doit comprendre 3 phrases. Si ce n’est pas le cas, quelque chose ne va vraiment pas."  # noqa
     assert len(get_default_fr.get_sentences(text)) == 3
+
+
+def test_get_ner(get_default_fr):
+    text = "ceci est un exemple de texte écrit par Claude. Il contient trois noms différents, comme celui de Dominique. Voyons si Martin est reconnu."  # noqa
+    sents = get_default_fr.get_sentences(text)
+    for sent in sents:
+        assert get_default_fr.get_ner(sent)
