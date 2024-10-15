@@ -108,12 +108,11 @@ class Pseudonymize:
     def init_transformers(
         self,
         model="xlm-roberta-large-finetuned-conll03-english",
-        model_revision_number="default",
+        model_revision_number="18f95e9",
     ):
-        # TODO: Model revision number
-
-        # ner_recognizer = pipeline("token-classification")
-        self.ner_recognizer = pipeline("token-classification", model=model)
+        self.ner_recognizer = pipeline(
+            "token-classification", model=model, revision=model_revision_number
+        )
 
     def reset(self):
         # reset used names for processing a new email
