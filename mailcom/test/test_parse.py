@@ -85,3 +85,13 @@ def test_get_ner(get_default_fr):
     sents = get_default_fr.get_sentences(text)
     for sent in sents:
         assert get_default_fr.get_ner(sent)
+
+
+def test_pseudonymize_ne(get_default_fr):
+    text = "ceci est un exemple de texte écrit par Francois. Il contient trois noms différents, comme celui de Agathe. Voyons si Antoine est reconnu."  # noqa
+    sents = get_default_fr.get_sentences(text)
+    names = ["Francois", "Agathe", "Antoine"]
+    for i in range(len(sents)):
+        ner = get_default_fr.get_ner(sents[i])
+        ps_sent = " ".join(get_default_fr.pseudonymize_ne(ner, sents[i]))
+        assert names[i] not in ps_sent
