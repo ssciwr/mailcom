@@ -25,6 +25,7 @@ dependencies = [
   "eml_parser",
   "bs4",
   "dicttoxml",
+  "torch",
 ]
 
 [project.optional-dependencies]
