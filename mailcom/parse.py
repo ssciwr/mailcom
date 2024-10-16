@@ -55,42 +55,8 @@ class Pseudonymize:
             ],
         }
 
-        self.pseudo_last_names = {
-            "es": [
-                "García",
-                "Fernández",
-                "González",
-                "Rodríguez",
-                "López",
-                "Martínez",
-                "Sánchez",
-                "Pérez",
-                "Martín",
-                "Gómez",
-            ],
-            "fr": [
-                "Martin",
-                "Bernard",
-                "Dubois",
-                "Thomas",
-                "Robert",
-                "Richard",
-                "Petit",
-                "Durand",
-                "Leroy",
-                "Moreau",
-            ],
-        }
         # records the already replaced names in an email
         self.used_first_names = {}
-        self.used_last_names = {}
-
-        # forms of address that indicate last names
-        # TODO add pt and es
-        self.ln_forms_of_adress = [
-            "Madame",
-            "Monsieur",
-        ]
 
     def init_spacy(self, language: str, model="default"):
         if model == "default":
@@ -113,12 +79,13 @@ class Pseudonymize:
         # TODO: Model revision number
 
         # ner_recognizer = pipeline("token-classification")
-        self.ner_recognizer = pipeline("token-classification", model=model)
+        self.ner_recognizer = pipeline(
+            "token-classification", model=model, aggregation_strategy="simple"
+        )
 
     def reset(self):
         # reset used names for processing a new email
         self.used_first_names.clear()
-        self.used_last_names.clear()
 
     def get_sentences(self, input_text):
         doc = self.nlp_spacy(input_text)
@@ -131,23 +98,45 @@ class Pseudonymize:
         ner = self.ner_recognizer(sentence)
         return ner
 
+    def pseudonymize_per(self, new_sentence, nelist):
+        unique_ne_list = list(dict.fromkeys(nelist))
+        for ne in unique_ne_list:
+            # choose the pseudonym
+            nm_list = self.used_first_names
+            pseudo_list = self.pseudo_first_names
+            pseudonym = ""
+            name_variations = [
+                ne,
+                ne.lower(),
+                ne.title(),
+            ]
+            # if this name has been replaced before, choose the same pseudonym
+            for nm_var in name_variations:
+                pseudonym = nm_list.get(nm_var, "")
+                if pseudonym != "":
+                    break
+            # if none is found, choose a new pseudonym
+            if pseudonym == "":
+                try:
+                    pseudonym = pseudo_list["fr"][
+                        len(nm_list)
+                    ]  # reaches end of the list
+                except IndexError:
+                    pseudonym = pseudo_list["fr"][0]
+                nm_list[ne] = pseudonym
+            # replace all occurences with pseudonym
+            new_sentence = new_sentence.replace(ne, pseudonym)
+        return new_sentence
+
     def pseudonymize_ne(self, ner, sentence):
         # remove any named entities
         entlist = []
+        nelist = []
         new_sentence = sentence
-        # record the additional sentence length by
-        # Pseudonyms being shorter or longer as
-        # replaced names
-        additional_sentence_length = 0
         for i in range(len(ner)):
             entity = ner[i]
-            # check whether this entity has already been processed
-            # because it is part of a previous word
-            if entity.get("replaced", False):
-                continue
-            entity["replaced"] = True
-            ent_string = entity["entity"]  # noqa
-            # here we could check that string is "I-PER"
+            ent_string = entity["entity_group"]  # noqa
+            # here we could check that string is "PER"
             ent_conf = entity["score"]  # noqa
             ent_position = entity["start"], entity["end"]
             # Here we have to be careful - tokenization with
@@ -155,81 +144,20 @@ class Pseudonymize:
             # here we get character ids
             entlist.append(ent_position)
             # now replace respective characters
-            # replace I-PER
-            if ent_string == "I-PER":
-                # add all following entities to this name
-                word_end = entity["end"]
-                for j in range(i, len(ner) - 1):
-                    if ner[j]["end"] != ner[j + 1]["start"]:
-                        break
-                    ner[j + 1]["replaced"] = True
-                    word_end = ner[j + 1]["end"]
-                name_to_replace = new_sentence[
-                    entity["start"]
-                    + additional_sentence_length : word_end  # noqa
-                    + additional_sentence_length
-                ]
-                # distinguish between first and last names
-                is_last_name = False
-                # if there is another entity before this name with one char inbetween,
-                # this is likely a last name
-                if i > 0 and entity["start"] - ner[i - 1]["end"] == 1:
-                    is_last_name = True
-                # if there is a form of address in front
-                # of this name that indicates last names,
-                # this is likely a last name
-                region_to_search_for_foa = new_sentence[
-                    entity["start"] - 10 : entity["start"]  # noqa
-                ]
-                if any(
-                    foa in region_to_search_for_foa
-                    for foa in self.ln_forms_of_adress
-                ):
-                    is_last_name = True
-                # choose the pseudonym
-                if is_last_name:
-                    nm_list = self.used_last_names
-                    pseudo_list = self.pseudo_last_names
-                else:
-                    nm_list = self.used_first_names
-                    pseudo_list = self.pseudo_first_names
-                pseudonym = ""
-                name_variations = [
-                    name_to_replace,
-                    name_to_replace.lower(),
-                    name_to_replace.title(),
-                ]
-                # if this name has been replaced before, choose the same pseudonym
-                for nm_var in name_variations:
-                    pseudonym = nm_list.get(nm_var, "")
-                    if pseudonym != "":
-                        break
-                # if none is found, choose a new pseudonym
-                if pseudonym == "":
-                    pseudonym = pseudo_list["fr"][len(nm_list)]  # reaches end of the list
-                    nm_list[name_to_replace] = pseudonym
-                # replace the name
-                new_sentence = (
-                    new_sentence[: ent_position[0] + additional_sentence_length]
-                    + pseudonym
-                    + new_sentence[
-                        (word_end + additional_sentence_length) :  # noqa
-                    ]
-                )
-                # since the position of chars in the sentence now changes,
-                # record the additional sentence length
-                additional_sentence_length += len(pseudonym) - (
-                    word_end - ent_position[0]
-                )
+            # replace PER
+            if ent_string == "PER":
+                # add the name of this entity to list
+                nelist.append(entity["word"])
             else:
                 # Locations and Organizations
                 new_sentence = (
-                    new_sentence[: (ent_position[0] + additional_sentence_length)]
+                    new_sentence[: (ent_position[0])]
                     + "x" * (ent_position[1] - ent_position[0])
-                    + new_sentence[
-                        (ent_position[1] + additional_sentence_length) :  # noqa
-                    ]
+                    + new_sentence[(ent_position[1]) :]  # noqa
                 )
+        # replace all unique PER now
+        new_sentence = self.pseudonymize_per(new_sentence, nelist)
+
         newlist = [new_sentence]
         return newlist
 
