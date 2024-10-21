@@ -1,4 +1,4 @@
-from mailcom import parse, inout
+from mailcom import parse
 import pytest
 from pathlib import Path
 from importlib import resources
@@ -41,20 +41,6 @@ def get_default_fr():
     return inst
 
 
-@pytest.fixture()
-def get_sample_texts():
-    inst = inout.InoutHandler(FILE_PATH)
-    inst.list_of_files()
-    email_list = []
-    for file in inst.email_list:
-        text = inst.get_text(file)
-        text = inst.get_html_text(text)
-        if not text:
-            continue
-        email_list.append(text)
-    return email_list
-
-
 def test_init_spacy(get_instant):
     with pytest.raises(KeyError):
         get_instant.init_spacy("not_a_language")
@@ -65,14 +51,17 @@ def test_init_spacy(get_instant):
 # TODO init_transformers
 
 
-def test_reset(get_default_fr, get_sample_texts):
-    for text in get_sample_texts:
-        # Test that used names lists are empty
-        # They should be cleared after every email
-        assert len(get_default_fr.used_first_names) == 0
-        assert len(get_default_fr.used_last_names) == 0
+def test_reset(get_default_fr):
+    text1 = "ceci est un exemple de texte écrit par Claude. Il contient trois noms différents, comme celui de Dominique. Voyons si Martin est reconnu."  # noqa
+    text2 = "ceci est un exemple de texte écrit par Francois. Il contient trois noms différents, comme celui de Agathe. Voyons si Antoine est reconnu."  # noqa
+    sample_texts = [text1, text2]
+    for text in sample_texts:
         # pseudonymize email
         get_default_fr.pseudonymize(text)
+        get_default_fr.reset()
+        # Test that used names lists are empty now
+        # They should be cleared after every email
+        assert len(get_default_fr.used_first_names) == 0
 
 
 def test_get_sentences(get_default_fr):
