@@ -64,11 +64,6 @@ def test_reset(get_default_fr):
         assert len(get_default_fr.used_first_names) == 0
 
 
-def test_get_sentences(get_default_fr):
-    text = "ceci est un exemple de texte. Il doit comprendre 3 phrases. Si ce n’est pas le cas, quelque chose ne va vraiment pas."  # noqa
-    assert len(get_default_fr.get_sentences(text)) == 3
-
-
 def test_get_ner(get_default_fr):
     text = "ceci est un exemple de texte écrit par Claude. Il contient trois noms différents, comme celui de Dominique. Voyons si Martin est reconnu."  # noqa
     sents = get_default_fr.get_sentences(text)
@@ -84,3 +79,26 @@ def test_pseudonymize_ne(get_default_fr):
         ner = get_default_fr.get_ner(sents[i])
         ps_sent = " ".join(get_default_fr.pseudonymize_ne(ner, sents[i]))
         assert names[i] not in ps_sent
+
+
+def test_get_sentences_empty_string(get_default_fr):
+    text = ""
+    assert get_default_fr.get_sentences(text) == []
+
+
+def test_get_sentences_multiple_sentences(get_default_fr):
+    text = "Ceci est la première phrase. Voici la deuxième phrase. Et enfin, la troisième phrase."  # noqa
+    sentences = get_default_fr.get_sentences(text)
+    assert len(sentences) == 3
+    assert sentences[0] == "Ceci est la première phrase."
+    assert sentences[1] == "Voici la deuxième phrase."
+    assert sentences[2] == "Et enfin, la troisième phrase."
+
+
+def test_get_sentences_with_punctuation(get_default_fr):
+    text = "Bonjour! Comment ça va? Très bien, merci."
+    sentences = get_default_fr.get_sentences(text)
+    assert len(sentences) == 3
+    assert sentences[0] == "Bonjour!"
+    assert sentences[1] == "Comment ça va?"
+    assert sentences[2] == "Très bien, merci."
