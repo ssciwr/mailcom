@@ -44,7 +44,7 @@ def get_default_fr():
 def test_init_spacy(get_instant):
     with pytest.raises(KeyError):
         get_instant.init_spacy("not_a_language")
-    with pytest.raises(OSError):
+    with pytest.raises(SystemExit):
         get_instant.init_spacy("fr", "not_an_existing_spacy_model")
 
 
