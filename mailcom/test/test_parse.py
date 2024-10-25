@@ -71,16 +71,6 @@ def test_get_ner(get_default_fr):
         assert get_default_fr.get_ner(sent)
 
 
-def test_pseudonymize_ne(get_default_fr):
-    text = "ceci est un exemple de texte écrit par Francois. Il contient trois noms différents, comme celui de Agathe. Voyons si Antoine est reconnu."  # noqa
-    sents = get_default_fr.get_sentences(text)
-    names = ["Francois", "Agathe", "Antoine"]
-    for i in range(len(sents)):
-        ner = get_default_fr.get_ner(sents[i])
-        ps_sent = " ".join(get_default_fr.pseudonymize_ne(ner, sents[i]))
-        assert names[i] not in ps_sent
-
-
 def test_get_sentences_empty_string(get_default_fr):
     text = ""
     assert get_default_fr.get_sentences(text) == []
@@ -102,3 +92,103 @@ def test_get_sentences_with_punctuation(get_default_fr):
     assert sentences[0] == "Bonjour!"
     assert sentences[1] == "Comment ça va?"
     assert sentences[2] == "Très bien, merci."
+
+
+def test_pseudonymize_per(get_default_fr):
+    sentence = "Francois and Agathe are friends."
+    nelist = ["Francois", "Agathe"]
+    pseudonymized_sentence = get_default_fr.pseudonymize_per(sentence, nelist)
+    assert "Francois" not in pseudonymized_sentence
+    assert "Agathe" not in pseudonymized_sentence
+    assert any(
+        pseudo in pseudonymized_sentence
+        for pseudo in get_default_fr.pseudo_first_names["fr"]
+    )
+
+
+def test_pseudonymize_ne(get_default_fr):
+    sentence = "Francois and Agathe are friends."
+    ner = [
+        {
+            "entity_group": "PER",
+            "score": 0.99,
+            "word": "Francois",
+            "start": 0,
+            "end": 8,
+        },
+        {
+            "entity_group": "PER",
+            "score": 0.99,
+            "word": "Agathe",
+            "start": 13,
+            "end": 19,
+        },
+    ]
+    pseudonymized_sentence = get_default_fr.pseudonymize_ne(ner, sentence)
+    assert "Francois" not in pseudonymized_sentence[0]
+    assert "Agathe" not in pseudonymized_sentence[0]
+    assert any(
+        pseudo in pseudonymized_sentence[0]
+        for pseudo in get_default_fr.pseudo_first_names["fr"]
+    )
+
+
+def test_pseudonymize_numbers(get_default_fr):
+    sentence = "My phone number is 123-456-7890."
+    pseudonymized_sentence = get_default_fr.pseudonymize_numbers(sentence)
+    assert pseudonymized_sentence == "My phone number is xxx-xxx-xxxx."
+
+    sentence = "The year 2023 is almost over."
+    pseudonymized_sentence = get_default_fr.pseudonymize_numbers(sentence)
+    assert pseudonymized_sentence == "The year xxxx is almost over."
+
+    sentence = "No digits here!"
+    pseudonymized_sentence = get_default_fr.pseudonymize_numbers(sentence)
+    assert pseudonymized_sentence == "No digits here!"
+
+
+def test_concatenate_empty_list(get_default_fr):
+    sentences = []
+    concatenated = get_default_fr.concatenate(sentences)
+    assert concatenated == ""
+
+
+def test_concatenate_multiple_sentences(get_default_fr):
+    sentences = [
+        "This is the first sentence.",
+        "This is the second sentence.",
+        "This is the third sentence.",
+    ]
+    concatenated = get_default_fr.concatenate(sentences)
+    assert (
+        concatenated
+        == "This is the first sentence. This is the second sentence. This is the third sentence."  # noqa
+    )
+
+
+def test_pseudonymize(get_default_fr):
+    text = "Francois et Agathe sont amis. Mon numéro de téléphone est 123-456-7890."
+    pseudonymized_text = get_default_fr.pseudonymize(text)
+
+    # Check that names are pseudonymized
+    assert "Francois" not in pseudonymized_text
+    assert "Agathe" not in pseudonymized_text
+    assert any(
+        pseudo in pseudonymized_text
+        for pseudo in get_default_fr.pseudo_first_names["fr"]
+    )
+
+    # Check that numbers are pseudonymized
+    assert "123-456-7890" not in pseudonymized_text
+
+
+def test_pseudonymize_empty_string(get_default_fr):
+    text = ""
+    pseudonymized_text = get_default_fr.pseudonymize(text)
+    assert pseudonymized_text == ""
+
+
+def test_pseudonymize_no_entities(get_default_fr):
+    text = "Ceci est une phrase simple sans entités nommées ni chiffres."
+    pseudonymized_text = get_default_fr.pseudonymize(text)
+    assert pseudonymized_text == text
