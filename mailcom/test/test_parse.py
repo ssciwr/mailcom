@@ -1,11 +1,5 @@
 from mailcom import parse
 import pytest
-from pathlib import Path
-from importlib import resources
-
-pkg = resources.files("mailcom")
-
-FILE_PATH = Path(pkg / "test" / "data")
 
 
 # these worked when we were using strings
