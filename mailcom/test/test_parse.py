@@ -42,7 +42,21 @@ def test_init_spacy(get_instant):
         get_instant.init_spacy("fr", "not_an_existing_spacy_model")
 
 
-# TODO init_transformers
+def test_init_transformers(get_instant):
+    # Test with default model and revision number
+    get_instant.init_transformers()
+    assert get_instant.ner_recognizer is not None
+
+    # Test with an invalid model
+    with pytest.raises(OSError):
+        get_instant.init_transformers(model="invalid-model")
+
+    # Test with an invalid revision number
+    with pytest.raises(OSError):
+        get_instant.init_transformers(
+            model="xlm-roberta-large-finetuned-conll03-english",
+            model_revision_number="invalid-revision",
+        )
 
 
 def test_reset(get_default_fr):
