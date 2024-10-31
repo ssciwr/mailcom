@@ -145,6 +145,7 @@ class Pseudonymize:
         for i in range(len(ner)):
             entity = ner[i]
             ent_string = entity["entity_group"]  # noqa
+            ent_word = entity["word"]
             # here we could check that string is "PER"
             ent_conf = entity["score"]  # noqa
             ent_position = entity["start"], entity["end"]
@@ -156,14 +157,16 @@ class Pseudonymize:
             # replace PER
             if ent_string == "PER":
                 # add the name of this entity to list
-                nelist.append(entity["word"])
-            else:
-                # Locations and Organizations
-                new_sentence = (
-                    new_sentence[: (ent_position[0])]
-                    + "x" * (ent_position[1] - ent_position[0])
-                    + new_sentence[(ent_position[1]) :]  # noqa
-                )
+                nelist.append(ent_word)
+            # replace LOC
+            elif ent_string == "LOC":
+                new_sentence = new_sentence.replace(ent_word, "[location]")
+            # replace ORG
+            elif ent_string == "ORG":
+                new_sentence = new_sentence.replace(ent_word, "[organization]")
+            # replace MISC
+            elif ent_string == "MISC":
+                new_sentence = new_sentence.replace(ent_word, "[misc]")
         # replace all unique PER now
         new_sentence = self.pseudonymize_per(new_sentence, nelist)
 
