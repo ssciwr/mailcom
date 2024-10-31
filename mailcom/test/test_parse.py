@@ -144,15 +144,19 @@ def test_pseudonymize_ne(get_default_fr):
 def test_pseudonymize_numbers(get_default_fr):
     sentence = "My phone number is 123-456-7890."
     pseudonymized_sentence = get_default_fr.pseudonymize_numbers(sentence)
-    assert pseudonymized_sentence == "My phone number is xxx-xxx-xxxx."
+    assert pseudonymized_sentence == "My phone number is [number]-[number]-[number]."
 
     sentence = "The year 2023 is almost over."
     pseudonymized_sentence = get_default_fr.pseudonymize_numbers(sentence)
-    assert pseudonymized_sentence == "The year xxxx is almost over."
+    assert pseudonymized_sentence == "The year [number] is almost over."
 
     sentence = "No digits here!"
     pseudonymized_sentence = get_default_fr.pseudonymize_numbers(sentence)
     assert pseudonymized_sentence == "No digits here!"
+
+    sentence = ""
+    pseudonymized_sentence = get_default_fr.pseudonymize_numbers(sentence)
+    assert pseudonymized_sentence == ""
 
 
 def test_concatenate_empty_list(get_default_fr):

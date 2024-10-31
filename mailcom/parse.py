@@ -172,8 +172,15 @@ class Pseudonymize:
 
     def pseudonymize_numbers(self, sentence):
         sent_as_list = list(sentence)
-        sent_as_list = [char if not char.isdigit() else "x" for char in sent_as_list]
-        return "".join(sent_as_list)
+        new_list = []
+        for i in range(len(sent_as_list)):
+            if sent_as_list[i].isdigit():
+                if i == 0 or not sent_as_list[i - 1].isdigit():
+                    new_list.append("[number]")
+            else:
+                new_list.append(sent_as_list[i])
+
+        return "".join(new_list)
 
     def concatenate(self, sentences):
         return " ".join(sentences)
