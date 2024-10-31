@@ -67,9 +67,18 @@ class Pseudonymize:
                 model, exclude=["morphologizer", "attribute_ruler", "lemmatizer", "ner"]
             )
         except OSError:
-            raise OSError("Could not find {} in standard directory.".format(model))
-
-        self.nlp_spacy = sp.load(model)
+            try:
+                print(
+                    "Could not find model in standard directory. Trying to download model from repo."  # noqa
+                )
+                # try downloading model
+                sp.cli.download(model)
+                self.nlp_spacy = sp.load(
+                    model,
+                    exclude=["morphologizer", "attribute_ruler", "lemmatizer", "ner"],
+                )
+            except SystemExit:
+                raise SystemExit("Could not download {} from repo".format(model))
 
     def init_transformers(
         self,
