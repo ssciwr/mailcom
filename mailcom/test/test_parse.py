@@ -204,3 +204,21 @@ def test_pseudonymize_no_entities(get_default_fr):
     text = "Ceci est une phrase simple sans entités nommées ni chiffres."
     pseudonymized_text = get_default_fr.pseudonymize(text)
     assert pseudonymized_text == text
+
+
+def test_pseudonymize_email_addresses(get_default_fr):
+    sentence = "My email is example@example.com."
+    pseudonymized_sentence = get_default_fr.pseudonymize_email_addresses(sentence)
+    assert pseudonymized_sentence == "My email is [email]"
+
+    sentence = "Contact us at support@example.com or sales@example.com."
+    pseudonymized_sentence = get_default_fr.pseudonymize_email_addresses(sentence)
+    assert pseudonymized_sentence == "Contact us at [email] or [email]"
+
+    sentence = "No email addresses here!"
+    pseudonymized_sentence = get_default_fr.pseudonymize_email_addresses(sentence)
+    assert pseudonymized_sentence == "No email addresses here!"
+
+    sentence = ""
+    pseudonymized_sentence = get_default_fr.pseudonymize_email_addresses(sentence)
+    assert pseudonymized_sentence == ""

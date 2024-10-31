@@ -182,6 +182,16 @@ class Pseudonymize:
 
         return "".join(new_list)
 
+    def pseudonymize_email_addresses(self, sentence):
+        split = sentence.split(" ")
+        new_list = []
+        for word in split:
+            if "@" in word:
+                new_list.append("[email]")
+            else:
+                new_list.append(word)
+        return " ".join(new_list)
+
     def concatenate(self, sentences):
         return " ".join(sentences)
 
@@ -193,6 +203,7 @@ class Pseudonymize:
             ner = self.get_ner(sent)
             ps_sent = " ".join(self.pseudonymize_ne(ner, sent)) if ner else sent
             ps_sent = self.pseudonymize_numbers(ps_sent)
+            ps_sent = self.pseudonymize_email_addresses(ps_sent)
             pseudonymized_sentences.append(ps_sent)
         return self.concatenate(pseudonymized_sentences)
 
