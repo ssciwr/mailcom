@@ -203,10 +203,10 @@ class Pseudonymize:
         sentences = self.get_sentences(text)
         pseudonymized_sentences = []
         for sent in sentences:
+            sent = self.pseudonymize_email_addresses(sent)
             ner = self.get_ner(sent)
             ps_sent = " ".join(self.pseudonymize_ne(ner, sent)) if ner else sent
             ps_sent = self.pseudonymize_numbers(ps_sent)
-            ps_sent = self.pseudonymize_email_addresses(ps_sent)
             pseudonymized_sentences.append(ps_sent)
         return self.concatenate(pseudonymized_sentences)
 
