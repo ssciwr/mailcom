@@ -145,6 +145,7 @@ class Pseudonymize:
         for i in range(len(ner)):
             entity = ner[i]
             ent_string = entity["entity_group"]  # noqa
+            ent_word = entity["word"]
             # here we could check that string is "PER"
             ent_conf = entity["score"]  # noqa
             ent_position = entity["start"], entity["end"]
@@ -156,14 +157,16 @@ class Pseudonymize:
             # replace PER
             if ent_string == "PER":
                 # add the name of this entity to list
-                nelist.append(entity["word"])
-            else:
-                # Locations and Organizations
-                new_sentence = (
-                    new_sentence[: (ent_position[0])]
-                    + "x" * (ent_position[1] - ent_position[0])
-                    + new_sentence[(ent_position[1]) :]  # noqa
-                )
+                nelist.append(ent_word)
+            # replace LOC
+            elif ent_string == "LOC":
+                new_sentence = new_sentence.replace(ent_word, "[location]")
+            # replace ORG
+            elif ent_string == "ORG":
+                new_sentence = new_sentence.replace(ent_word, "[organization]")
+            # replace MISC
+            elif ent_string == "MISC":
+                new_sentence = new_sentence.replace(ent_word, "[misc]")
         # replace all unique PER now
         new_sentence = self.pseudonymize_per(new_sentence, nelist)
 
@@ -172,8 +175,25 @@ class Pseudonymize:
 
     def pseudonymize_numbers(self, sentence):
         sent_as_list = list(sentence)
-        sent_as_list = [char if not char.isdigit() else "x" for char in sent_as_list]
-        return "".join(sent_as_list)
+        new_list = []
+        for i in range(len(sent_as_list)):
+            if sent_as_list[i].isdigit():
+                if i == 0 or not sent_as_list[i - 1].isdigit():
+                    new_list.append("[number]")
+            else:
+                new_list.append(sent_as_list[i])
+
+        return "".join(new_list)
+
+    def pseudonymize_email_addresses(self, sentence):
+        split = sentence.split(" ")
+        new_list = []
+        for word in split:
+            if "@" in word:
+                new_list.append("[email]")
+            else:
+                new_list.append(word)
+        return " ".join(new_list)
 
     def concatenate(self, sentences):
         return " ".join(sentences)
@@ -183,6 +203,7 @@ class Pseudonymize:
         sentences = self.get_sentences(text)
         pseudonymized_sentences = []
         for sent in sentences:
+            sent = self.pseudonymize_email_addresses(sent)
             ner = self.get_ner(sent)
             ps_sent = " ".join(self.pseudonymize_ne(ner, sent)) if ner else sent
             ps_sent = self.pseudonymize_numbers(ps_sent)
