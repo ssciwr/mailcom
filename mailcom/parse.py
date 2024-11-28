@@ -58,6 +58,12 @@ class Pseudonymize:
         # records the already replaced names in an email
         self.used_first_names = {}
 
+        # records NEs in the last email
+        self.per_list = []
+        self.org_list = []
+        self.loc_list = []
+        self.misc_list = []
+
     def init_spacy(self, language: str, model="default"):
         if model == "default":
             model = self.spacy_default_model_dict[language]
@@ -95,6 +101,11 @@ class Pseudonymize:
     def reset(self):
         # reset used names for processing a new email
         self.used_first_names.clear()
+        # reset NEs
+        self.per_list.clear()
+        self.org_list.clear()
+        self.loc_list.clear()
+        self.misc_list.clear()
 
     def get_sentences(self, input_text):
         doc = self.nlp_spacy(input_text)
@@ -107,8 +118,8 @@ class Pseudonymize:
         ner = self.ner_recognizer(sentence)
         return ner
 
-    def pseudonymize_per(self, new_sentence, nelist):
-        unique_ne_list = list(dict.fromkeys(nelist))
+    def pseudonymize_per(self, new_sentence):
+        unique_ne_list = list(dict.fromkeys(self.per_list))
         for ne in unique_ne_list:
             # choose the pseudonym
             nm_list = self.used_first_names
@@ -140,7 +151,6 @@ class Pseudonymize:
     def pseudonymize_ne(self, ner, sentence):
         # remove any named entities
         entlist = []
-        nelist = []
         new_sentence = sentence
         for i in range(len(ner)):
             entity = ner[i]
@@ -157,18 +167,21 @@ class Pseudonymize:
             # replace PER
             if ent_string == "PER":
                 # add the name of this entity to list
-                nelist.append(ent_word)
+                self.per_list.append(ent_word)
             # replace LOC
             elif ent_string == "LOC":
                 new_sentence = new_sentence.replace(ent_word, "[location]")
+                self.loc_list.append(ent_word)
             # replace ORG
             elif ent_string == "ORG":
                 new_sentence = new_sentence.replace(ent_word, "[organization]")
+                self.org_list.append(ent_word)
             # replace MISC
             elif ent_string == "MISC":
                 new_sentence = new_sentence.replace(ent_word, "[misc]")
+                self.misc_list.append(ent_word)
         # replace all unique PER now
-        new_sentence = self.pseudonymize_per(new_sentence, nelist)
+        new_sentence = self.pseudonymize_per(new_sentence)
 
         newlist = [new_sentence]
         return newlist
