@@ -105,7 +105,8 @@ def test_get_sentences_with_punctuation(get_default_fr):
 def test_pseudonymize_per(get_default_fr):
     sentence = "Francois and Agathe are friends."
     nelist = ["Francois", "Agathe"]
-    pseudonymized_sentence = get_default_fr.pseudonymize_per(sentence, nelist)
+    get_default_fr.per_list = nelist
+    pseudonymized_sentence = get_default_fr.pseudonymize_per(sentence)
     assert "Francois" not in pseudonymized_sentence
     assert "Agathe" not in pseudonymized_sentence
     assert any(
