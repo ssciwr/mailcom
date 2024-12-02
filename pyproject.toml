@@ -26,6 +26,8 @@ dependencies = [
   "bs4",
   "dicttoxml",
   "torch",
+  "pandas",
+  "jupyter",
 ]
 
 [project.optional-dependencies]
