@@ -22,6 +22,9 @@ tool = "transformers"
 
 class Pseudonymize:
     def __init__(self):
+        # amount of sentences passed to transformers ner_classification
+        # -1 corresponds to all sentences
+        self.n_batch_sentences = 1
 
         self.spacy_default_model_dict = {
             "es": "es_core_news_md",
@@ -57,6 +60,13 @@ class Pseudonymize:
 
         # records the already replaced names in an email
         self.used_first_names = {}
+
+    def set_sentence_batch_size(self, batch_size: int):
+        if batch_size == 0 or batch_size < -1:
+            raise ValueError(
+                "Batch size should either be a positive integer or -1 for all sentences."
+            )
+        self.n_batch_sentences = batch_size
 
     def init_spacy(self, language: str, model="default"):
         if model == "default":
@@ -201,14 +211,21 @@ class Pseudonymize:
     def pseudonymize(self, text: str):
         self.reset()
         sentences = self.get_sentences(text)
-        pseudonymized_sentences = []
-        for sent in sentences:
-            sent = self.pseudonymize_email_addresses(sent)
-            ner = self.get_ner(sent)
-            ps_sent = " ".join(self.pseudonymize_ne(ner, sent)) if ner else sent
+        batches = [
+            sentences[n : n + self.n_batch_sentences]  # noqa
+            for n in range(0, len(sentences), self.n_batch_sentences)
+        ]
+        pseudonymized_batches = []
+        for batch in batches:
+            print(batch)
+            batch = self.concatenate(batch)
+            print(batch)
+            batch = self.pseudonymize_email_addresses(batch)
+            ner = self.get_ner(batch)
+            ps_sent = " ".join(self.pseudonymize_ne(ner, batch)) if ner else batch
             ps_sent = self.pseudonymize_numbers(ps_sent)
-            pseudonymized_sentences.append(ps_sent)
-        return self.concatenate(pseudonymized_sentences)
+            pseudonymized_batches.append(ps_sent)
+        return self.concatenate(pseudonymized_batches)
 
 
 def check_dir(path: str) -> bool:
@@ -242,6 +259,7 @@ if __name__ == "__main__":
     pseudonymizer = Pseudonymize()
     pseudonymizer.init_spacy("fr")
     pseudonymizer.init_transformers()
+    pseudonymizer.set_sentence_batch_size(1000)
     for file in io.email_list:
         print("Parsing input file {}".format(file))
         text = io.get_text(file)
