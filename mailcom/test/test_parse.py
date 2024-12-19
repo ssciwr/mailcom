@@ -286,3 +286,22 @@ def test_pseudonymize_ne_with_misc_entities(get_default_fr):
     pseudonymized_sentence = get_default_fr.pseudonymize_ne(ner, sentence)
     assert "tour Eiffel" not in pseudonymized_sentence[0]
     assert "[misc]" in pseudonymized_sentence[0]
+
+
+def test_set_sentence_batch_size(get_default_fr):
+    # Test with valid batch sizes
+    get_default_fr.set_sentence_batch_size(1)
+    assert get_default_fr.n_batch_sentences == 1
+
+    get_default_fr.set_sentence_batch_size(10)
+    assert get_default_fr.n_batch_sentences == 10
+
+    get_default_fr.set_sentence_batch_size(-1)
+    assert get_default_fr.n_batch_sentences == -1
+
+    # Test with invalid batch sizes
+    with pytest.raises(ValueError):
+        get_default_fr.set_sentence_batch_size(0)
+
+    with pytest.raises(ValueError):
+        get_default_fr.set_sentence_batch_size(-2)
