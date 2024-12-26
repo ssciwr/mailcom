@@ -230,9 +230,7 @@ class Pseudonymize:
         ]
         pseudonymized_batches = []
         for batch in batches:
-            print(batch)
             batch = self.concatenate(batch)
-            print(batch)
             batch = self.pseudonymize_email_addresses(batch)
             ner = self.get_ner(batch)
             ps_sent = " ".join(self.pseudonymize_ne(ner, batch)) if ner else batch
@@ -272,7 +270,7 @@ if __name__ == "__main__":
     pseudonymizer = Pseudonymize()
     pseudonymizer.init_spacy("fr")
     pseudonymizer.init_transformers()
-    pseudonymizer.set_sentence_batch_size(1000)
+    pseudonymizer.set_sentence_batch_size(2)
     for file in io.email_list:
         print("Parsing input file {}".format(file))
         text = io.get_text(file)
