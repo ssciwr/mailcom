@@ -221,13 +221,21 @@ class Pseudonymize:
     def concatenate(self, sentences):
         return " ".join(sentences)
 
+    def split_batches(self, sentences):
+        batches = (
+            [
+                sentences[n : n + self.n_batch_sentences]  # noqa
+                for n in range(0, len(sentences), self.n_batch_sentences)
+            ]
+            if self.n_batch_sentences != -1
+            else [sentences]
+        )
+        return batches
+
     def pseudonymize(self, text: str):
         self.reset()
         sentences = self.get_sentences(text)
-        batches = [
-            sentences[n : n + self.n_batch_sentences]  # noqa
-            for n in range(0, len(sentences), self.n_batch_sentences)
-        ]
+        batches = self.split_batches(sentences)
         pseudonymized_batches = []
         for batch in batches:
             batch = self.concatenate(batch)

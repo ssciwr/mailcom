@@ -306,3 +306,60 @@ def test_set_sentence_batch_size(get_default_fr):
 
     with pytest.raises(ValueError):
         get_default_fr.set_sentence_batch_size(-2)
+
+
+def test_split_batches_empty_list(get_default_fr):
+    sentences = []
+    batches = get_default_fr.split_batches(sentences)
+    assert batches == []
+
+
+def test_split_batches_single_sentence(get_default_fr):
+    sentences = ["This is a single sentence."]
+    get_default_fr.set_sentence_batch_size(1)
+    batches = get_default_fr.split_batches(sentences)
+    assert batches == [["This is a single sentence."]]
+
+
+def test_split_batches_multiple_sentences(get_default_fr):
+    sentences = [
+        "This is the first sentence.",
+        "This is the second sentence.",
+        "This is the third sentence.",
+        "This is the fourth sentence.",
+    ]
+    get_default_fr.set_sentence_batch_size(2)
+    batches = get_default_fr.split_batches(sentences)
+    assert batches == [
+        ["This is the first sentence.", "This is the second sentence."],
+        ["This is the third sentence.", "This is the fourth sentence."],
+    ]
+
+
+def test_split_batches_batch_size_greater_than_sentences(get_default_fr):
+    sentences = [
+        "This is the first sentence.",
+        "This is the second sentence.",
+    ]
+    get_default_fr.set_sentence_batch_size(5)
+    batches = get_default_fr.split_batches(sentences)
+    assert batches == [["This is the first sentence.", "This is the second sentence."]]
+
+
+def test_split_batches_batch_size_minus_one(get_default_fr):
+    sentences = [
+        "This is the first sentence.",
+        "This is the second sentence.",
+        "This is the third sentence.",
+        "This is the fourth sentence.",
+    ]
+    get_default_fr.set_sentence_batch_size(-1)
+    batches = get_default_fr.split_batches(sentences)
+    assert batches == [
+        [
+            "This is the first sentence.",
+            "This is the second sentence.",
+            "This is the third sentence.",
+            "This is the fourth sentence.",
+        ]
+    ]
