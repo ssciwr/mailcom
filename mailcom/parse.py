@@ -278,7 +278,7 @@ if __name__ == "__main__":
     pseudonymizer = Pseudonymize()
     pseudonymizer.init_spacy("fr")
     pseudonymizer.init_transformers()
-    pseudonymizer.set_sentence_batch_size(2)
+    pseudonymizer.set_sentence_batch_size(1)
     for file in io.email_list:
         print("Parsing input file {}".format(file))
         text = io.get_text(file)
