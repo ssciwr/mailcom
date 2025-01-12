@@ -30,8 +30,8 @@ class InoutHandler:
         if len(self.email_list) == 0:
             raise ValueError(
                 """The directory {} does not contain .eml or .html files.
-                Please check that the directory is containing the
-                email data files""".format(
+                Please check that the directory is containing the email
+                data files""".format(
                     mypath
                 )
             )
@@ -83,7 +83,9 @@ class InoutHandler:
         pass
 
     def data_to_xml(self, text):
-        my_item_func = lambda x: "content"  # noqa
+        def my_item_func(x):
+            return "content"
+
         xml = dicttoxml(text, custom_root="email", item_func=my_item_func)
         return xml.decode()
 
