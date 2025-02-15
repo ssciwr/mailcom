@@ -69,7 +69,7 @@ def test_reset(get_default_fr):
         get_default_fr.reset()
         # Test that used names lists are empty now
         # They should be cleared after every email
-        assert len(get_default_fr.used_first_names) == 0
+        assert len(get_default_fr.ne_list) == 0
 
 
 def test_get_ner(get_default_fr):
@@ -100,19 +100,6 @@ def test_get_sentences_with_punctuation(get_default_fr):
     assert sentences[0] == "Bonjour!"
     assert sentences[1] == "Comment ça va?"
     assert sentences[2] == "Très bien, merci."
-
-
-def test_pseudonymize_per(get_default_fr):
-    sentence = "Francois and Agathe are friends."
-    nelist = ["Francois", "Agathe"]
-    get_default_fr.per_list = nelist
-    pseudonymized_sentence = get_default_fr.pseudonymize_per(sentence)
-    assert "Francois" not in pseudonymized_sentence
-    assert "Agathe" not in pseudonymized_sentence
-    assert any(
-        pseudo in pseudonymized_sentence
-        for pseudo in get_default_fr.pseudo_first_names["fr"]
-    )
 
 
 def test_pseudonymize_numbers(get_default_fr):
@@ -198,92 +185,110 @@ def test_pseudonymize_email_addresses(get_default_fr):
     assert pseudonymized_sentence == ""
 
 
-def test_pseudonymize_ne_with_person_entities(get_default_fr):
-    sentence = "Francois et Agathe sont amis."
-    ner = [
-        {
-            "entity_group": "PER",
-            "score": 0.99,
-            "word": "Francois",
-            "start": 0,
-            "end": 8,
-        },
-        {
-            "entity_group": "PER",
-            "score": 0.99,
-            "word": "Agathe",
-            "start": 13,
-            "end": 19,
-        },
+def test_choose_per_pseudonym_new_name(get_default_fr):
+    name = "Jean"
+    pseudonym = get_default_fr.choose_per_pseudonym(name)
+    assert pseudonym in get_default_fr.pseudo_first_names["fr"]
+
+
+def test_choose_per_pseudonym_existing_name(get_default_fr):
+    name = "Claude"
+    get_default_fr.ne_list = [
+        {"word": "Claude", "entity_group": "PER", "pseudonym": "Dominique"}
     ]
-    pseudonymized_sentence = get_default_fr.pseudonymize_ne(ner, sentence)
-    assert "Francois" not in pseudonymized_sentence[0]
-    assert "Agathe" not in pseudonymized_sentence[0]
+    pseudonym = get_default_fr.choose_per_pseudonym(name)
+    assert pseudonym == "Dominique"
+
+
+def test_choose_per_pseudonym_case_insensitive(get_default_fr):
+    name = "claude"
+    get_default_fr.ne_list = [
+        {"word": "Claude", "entity_group": "PER", "pseudonym": "Dominique"}
+    ]
+    pseudonym = get_default_fr.choose_per_pseudonym(name)
+    assert pseudonym == "Dominique"
+
+
+def test_choose_per_pseudonym_exhausted_list(get_default_fr):
+    name = "Jean"
+    get_default_fr.ne_list = [
+        {"word": "Claude", "entity_group": "PER", "pseudonym": pseudo}
+        for pseudo in get_default_fr.pseudo_first_names["fr"]
+    ]
+    pseudonym = get_default_fr.choose_per_pseudonym(name)
+    assert pseudonym == get_default_fr.pseudo_first_names["fr"][0]
+
+
+def test_pseudonymize_ne_person(get_default_fr):
+    sentence = "Mehdi et Théo sont amis."
+    ner = [
+        {"entity_group": "PER", "word": "Mehdi", "start": 0, "end": 5},
+        {"entity_group": "PER", "word": "Théo", "start": 9, "end": 13},
+    ]
+    pseudonymized_sentence = " ".join(get_default_fr.pseudonymize_ne(ner, sentence))
+    assert "Mehdi" not in pseudonymized_sentence
+    assert "Théo" not in pseudonymized_sentence
     assert any(
-        pseudo in pseudonymized_sentence[0]
+        pseudo in pseudonymized_sentence
         for pseudo in get_default_fr.pseudo_first_names["fr"]
     )
 
 
-def test_pseudonymize_ne_with_location_entities(get_default_fr):
-    sentence = "Paris et New York sont des villes."
+def test_pseudonymize_ne_location(get_default_fr):
+    sentence = "Paris est une belle ville."
     ner = [
-        {
-            "entity_group": "LOC",
-            "score": 0.99,
-            "word": "Paris",
-            "start": 0,
-            "end": 5,
-        },
-        {
-            "entity_group": "LOC",
-            "score": 0.99,
-            "word": "New York",
-            "start": 10,
-            "end": 18,
-        },
+        {"entity_group": "LOC", "word": "Paris", "start": 0, "end": 5},
     ]
-    pseudonymized_sentence = get_default_fr.pseudonymize_ne(ner, sentence)
-    assert "Paris" not in pseudonymized_sentence[0]
-    assert "New York" not in pseudonymized_sentence[0]
-    assert "[location]" in pseudonymized_sentence[0]
+    pseudonymized_sentence = " ".join(get_default_fr.pseudonymize_ne(ner, sentence))
+    assert pseudonymized_sentence == "[location] est une belle ville."
 
 
-def test_pseudonymize_ne_with_organization_entities(get_default_fr):
-    sentence = "Google et Microsoft sont des géants de la technologie."
+def test_pseudonymize_ne_organization(get_default_fr):
+    sentence = "Microsoft est une grande entreprise."
     ner = [
-        {
-            "entity_group": "ORG",
-            "score": 0.99,
-            "word": "Google",
-            "start": 0,
-            "end": 6,
-        },
-        {
-            "entity_group": "ORG",
-            "score": 0.99,
-            "word": "Microsoft",
-            "start": 11,
-            "end": 20,
-        },
+        {"entity_group": "ORG", "word": "Microsoft", "start": 0, "end": 9},
     ]
-    pseudonymized_sentence = get_default_fr.pseudonymize_ne(ner, sentence)
-    assert "Google" not in pseudonymized_sentence[0]
-    assert "Microsoft" not in pseudonymized_sentence[0]
-    assert "[organization]" in pseudonymized_sentence[0]
+    pseudonymized_sentence = " ".join(get_default_fr.pseudonymize_ne(ner, sentence))
+    assert pseudonymized_sentence == "[organization] est une grande entreprise."
 
 
-def test_pseudonymize_ne_with_misc_entities(get_default_fr):
-    sentence = "La tour Eiffel est un monument célèbre."
+def test_pseudonymize_ne_misc(get_default_fr):
+    sentence = "Le Tour de France est un événement célèbre."
     ner = [
-        {
-            "entity_group": "MISC",
-            "score": 0.99,
-            "word": "tour Eiffel",
-            "start": 4,
-            "end": 16,
-        },
+        {"entity_group": "MISC", "word": "Tour de France", "start": 3, "end": 17},
     ]
-    pseudonymized_sentence = get_default_fr.pseudonymize_ne(ner, sentence)
-    assert "tour Eiffel" not in pseudonymized_sentence[0]
-    assert "[misc]" in pseudonymized_sentence[0]
+    pseudonymized_sentence = " ".join(get_default_fr.pseudonymize_ne(ner, sentence))
+    assert pseudonymized_sentence == "Le [misc] est un événement célèbre."
+
+
+def test_pseudonymize_ne_multiple_entities(get_default_fr):
+    sentence = "Thomas travaille chez Microsoft à Paris."
+    ner = [
+        {"entity_group": "PER", "word": "Thomas", "start": 0, "end": 6},
+        {"entity_group": "ORG", "word": "Microsoft", "start": 18, "end": 27},
+        {"entity_group": "LOC", "word": "Paris", "start": 30, "end": 35},
+    ]
+    pseudonymized_sentence = " ".join(get_default_fr.pseudonymize_ne(ner, sentence))
+    assert "Thomas" not in pseudonymized_sentence
+    assert "Microsoft" not in pseudonymized_sentence
+    assert "Paris" not in pseudonymized_sentence
+    assert any(
+        pseudo in pseudonymized_sentence
+        for pseudo in get_default_fr.pseudo_first_names["fr"]
+    )
+    assert "[organization]" in pseudonymized_sentence
+    assert "[location]" in pseudonymized_sentence
+
+
+def test_pseudonymize_ne_no_entities(get_default_fr):
+    sentence = "Ceci est une phrase sans entités nommées."
+    ner = []
+    pseudonymized_sentence = " ".join(get_default_fr.pseudonymize_ne(ner, sentence))
+    assert pseudonymized_sentence == sentence
+
+
+def test_pseudonymize_ne_empty_sentence(get_default_fr):
+    sentence = "Ceci est une phrase sans entités nommées."
+    ner = []
+    pseudonymized_sentence = " ".join(get_default_fr.pseudonymize_ne(ner, sentence))
+    assert pseudonymized_sentence == sentence
