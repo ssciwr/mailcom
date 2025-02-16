@@ -257,8 +257,8 @@ if __name__ == "__main__":
         print("Parsing input file {}".format(file))
         text = io.get_text(file)
         text = io.get_html_text(text)
-        # xml = io.data_to_xml(text)
-        # io.write_file(xml, path_output / output_filename)
+        xml = io.data_to_xml(text)
+        io.write_file(xml, path_output / output_filename)
         if not text:
             continue
         # Test functionality of Pseudonymize class
