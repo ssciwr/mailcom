@@ -211,7 +211,16 @@ class Pseudonymize:
     def concatenate(self, sentences):
         return " ".join(sentences)
 
-    def pseudonymize(self, text: str):
+    def pseudonymize(self, email):
+        """Function that handles the pseudonymization of an email
+        and all its steps
+
+        Args:
+            email (dict): Dictionary containing email content and metadata.
+
+        Returns:
+            str: Pseudonymized text"""
+        text = email["content"]
         self.reset()
         sentences = self.get_sentences(text)
         pseudonymized_sentences = []
@@ -221,7 +230,8 @@ class Pseudonymize:
             ps_sent = " ".join(self.pseudonymize_ne(ner, sent)) if ner else sent
             ps_sent = self.pseudonymize_numbers(ps_sent)
             pseudonymized_sentences.append(ps_sent)
-        return self.concatenate(pseudonymized_sentences)
+        email["pseudo_content"] = self.concatenate(pseudonymized_sentences)
+        return email["pseudo_content"]
 
 
 def check_dir(path: str) -> bool:
@@ -260,6 +270,6 @@ if __name__ == "__main__":
         if not email["content"]:
             continue
         # Test functionality of Pseudonymize class
-        output_text = pseudonymizer.pseudonymize(email["content"])
-        print("New text:", output_text)
+        _ = pseudonymizer.pseudonymize(email)
+        print("New text:", email["pseudo_content"])
         print("Old text:", email["content"])
