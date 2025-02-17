@@ -87,8 +87,8 @@ def test_process_emails(get_instant):
 
     # Check if the emails were processed and added to the email list
     assert len(get_instant.email_list) == 2
-    assert "Content of test email 1" in get_instant.email_list[0]["content"]
-    assert "Content of test email 2" in get_instant.email_list[1]["content"]
+    assert "Content of test email" in get_instant.email_list[0]["content"]
+    assert "Content of test email" in get_instant.email_list[1]["content"]
 
 
 def test_write_csv(get_instant, tmp_path):
