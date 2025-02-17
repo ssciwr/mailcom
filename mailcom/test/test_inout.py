@@ -25,7 +25,7 @@ def test_list_of_files(get_instant):
     p = get_instant.directory_name / "test.eml"
     p.write_text("test")
     get_instant.list_of_files()
-    assert len(get_instant.email_list) != 0
+    assert len(get_instant.email_path_list) != 0
     get_instant2 = inout.InoutHandler("nonexistingDir")
     with pytest.raises(OSError):
         get_instant2.list_of_files()
@@ -34,7 +34,7 @@ def test_list_of_files(get_instant):
     p = get_instant.directory_name / "test3.xml"
     p.write_text("test3")
     get_instant.list_of_files()
-    assert get_instant.directory_name / "test3.xml" not in get_instant.email_list
+    assert get_instant.directory_name / "test3.xml" not in get_instant.email_path_list
 
 
 def test_get_html_text(get_instant):
