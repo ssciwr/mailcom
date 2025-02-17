@@ -251,19 +251,15 @@ if __name__ == "__main__":
     # process the text
     io = InoutHandler(path_input)
     io.list_of_files()
+    io.process_emails()
     # html_files = list_of_files(path_input, "html")
     pseudonymizer = Pseudonymize()
     pseudonymizer.init_spacy("fr")
     pseudonymizer.init_transformers()
-    for file in io.email_list:
-        print("Parsing input file {}".format(file))
-        text = io.get_text(file)
-        text = io.get_html_text(text)
-        xml = io.data_to_xml(text)
-        io.write_file(xml, path_output / output_filename)
-        if not text:
+    for idx, email in enumerate(io.get_email_list()):
+        if not email["content"]:
             continue
         # Test functionality of Pseudonymize class
-        output_text = pseudonymizer.pseudonymize(text)
+        output_text = pseudonymizer.pseudonymize(email["content"])
         print("New text:", output_text)
-        print("Old text:", text)
+        print("Old text:", email["content"])

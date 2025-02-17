@@ -37,22 +37,6 @@ def test_list_of_files(get_instant):
     assert get_instant.directory_name / "test3.xml" not in get_instant.email_list
 
 
-def test_get_text(get_instant):
-    p = get_instant.directory_name / "test.eml"
-    p.write_text("test")
-    extracted_text = get_instant.get_text(p)
-    assert extracted_text == "test"
-    text = get_instant.get_text(FILE_PATH)
-    assert text[0:25] == TEXT_REF
-    assert get_instant.email_content["date"] == datetime.datetime(
-        2024, 4, 17, 15, 13, 56, tzinfo=datetime.timezone.utc
-    )
-    assert get_instant.email_content["attachment"] == 2
-    assert get_instant.email_content["attachement type"] == ["jpg", "jpg"]
-    with pytest.raises(OSError):
-        get_instant.get_text(get_instant.directory_name / "nonexisting.eml")
-
-
 def test_get_html_text(get_instant):
     html = """<html><head><title>Test</title></head></html>"""
     assert get_instant.get_html_text(html) == "Test"
@@ -70,3 +54,37 @@ def test_data_to_xml(get_instant, tmp_path):
     xml = get_instant.data_to_xml(xml_content)
     get_instant.write_file(xml, tmp_path / "test")
     assert filecmp.cmp(XML_PATH, tmp_path / "test.out")
+
+
+def test_extract_email_info(get_instant):
+    # Test with a valid email file
+    email_info = get_instant.extract_email_info(FILE_PATH)
+    assert email_info["content"].startswith(TEXT_REF)
+    assert email_info["date"] == datetime.datetime(
+        2024, 4, 17, 15, 13, 56, tzinfo=datetime.timezone.utc
+    )
+    assert email_info["attachment"] == 2
+    assert email_info["attachement type"] == ["jpg", "jpg"]
+
+    # Test with a non-existing file
+    with pytest.raises(OSError):
+        get_instant.extract_email_info(get_instant.directory_name / "nonexisting.eml")
+
+
+def test_process_emails(get_instant):
+    # Create some test email files
+    email_file_1 = get_instant.directory_name / "test1.eml"
+    email_file_1.write_text("Content of test email 1")
+    email_file_2 = get_instant.directory_name / "test2.eml"
+    email_file_2.write_text("Content of test email 2")
+
+    # Update the directory name and list of files
+    get_instant.list_of_files()
+
+    # Process the emails
+    get_instant.process_emails()
+
+    # Check if the emails were processed and added to the email list
+    assert len(get_instant.email_list) == 2
+    assert "Content of test email 1" in get_instant.email_list[0]["content"]
+    assert "Content of test email 2" in get_instant.email_list[1]["content"]

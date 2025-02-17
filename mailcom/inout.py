@@ -16,6 +16,9 @@ class InoutHandler:
         # presets
         self.pattern = [".eml", ".html"]
 
+        # list containing all emails
+        self.email_list = []
+
     def list_of_files(self):
         """Method to create a list of Path objects (files) that are present
         in a directory."""
@@ -24,10 +27,10 @@ class InoutHandler:
         ):  # check if given dir exists raises error otherwise
             raise OSError("Path {} does not exist".format(self.directory_name))
         mypath = Path(self.directory_name)
-        self.email_list = [
+        self.email_path_list = [
             mp.resolve() for mp in mypath.glob("**/*") if mp.suffix in self.pattern
         ]
-        if len(self.email_list) == 0:
+        if len(self.email_path_list) == 0:
             raise ValueError(
                 """The directory {} does not contain .eml or .html files.
                 Please check that the directory is containing the email
@@ -48,15 +51,15 @@ class InoutHandler:
             text_check = soup.get_text()
         return text_check
 
-    def get_text(self, file: Path) -> str:
-        """Function to extract the textual content and other metadata from an email file.
+    def extract_email_info(self, file: Path) -> dict:
+        """Function to extract the textual content and other metadata
+        from a single email file.
 
         Args:
             file (Path): The path to the email file.
 
         Returns:
-            str: The textual content of the email. In the future, this will return the
-            complete dictionary with the metadata."""
+            dict: Dictionary containing email text and metadata."""
         if not file.is_file():  # check if given file exists raises error otherwise
             raise OSError("File {} does not exist".format(file))
         with open(file, "rb") as fhdl:
@@ -71,13 +74,32 @@ class InoutHandler:
             attachmenttypes = [
                 parsed_eml["attachment"][i]["extension"] for i in range(attachments)
             ]
-        self.email_content = {
+        email_content = {
             "content": parsed_eml["body"][0]["content"],
             "date": parsed_eml["header"]["date"],
             "attachment": attachments,
             "attachement type": attachmenttypes,
         }
-        return self.email_content["content"]
+        # clean up html content
+        email_content["content"] = self.get_html_text(email_content["content"])
+
+        return email_content
+
+    def process_emails(self):
+        """Function that processes all emails in the directory
+        and saves their contents in email_list"""
+
+        for email_path in self.email_path_list:
+            print("Processing input file {}".format(email_path))
+            email_dict = self.extract_email_info(email_path)
+            self.email_list.append(email_dict)
+
+    def get_email_list(self):
+        """Function that returns an iterator of email_list
+
+        Returns:
+            iter: Iterator of self.email_list."""
+        return iter(self.email_list)
 
     def validate_data(self):
         pass
