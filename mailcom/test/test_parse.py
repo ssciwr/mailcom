@@ -60,8 +60,12 @@ def test_init_transformers(get_instant):
 
 
 def test_reset(get_default_fr):
-    text1 = "ceci est un exemple de texte écrit par Claude. Il contient trois noms différents, comme celui de Dominique. Voyons si Martin est reconnu."  # noqa
-    text2 = "ceci est un exemple de texte écrit par Francois. Il contient trois noms différents, comme celui de Agathe. Voyons si Antoine est reconnu."  # noqa
+    text1 = {
+        "content": "ceci est un exemple de texte écrit par Claude. Il contient trois noms différents, comme celui de Dominique. Voyons si Martin est reconnu."  # noqa
+    }  # noqa
+    text2 = {
+        "content": "ceci est un exemple de texte écrit par Francois. Il contient trois noms différents, comme celui de Agathe. Voyons si Antoine est reconnu."  # noqa
+    }  # noqa
     sample_texts = [text1, text2]
     for text in sample_texts:
         # pseudonymize email
@@ -153,7 +157,9 @@ def test_concatenate_multiple_sentences(get_default_fr):
 
 
 def test_pseudonymize(get_default_fr):
-    text = "Francois et Agathe sont amis. Mon numéro de téléphone est 123-456-7890."
+    text = {
+        "content": "Francois et Agathe sont amis. Mon numéro de téléphone est 123-456-7890."  # noqa
+    }
     pseudonymized_text = get_default_fr.pseudonymize(text)
 
     # Check that names are pseudonymized
@@ -169,15 +175,15 @@ def test_pseudonymize(get_default_fr):
 
 
 def test_pseudonymize_empty_string(get_default_fr):
-    text = ""
+    text = {"content": ""}
     pseudonymized_text = get_default_fr.pseudonymize(text)
     assert pseudonymized_text == ""
 
 
 def test_pseudonymize_no_entities(get_default_fr):
-    text = "Ceci est une phrase simple sans entités nommées ni chiffres."
+    text = {"content": "Ceci est une phrase simple sans entités nommées ni chiffres."}
     pseudonymized_text = get_default_fr.pseudonymize(text)
-    assert pseudonymized_text == text
+    assert pseudonymized_text == text["content"]
 
 
 def test_pseudonymize_email_addresses(get_default_fr):

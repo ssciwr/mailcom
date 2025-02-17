@@ -273,3 +273,4 @@ if __name__ == "__main__":
         _ = pseudonymizer.pseudonymize(email)
         print("New text:", email["pseudo_content"])
         print("Old text:", email["content"])
+    io.write_csv("data/out/out.csv")

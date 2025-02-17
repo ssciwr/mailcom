@@ -4,6 +4,7 @@ from pathlib import Path
 from importlib import resources
 import datetime
 import filecmp
+import csv
 
 pkg = resources.files("mailcom")
 
@@ -88,3 +89,42 @@ def test_process_emails(get_instant):
     assert len(get_instant.email_list) == 2
     assert "Content of test email 1" in get_instant.email_list[0]["content"]
     assert "Content of test email 2" in get_instant.email_list[1]["content"]
+
+
+def test_write_csv(get_instant, tmp_path):
+    # Create some test email data
+    email_data = [
+        {
+            "content": "Content of test email 1",
+            "date": "2024-04-17T15:13:56+00:00",
+            "attachment": 1,
+            "attachement type": ["jpg"],
+        },
+        {
+            "content": "Content of test email 2",
+            "date": "2024-04-18T15:13:56+00:00",
+            "attachment": 0,
+            "attachement type": [],
+        },
+    ]
+    get_instant.email_list = email_data
+
+    # Define the output CSV file path
+    csv_file = tmp_path / "test_emails.csv"
+
+    # Write the email data to CSV
+    get_instant.write_csv(csv_file)
+
+    # Read the CSV file and verify its contents
+    with open(csv_file, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+        assert len(rows) == 2
+        assert rows[0]["content"] == "Content of test email 1"
+        assert rows[0]["date"] == "2024-04-17T15:13:56+00:00"
+        assert rows[0]["attachment"] == "1"
+        assert rows[0]["attachement type"] == "['jpg']"
+        assert rows[1]["content"] == "Content of test email 2"
+        assert rows[1]["date"] == "2024-04-18T15:13:56+00:00"
+        assert rows[1]["attachment"] == "0"
+        assert rows[1]["attachement type"] == "[]"

@@ -3,6 +3,7 @@ import os
 import eml_parser
 from bs4 import BeautifulSoup
 from dicttoxml import dicttoxml
+import csv
 
 
 class InoutHandler:
@@ -119,3 +120,14 @@ class InoutHandler:
             name (str): The name of the file to be written."""
         with open("{}.out".format(name), "w") as file:
             file.write(text)
+
+    def write_csv(self, outfile: str):
+        """Write the email list containing all dictionaries to csv.
+
+        Args:
+            outfile (str): The path of the file to be written."""
+        keys = self.email_list[0].keys()
+        with open(outfile, "w", newline="", encoding="utf-8") as output_file:
+            dict_writer = csv.DictWriter(output_file, fieldnames=keys)
+            dict_writer.writeheader()
+            dict_writer.writerows(self.email_list)
