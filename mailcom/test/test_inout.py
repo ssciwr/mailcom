@@ -128,3 +128,33 @@ def test_write_csv(get_instant, tmp_path):
         assert rows[1]["date"] == "2024-04-18T15:13:56+00:00"
         assert rows[1]["attachment"] == "0"
         assert rows[1]["attachement type"] == "[]"
+
+
+def test_get_email_list(get_instant):
+    # Create some test email data
+    email_data = [
+        {
+            "content": "Content of test email 1",
+            "date": "2024-04-17T15:13:56+00:00",
+            "attachment": 1,
+            "attachement type": ["jpg"],
+        },
+        {
+            "content": "Content of test email 2",
+            "date": "2024-04-18T15:13:56+00:00",
+            "attachment": 0,
+            "attachement type": [],
+        },
+    ]
+    get_instant.email_list = email_data
+
+    # Get the email list iterator
+    email_list_iter = get_instant.get_email_list()
+
+    # Verify the contents of the email list
+    assert next(email_list_iter) == email_data[0]
+    assert next(email_list_iter) == email_data[1]
+
+    # Verify that the iterator is exhausted
+    with pytest.raises(StopIteration):
+        next(email_list_iter)
