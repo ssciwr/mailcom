@@ -3,6 +3,7 @@ import spacy as sp
 from transformers import pipeline
 from pathlib import Path
 from mailcom.inout import InoutHandler
+from mailcom.utils import check_dir, make_dir
 
 # please modify this section depending on your setup
 # input language - either "es" or "fr"
@@ -232,18 +233,6 @@ class Pseudonymize:
             pseudonymized_sentences.append(ps_sent)
         email["pseudo_content"] = self.concatenate(pseudonymized_sentences)
         return email["pseudo_content"]
-
-
-def check_dir(path: str) -> bool:
-    if not os.path.exists(path):
-        raise OSError("Path {} does not exist".format(path))
-    else:
-        return True
-
-
-def make_dir(path: str):
-    # make directory at path
-    os.makedirs(path + "/")
 
 
 if __name__ == "__main__":
