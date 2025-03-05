@@ -114,7 +114,7 @@ class Pseudonymize:
         used_pseudonyms = [
             ne["pseudonym"] if "pseudonym" in ne else "" for ne in self.ne_list
         ]
-        # amount of pseudonyms for PER used
+        # amount of pseudonyms for PER used (PER for "PERSON")
         n_pseudonyms_used = [ne["entity_group"] for ne in self.ne_list].count("PER")
         # check all variations of the name
         name_variations = [
@@ -134,6 +134,8 @@ class Pseudonymize:
             # if none is found, choose a new pseudonym
             if pseudonym == "":
                 try:
+                    # TODO: clean up the below comment after addressing the question
+                    # question: is the new pseudonym always a France one?
                     pseudonym = self.pseudo_first_names["fr"][
                         n_pseudonyms_used
                     ]  # reaches end of the list
