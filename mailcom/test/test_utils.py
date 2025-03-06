@@ -49,6 +49,21 @@ langid_langs = ['af', 'am', 'an', 'ar', 'as', 'az',
                     'zh', 'zu']
 
 
+lang_samples = [
+    "J'espère que tu vas bien! Je voulais partager avec toi quelques photos de mon dernier voyage!",
+    "Hola, ¿cómo estás? Espero que estés bien. ¡Hasta pronto!",
+    "Bonjour, comment ça va? J'espère que tu vas bien. À bientôt!",
+    "Hello, how are you? I hope you are well. See you soon!",
+    "Hallo, wie geht es dir? Ich hoffe, es geht dir gut. Bis bald!",
+    "Ciao, come stai? Spero che tu stia bene. A presto!",
+    "Olá, como você está? Espero que você esteja bem. Até logo!",
+    "Привет, как дела? Надеюсь, у тебя все хорошо. Увидимся скоро!",
+    "你好，你好吗？希望你一切都好。很快见到你！",
+    "こんにちは、元気ですか？ あなたが元気であることを願っています。 またね！",
+    "안녕하세요, 어떻게 지내세요? 잘 지내길 바랍니다. 곧 뵙겠습니다!",
+]
+
+
 @pytest.fixture()
 def get_lang_detector():
     return utils.LangDetector()
@@ -80,3 +95,25 @@ def test_constrain_langid_fail(get_lang_detector):
     lang_set = ["not_a_language"]
     with pytest.raises(ValueError):
         get_lang_detector.constrain_langid(lang_set)
+
+
+def test_determine_langdetect(get_lang_detector):
+    get_lang_detector.determine_langdetect()
+    probs = []
+    for i in range(10):
+        _, prob = get_lang_detector.detect_with_langdetect(lang_samples[0])
+        probs.append(prob)
+    assert len(set(probs)) == 1
+
+
+def test_detect_with_langid(get_lang_detector):
+    lang, prob = get_lang_detector.detect_with_langid(lang_samples[0])
+    assert lang == "fr"
+    assert prob > 0.9
+
+
+def test_detect_with_langdetect(get_lang_detector):
+    get_lang_detector.determine_langdetect()
+    lang, prob = get_lang_detector.detect_with_langdetect(lang_samples[0])
+    assert lang == "fr"
+    assert prob > 0.9
