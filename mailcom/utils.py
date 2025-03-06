@@ -33,7 +33,7 @@ class LangDetector:
                     "No languages in the set are supported by langid. Please check the language set."
                 )
     
-    def determ_langdetect(self):
+    def determine_langdetect(self):
         """Enforce consistent results for langdetect.
         """
         DetectorFactory.seed = 0
