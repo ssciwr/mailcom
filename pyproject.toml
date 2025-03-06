@@ -28,7 +28,9 @@ dependencies = [
   "torch",
   "pandas",
   "jupyter",
-  "matplotlib"
+  "matplotlib",
+  "langid",
+  "langdetect"
 ]
 
 [project.optional-dependencies]
