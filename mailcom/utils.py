@@ -60,4 +60,5 @@ class LangDetector:
         Returns:
             list(str, float): The possible language and their probabilities.
         """
-        return detect_langs(text)
+        detections = self.detect_langs(text)
+        return detections[0].lang, detections[0].prob
