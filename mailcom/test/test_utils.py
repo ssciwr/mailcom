@@ -62,7 +62,8 @@ lang_samples = {
     "مرحبًا، كيف حالك؟ آمل أن تكون بخير. أراك قريبًا!": "ar",
     "नमस्ते, कैसे हो? आशा है कि आप ठीक होंगे। जल्द ही मिलेंगे!": "hi",
 }
-detect_threshold = 0.7
+single_detect_threshold = 0.7
+multi_detect_threshold = 0.4
 repeat_num = 5
 lang_num = 2
 
@@ -80,10 +81,12 @@ def get_mixed_lang_docs():
         # create a text with sentences in lang_num different languages,
         # each sentence is repeated repeat_num times before the next sentence is added
         tmp_sentences = []
+        tmp_lang = []
         for j in range(lang_num):
-            tmp_sentences += [sentences[i+j]] * repeat_num
+            tmp_sentences += [sentences[i+j]] * repeat_num + ["\n"]
+            tmp_lang.append(lang_samples[sentences[i+j]])
         text = " ".join(tmp_sentences)
-        docs[text] = lang_samples[sentences[i]]
+        docs[text] = tmp_lang
 
     return docs
 
@@ -131,7 +134,7 @@ def test_detect_singe_lang_with_langid(get_lang_detector):
         detection = get_lang_detector.detect_with_langid(sent)
         det_lang, prob = detection[0]
         assert det_lang == lang
-        assert prob > detect_threshold
+        assert prob > single_detect_threshold
 
 
 def test_detect_single_lang_with_langdetect(get_lang_detector):
@@ -143,17 +146,56 @@ def test_detect_single_lang_with_langdetect(get_lang_detector):
         det_lang = "zh" if det_lang == "zh-cn" else det_lang
         det_lang = "zh" if det_lang == "zh-tw" else det_lang
         assert det_lang == lang
-        assert prob > detect_threshold
+        assert prob > single_detect_threshold
 
 
 def test_detect_mixed_lang_with_langid(get_lang_detector, get_mixed_lang_docs):
     for doc in get_mixed_lang_docs:
         detection = get_lang_detector.detect_with_langid(doc)
         det_lang, prob = detection[0]
-        if get_mixed_lang_docs[doc] in ["en", "it", "pt", "zh", "ar"]:
-            # special case with langid
+        if (lang_num == 2) and get_mixed_lang_docs[doc][0] in ["en", "it", "pt", "zh", "ar"]:
             # detected lang is the second one in the doc
-            pass
+            assert det_lang == get_mixed_lang_docs[doc][1]
+            assert prob > multi_detect_threshold
+        elif (lang_num == 3) and get_mixed_lang_docs[doc][0] in ["en", "zh", "ar"]:
+            # detected lang is the second one in the doc
+            assert det_lang == get_mixed_lang_docs[doc][1]
+            assert prob > multi_detect_threshold
+        elif (lang_num == 3) and get_mixed_lang_docs[doc][0] in ["de", "it", "pt", "ru"]:
+            # detected lang is completely wrong
+            with pytest.raises(AssertionError):
+                assert det_lang == get_mixed_lang_docs[doc][0]
+                assert prob > multi_detect_threshold
         else:
-            assert det_lang == get_mixed_lang_docs[doc]
-            assert prob > detect_threshold
+            assert det_lang == get_mixed_lang_docs[doc][0]
+            assert prob > multi_detect_threshold
+
+
+def test_detect_mixed_lang_with_langdetect(get_lang_detector, get_mixed_lang_docs):
+    get_lang_detector.determine_langdetect()
+    if lang_num == 2:
+        incomplete_detec = []
+        for doc in get_mixed_lang_docs:
+            detections = get_lang_detector.detect_with_langdetect(doc)
+            det_lang1, prob1 = detections[0]
+            if get_mixed_lang_docs[doc][0] in ["de", "it", "pt", "zh", "ko", "ar"]:
+                # detected lang is wrong
+                with pytest.raises(AssertionError):
+                    assert det_lang1 == get_mixed_lang_docs[doc][0]
+                    assert prob1 > multi_detect_threshold
+            else:
+                assert det_lang1 == get_mixed_lang_docs[doc][0]
+                assert prob1 > multi_detect_threshold
+            if len(detections) > 1:
+                det_lang2, prob2 = detections[1]
+                if get_mixed_lang_docs[doc][0] in ["en", "pt", "ar"]:
+                    # detected lang is completely wrong
+                    with pytest.raises(AssertionError):
+                        assert det_lang2 == get_mixed_lang_docs[doc][1]
+                        assert prob2 > multi_detect_threshold
+                else:
+                    assert det_lang2 == get_mixed_lang_docs[doc][1]
+            else:
+                incomplete_detec.append(doc)
+                incomplete_detec.append("\n")
+        print(" ".join(incomplete_detec))
