@@ -30,7 +30,8 @@ dependencies = [
   "jupyter",
   "matplotlib",
   "langid",
-  "langdetect"
+  "langdetect",
+  "intervaltree"
 ]
 
 [project.optional-dependencies]

@@ -3,7 +3,7 @@ import spacy as sp
 from transformers import pipeline
 from pathlib import Path
 from mailcom.inout import InoutHandler
-from mailcom.utils import check_dir, make_dir
+from mailcom.utils import check_dir, make_dir, LangDetector
 
 # please modify this section depending on your setup
 # input language - either "es" or "fr"
@@ -256,3 +256,10 @@ if __name__ == "__main__":
         output_text = pseudonymizer.pseudonymize(text)
         print("New text:", output_text)
         print("Old text:", text)
+
+        # Test functionality of LangDetector class in utils.py
+        lang_detector = LangDetector()
+        sentences = pseudonymizer.get_sentences(text)
+        for lang_lib in ["langid", "langdetect"]:
+            lang_tree = lang_detector.detect_lang_sentences(sentences, lang_lib)
+            print(lang_tree)

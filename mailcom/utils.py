@@ -1,6 +1,7 @@
 import os
 from langid.langid import LanguageIdentifier, model
 from langdetect import detect_langs, DetectorFactory
+from intervaltree import IntervalTree
 
 
 def check_dir(path: str) -> bool:
@@ -37,20 +38,22 @@ class LangDetector:
         """
         DetectorFactory.seed = 0
 
-    def detect_with_langid(self, text: str):
+    def detect_with_langid(self, sentence: str) -> list[tuple[str, float]]:
         """Dectect language of a given text using langid library.
+        Recommended for a single language detection.
 
         Args:
-            text (str): The text to detect the language of.
+            sentence (str): The text to detect the language of.
 
         Returns:
             [(str, float)]: The detected language and its probability.
         """
-        lang, prob = self.lang_id.classify(text)
+        lang, prob = self.lang_id.classify(sentence)
         return [(lang, prob)]
     
-    def detect_with_langdetect(self, text: str):
+    def detect_with_langdetect(self, sentence: str) -> list[tuple[str, float]]:
         """Dectect language of a given text using langdetect library.
+        Recommended for a single language detection.
 
         Args:
             text (str): The text to detect the language of.
@@ -58,6 +61,53 @@ class LangDetector:
         Returns:
             list(str, float): The possible language and their probabilities.
         """
-        detections = self.detect_langs(text)
+        detections = self.detect_langs(sentence)
         results = [(det.lang, det.prob) for det in detections]
         return results
+    
+    def get_detections(self, text: str, lang_lib="langdetect") -> list[tuple[str, float]]:
+        """Get detections for a given text using a specified lang_lib.
+
+        Args:
+            text (str): The text to detect the language of.
+            lang_lib (str): The lang_lib to use for detection. Options are "langid" and "langdetect".
+
+        Returns:
+            list(str, float): A list of detected languages and their probabilities.
+        """
+        if lang_lib == "langid":
+            return self.detect_with_langid(text)
+        elif lang_lib == "langdetect":
+            self.determine_langdetect()
+            return self.detect_with_langdetect(text)
+        else:
+            raise ValueError("Language library must be either 'langid' or 'langdetect'.")
+        
+    def detect_lang_sentences(self, sentences: list[str], lang_lib="langdetect") -> IntervalTree:
+        """Detect languages of a list of sentences using a specified language library.
+
+        Args:
+            sentences (str): The document to detect the languages of.
+            lang_lib (str): The lang_lib to use for detection. Options are "langid" and "langdetect".
+
+        Returns:
+            IntervalTree: An interval tree with the detected languages and their spans.
+        """
+        result_tree = IntervalTree()
+        marked_idx = 0
+        current_idx = 0
+        current_lang = ""
+        for sent in sentences:
+            if sent:
+                detections = self.get_detections(sent, lang_lib)
+                # only take the first detection
+                lang, _ = detections[0]
+                if lang != current_lang:
+                    if current_lang:
+                        result_tree.addi(marked_idx, current_idx, current_lang)
+                        marked_idx = current_idx
+                    current_lang = lang
+            current_idx += 1
+
+        result_tree.addi(marked_idx, current_idx, current_lang)
+        return result_tree

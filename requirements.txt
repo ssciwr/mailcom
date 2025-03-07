@@ -6,3 +6,4 @@ pandas
 jupyter
 langid
 langdetect
+intervaltree

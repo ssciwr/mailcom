@@ -65,7 +65,7 @@ lang_samples = {
 single_detect_threshold = 0.7
 multi_detect_threshold = 0.4
 repeat_num = 5
-lang_num = 2
+lang_num = 2 # tested up to 3 languages
 
 
 @pytest.fixture()
@@ -166,6 +166,9 @@ def test_detect_mixed_lang_with_langid(get_lang_detector, get_mixed_lang_docs):
             with pytest.raises(AssertionError):
                 assert det_lang == get_mixed_lang_docs[doc][0]
                 assert prob > multi_detect_threshold
+        elif lang_num > 3:
+            # not tested for more than 3 languages
+            pass
         else:
             assert det_lang == get_mixed_lang_docs[doc][0]
             assert prob > multi_detect_threshold
@@ -199,3 +202,23 @@ def test_detect_mixed_lang_with_langdetect(get_lang_detector, get_mixed_lang_doc
                 incomplete_detec.append(doc)
                 incomplete_detec.append("\n")
         print(" ".join(incomplete_detec))
+
+
+def test_get_detections(get_lang_detector):
+    sentence = list(lang_samples.keys())[0]
+    detection_langid = get_lang_detector.get_detections(sentence, "langid")
+    detection_langdetect = get_lang_detector.get_detections(sentence, "langdetect")
+    assert detection_langid[0][0] == detection_langdetect[0][0]
+    assert detection_langid[0][0] == lang_samples[sentence]
+
+
+def test_detect_lang_sentences(get_lang_detector, get_mixed_lang_docs):
+    for lang_lib in ["langid", "langdetect"]:
+        for doc in get_mixed_lang_docs:
+            sentences = doc.split("\n")
+            lang_tree = get_lang_detector.detect_lang_sentences(sentences, lang_lib)
+            assert lang_tree.begin() == 0
+            assert lang_tree.end() == len(doc.split("\n"))
+            for i, interval in enumerate(sorted(lang_tree.items())):
+                detected_lang = interval.data.split("-")[0] if lang_lib == "langdetect" else interval.data
+                assert detected_lang == get_mixed_lang_docs[doc][i]
