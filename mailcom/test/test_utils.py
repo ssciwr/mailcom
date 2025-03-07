@@ -212,6 +212,12 @@ def test_get_detections(get_lang_detector):
     assert detection_langid[0][0] == lang_samples[sentence]
 
 
+def test_get_detections_fail(get_lang_detector):
+    sentence = list(lang_samples.keys())[0]
+    with pytest.raises(ValueError):
+        get_lang_detector.get_detections(sentence, "not_a_lib")
+
+
 def test_detect_lang_sentences(get_lang_detector, get_mixed_lang_docs):
     for lang_lib in ["langid", "langdetect"]:
         for doc in get_mixed_lang_docs:
