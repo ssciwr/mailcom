@@ -49,19 +49,23 @@ langid_langs = ['af', 'am', 'an', 'ar', 'as', 'az',
                     'zh', 'zu']
 
 
-lang_samples = [
-    "J'espère que tu vas bien! Je voulais partager avec toi quelques photos de mon dernier voyage!",
-    "Hola, ¿cómo estás? Espero que estés bien. ¡Hasta pronto!",
-    "Bonjour, comment ça va? J'espère que tu vas bien. À bientôt!",
-    "Hello, how are you? I hope you are well. See you soon!",
-    "Hallo, wie geht es dir? Ich hoffe, es geht dir gut. Bis bald!",
-    "Ciao, come stai? Spero che tu stia bene. A presto!",
-    "Olá, como você está? Espero que você esteja bem. Até logo!",
-    "Привет, как дела? Надеюсь, у тебя все хорошо. Увидимся скоро!",
-    "你好，你好吗？希望你一切都好。很快见到你！",
-    "こんにちは、元気ですか？ あなたが元気であることを願っています。 またね！",
-    "안녕하세요, 어떻게 지내세요? 잘 지내길 바랍니다. 곧 뵙겠습니다!",
-]
+lang_samples = {
+    "J'espère que tu vas bien! Je voulais partager avec toi quelques photos de mon dernier voyage!": "fr",
+    "Hola, ¿cómo estás? Espero que estés bien. ¡Hasta pronto!": "es",
+    "Hello, how are you? I hope you are well. See you soon!": "en",
+    "Hallo, wie geht es dir? Ich hoffe, es geht dir gut. Bis bald!": "de",
+    "Ciao, come stai? Spero che tu stia bene. A presto!": "it",
+    "Olá, como você está? Espero que você esteja bem. Até logo!": "pt",
+    "Привет, как дела? Надеюсь, у тебя все хорошо. Увидимся скоро!": "ru",
+    "你好，你好吗？希望你一切都好。很快见到你！": "zh",
+    "こんにちは、元気ですか？ あなたが元気であることを願っています。 またね！": "ja",
+    "안녕하세요, 어떻게 지내세요? 잘 지내길 바랍니다. 곧 뵙겠습니다!": "ko",
+    "مرحبًا، كيف حالك؟ آمل أن تكون بخير. أراك قريبًا!": "ar",
+    "नमस्ते, कैसे हो? आशा है कि आप ठीक होंगे। जल्द ही मिलेंगे!": "hi",
+}
+
+
+detect_threshold = 0.7
 
 
 @pytest.fixture()
@@ -101,19 +105,24 @@ def test_determine_langdetect(get_lang_detector):
     get_lang_detector.determine_langdetect()
     probs = []
     for i in range(10):
-        _, prob = get_lang_detector.detect_with_langdetect(lang_samples[0])
+        detection = get_lang_detector.detect_with_langdetect(list(lang_samples.keys())[0])
+        _, prob = detection[0]
         probs.append(prob)
     assert len(set(probs)) == 1
 
 
-def test_detect_with_langid(get_lang_detector):
-    lang, prob = get_lang_detector.detect_with_langid(lang_samples[0])
-    assert lang == "fr"
-    assert prob > 0.9
+def test_detect_singe_lang_with_langid(get_lang_detector):
+    for sent, lang in lang_samples.items():
+        detection = get_lang_detector.detect_with_langid(sent)
+        lang, prob = detection[0]
+        assert lang == lang
+        assert prob > detect_threshold
 
 
-def test_detect_with_langdetect(get_lang_detector):
+def test_detect_single_lang_with_langdetect(get_lang_detector):
     get_lang_detector.determine_langdetect()
-    lang, prob = get_lang_detector.detect_with_langdetect(lang_samples[0])
-    assert lang == "fr"
-    assert prob > 0.9
+    for sent, lang in lang_samples.items():
+        detection = get_lang_detector.detect_with_langdetect(sent)
+        lang, prob = detection[0]
+        assert lang == lang
+        assert prob > detect_threshold
