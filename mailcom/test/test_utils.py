@@ -22,6 +22,7 @@ def test_check_dir_fail():
         utils.check_dir(str("mydir"))
 
 
+# test cases for email language detection
 langid_langs = ['af', 'am', 'an', 'ar', 'as', 'az', 
                     'be', 'bg', 'bn', 'br', 'bs', 
                     'ca', 'cs', 'cy', 
@@ -47,8 +48,6 @@ langid_langs = ['af', 'am', 'an', 'ar', 'as', 'az',
                     'wa', 
                     'xh', 
                     'zh', 'zu']
-
-
 lang_samples = {
     "J'espère que tu vas bien! Je voulais partager avec toi quelques photos de mon dernier voyage!": "fr",
     "Hola, ¿cómo estás? Espero que estés bien. ¡Hasta pronto!": "es",
@@ -63,14 +62,30 @@ lang_samples = {
     "مرحبًا، كيف حالك؟ آمل أن تكون بخير. أراك قريبًا!": "ar",
     "नमस्ते, कैसे हो? आशा है कि आप ठीक होंगे। जल्द ही मिलेंगे!": "hi",
 }
-
-
 detect_threshold = 0.7
+repeat_num = 5
+lang_num = 2
 
 
 @pytest.fixture()
 def get_lang_detector():
     return utils.LangDetector()
+
+
+@pytest.fixture()
+def get_mixed_lang_docs():
+    docs = {}
+    sentences = list(lang_samples.keys())
+    for i in range(len(sentences)-(lang_num-1)):
+        # create a text with sentences in lang_num different languages,
+        # each sentence is repeated repeat_num times before the next sentence is added
+        tmp_sentences = []
+        for j in range(lang_num):
+            tmp_sentences += [sentences[i+j]] * repeat_num
+        text = " ".join(tmp_sentences)
+        docs[text] = lang_samples[sentences[i]]
+
+    return docs
 
 
 def test_lang_detector(get_lang_detector):
@@ -114,8 +129,8 @@ def test_determine_langdetect(get_lang_detector):
 def test_detect_singe_lang_with_langid(get_lang_detector):
     for sent, lang in lang_samples.items():
         detection = get_lang_detector.detect_with_langid(sent)
-        lang, prob = detection[0]
-        assert lang == lang
+        det_lang, prob = detection[0]
+        assert det_lang == lang
         assert prob > detect_threshold
 
 
@@ -123,6 +138,22 @@ def test_detect_single_lang_with_langdetect(get_lang_detector):
     get_lang_detector.determine_langdetect()
     for sent, lang in lang_samples.items():
         detection = get_lang_detector.detect_with_langdetect(sent)
-        lang, prob = detection[0]
-        assert lang == lang
+        det_lang, prob = detection[0]
+        # special case of zh with langdetect
+        det_lang = "zh" if det_lang == "zh-cn" else det_lang
+        det_lang = "zh" if det_lang == "zh-tw" else det_lang
+        assert det_lang == lang
         assert prob > detect_threshold
+
+
+def test_detect_mixed_lang_with_langid(get_lang_detector, get_mixed_lang_docs):
+    for doc in get_mixed_lang_docs:
+        detection = get_lang_detector.detect_with_langid(doc)
+        det_lang, prob = detection[0]
+        if get_mixed_lang_docs[doc] in ["en", "it", "pt", "zh", "ar"]:
+            # special case with langid
+            # detected lang is the second one in the doc
+            pass
+        else:
+            assert det_lang == get_mixed_lang_docs[doc]
+            assert prob > detect_threshold
