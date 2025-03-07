@@ -1,5 +1,4 @@
 import os
-import langid
 from langid.langid import LanguageIdentifier, model
 from langdetect import detect_langs, DetectorFactory
 
@@ -45,11 +44,10 @@ class LangDetector:
             text (str): The text to detect the language of.
 
         Returns:
-            lang (str): The detected language.
-            prob (float): The probability of the detection.
+            [(str, float)]: The detected language and its probability.
         """
         lang, prob = self.lang_id.classify(text)
-        return lang, prob
+        return [(lang, prob)]
     
     def detect_with_langdetect(self, text: str):
         """Dectect language of a given text using langdetect library.
@@ -61,4 +59,5 @@ class LangDetector:
             list(str, float): The possible language and their probabilities.
         """
         detections = self.detect_langs(text)
-        return detections[0].lang, detections[0].prob
+        results = [(det.lang, det.prob) for det in detections]
+        return results
