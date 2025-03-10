@@ -31,7 +31,7 @@ class LangDetector:
             bool: True if the text is only punctuations, False otherwise.
         """
         return not any(char.isalnum() for char in text)
-    
+
     def strip_punctuations(self, text: str) -> str:
         """Strip punctuations from a given text.
 
@@ -42,7 +42,7 @@ class LangDetector:
             str: The text with punctuations stripped.
         """
         return "".join([char for char in text if char.isalnum() or char.isspace()])
-    
+
     def contains_only_numbers(self, text: str) -> bool:
         """Check if a given text contains only numbers.
 
@@ -53,9 +53,11 @@ class LangDetector:
             bool: True if the text is only numbers, False otherwise.
         """
         processed_text = self.strip_punctuations(text)
-        processed_text = "".join([char for char in processed_text if not char.isspace()])
+        processed_text = "".join(
+            [char for char in processed_text if not char.isspace()]
+        )
         return processed_text.isdigit()
-    
+
     def contains_only_emails(self, text: str) -> bool:
         """Check if a given text contains only email(s).
 
@@ -68,11 +70,9 @@ class LangDetector:
         processed_text = text.strip().strip("\n")
         text_as_list = [word for word in processed_text.split(" ") if word.strip()]
         return all("@" in word for word in text_as_list)
-        
 
     def constrain_langid(self, lang_set=[]):
-        """Set constraint for language set of langid. Default is no constrained languages.
-        """
+        """Set constraint for language set of langid. Default is no constrained languages."""
         if lang_set:
             lang_intersec = list(set(lang_set) & set(self.lang_id.nb_classes))
             if lang_intersec:
@@ -81,10 +81,9 @@ class LangDetector:
                 raise ValueError(
                     "No languages in the set are supported by langid. Please check the language set."
                 )
-    
+
     def determine_langdetect(self):
-        """Enforce consistent results for langdetect.
-        """
+        """Enforce consistent results for langdetect."""
         DetectorFactory.seed = 0
 
     def detect_with_langid(self, sentence: str) -> list[tuple[str, float]]:
@@ -100,11 +99,13 @@ class LangDetector:
         try:
             lang, prob = self.lang_id.classify(sentence)
         except Exception as e:
-            lang = None 
+            lang = None
             prob = 0.0
-            raise ValueError("Error in detecting sentence {}: Error: {}".format(sentence, e))
+            raise ValueError(
+                "Error in detecting sentence {}: Error: {}".format(sentence, e)
+            )
         return [(lang, prob)]
-    
+
     def detect_with_langdetect(self, sentence: str) -> list[tuple[str, float]]:
         """Dectect language of a given text using langdetect library.
         Recommended for a single language detection.
@@ -120,10 +121,14 @@ class LangDetector:
             results = [(det.lang, det.prob) for det in detections]
         except Exception as e:
             results = [(None, 0.0)]
-            raise ValueError("Error in detecting sentence {}: Error: {}".format(sentence, e))
+            raise ValueError(
+                "Error in detecting sentence {}: Error: {}".format(sentence, e)
+            )
         return results
-    
-    def get_detections(self, text: str, lang_lib="langdetect") -> list[tuple[str, float]]:
+
+    def get_detections(
+        self, text: str, lang_lib="langdetect"
+    ) -> list[tuple[str, float]]:
         """Get detections for a given text using a specified lang_lib.
 
         Args:
@@ -134,21 +139,27 @@ class LangDetector:
             list(str, float): A list of detected languages and their probabilities.
         """
         # make sure that the text is not empty, not just whitespace or newline, not only contains punctuations
-        if text.strip().strip("\n") \
-            and not self.contains_only_punctuations(text) \
-                and not self.contains_only_numbers(text) \
-                    and not self.contains_only_emails(text):
+        if (
+            text.strip().strip("\n")
+            and not self.contains_only_punctuations(text)
+            and not self.contains_only_numbers(text)
+            and not self.contains_only_emails(text)
+        ):
             if lang_lib == "langid":
                 return self.detect_with_langid(text)
             elif lang_lib == "langdetect":
                 self.determine_langdetect()
                 return self.detect_with_langdetect(text)
             else:
-                raise ValueError("Language library must be either 'langid' or 'langdetect'.")
+                raise ValueError(
+                    "Language library must be either 'langid' or 'langdetect'."
+                )
         else:
             return [(None, 0.0)]
-        
-    def detect_lang_sentences(self, sentences: list[str], lang_lib="langdetect") -> IntervalTree:
+
+    def detect_lang_sentences(
+        self, sentences: list[str], lang_lib="langdetect"
+    ) -> IntervalTree:
         """Detect languages of a list of sentences using a specified language library.
 
         Args:

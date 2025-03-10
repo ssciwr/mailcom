@@ -24,31 +24,105 @@ def test_check_dir_fail():
 
 
 # test cases for email language detection
-langid_langs = ['af', 'am', 'an', 'ar', 'as', 'az', 
-                    'be', 'bg', 'bn', 'br', 'bs', 
-                    'ca', 'cs', 'cy', 
-                    'da', 'de', 'dz', 
-                    'el', 'en', 'eo', 'es', 'et', 'eu', 
-                    'fa', 'fi', 'fo', 'fr', 
-                    'ga', 'gl', 'gu', 
-                    'he', 'hi', 'hr', 'ht', 'hu', 'hy', 
-                    'id', 'is', 'it', 
-                    'ja', 'jv', 
-                    'ka', 'kk', 'km', 'kn', 'ko', 'ku', 'ky', 
-                    'la', 'lb', 'lo', 'lt', 'lv', 
-                    'mg', 'mk', 'ml', 'mn', 'mr', 'ms', 'mt', 
-                    'nb', 'ne', 'nl', 'nn', 'no', 
-                    'oc', 'or', 
-                    'pa', 'pl', 'ps', 'pt', 
-                    'qu', 
-                    'ro', 'ru', 'rw', 
-                    'se', 'si', 'sk', 'sl', 'sq', 'sr', 'sv', 'sw', 
-                    'ta', 'te', 'th', 'tl', 'tr', 
-                    'ug', 'uk', 'ur', 
-                    'vi', 'vo', 
-                    'wa', 
-                    'xh', 
-                    'zh', 'zu']
+langid_langs = [
+    "af",
+    "am",
+    "an",
+    "ar",
+    "as",
+    "az",
+    "be",
+    "bg",
+    "bn",
+    "br",
+    "bs",
+    "ca",
+    "cs",
+    "cy",
+    "da",
+    "de",
+    "dz",
+    "el",
+    "en",
+    "eo",
+    "es",
+    "et",
+    "eu",
+    "fa",
+    "fi",
+    "fo",
+    "fr",
+    "ga",
+    "gl",
+    "gu",
+    "he",
+    "hi",
+    "hr",
+    "ht",
+    "hu",
+    "hy",
+    "id",
+    "is",
+    "it",
+    "ja",
+    "jv",
+    "ka",
+    "kk",
+    "km",
+    "kn",
+    "ko",
+    "ku",
+    "ky",
+    "la",
+    "lb",
+    "lo",
+    "lt",
+    "lv",
+    "mg",
+    "mk",
+    "ml",
+    "mn",
+    "mr",
+    "ms",
+    "mt",
+    "nb",
+    "ne",
+    "nl",
+    "nn",
+    "no",
+    "oc",
+    "or",
+    "pa",
+    "pl",
+    "ps",
+    "pt",
+    "qu",
+    "ro",
+    "ru",
+    "rw",
+    "se",
+    "si",
+    "sk",
+    "sl",
+    "sq",
+    "sr",
+    "sv",
+    "sw",
+    "ta",
+    "te",
+    "th",
+    "tl",
+    "tr",
+    "ug",
+    "uk",
+    "ur",
+    "vi",
+    "vo",
+    "wa",
+    "xh",
+    "zh",
+    "zu",
+]
 lang_samples = {
     "J'espère que tu vas bien! Je voulais partager avec toi quelques photos de mon dernier voyage!": "fr",
     "Hola, ¿cómo estás? Espero que estés bien. ¡Hasta pronto!": "es",
@@ -67,7 +141,7 @@ punctuations_as_str = "".join(punctuation)
 single_detect_threshold = 0.7
 multi_detect_threshold = 0.4
 repeat_num = 5
-lang_num = 2 # tested up to 3 languages
+lang_num = 2  # tested up to 3 languages
 
 
 @pytest.fixture()
@@ -79,14 +153,14 @@ def get_lang_detector():
 def get_mixed_lang_docs():
     docs = {}
     sentences = list(lang_samples.keys())
-    for i in range(len(sentences)-(lang_num-1)):
+    for i in range(len(sentences) - (lang_num - 1)):
         # create a text with sentences in lang_num different languages,
         # each sentence is repeated repeat_num times before the next sentence is added
         tmp_sentences = []
         tmp_lang = []
         for j in range(lang_num):
-            tmp_sentences += [sentences[i+j]] * repeat_num + ["\n"]
-            tmp_lang.append(lang_samples[sentences[i+j]])
+            tmp_sentences += [sentences[i + j]] * repeat_num + ["\n"]
+            tmp_lang.append(lang_samples[sentences[i + j]])
         text = " ".join(tmp_sentences)
         docs[text] = tmp_lang
 
@@ -99,7 +173,10 @@ def test_contains_only_punctuations(get_lang_detector):
     assert get_lang_detector.contains_only_punctuations(".,;:!? ") is True
     assert get_lang_detector.contains_only_punctuations(".,;:!? a") is False
     assert get_lang_detector.contains_only_punctuations(punctuations_as_str) is True
-    assert get_lang_detector.contains_only_punctuations(punctuations_as_str + "a sentence") is False
+    assert (
+        get_lang_detector.contains_only_punctuations(punctuations_as_str + "a sentence")
+        is False
+    )
 
 
 def test_strip_punctuations(get_lang_detector):
@@ -108,7 +185,10 @@ def test_strip_punctuations(get_lang_detector):
     assert get_lang_detector.strip_punctuations(".,;:!? ") == " "
     assert get_lang_detector.strip_punctuations(".,;:!? a") == " a"
     assert get_lang_detector.strip_punctuations(punctuations_as_str) == ""
-    assert get_lang_detector.strip_punctuations(punctuations_as_str + "\n a sentence") == "\n a sentence"
+    assert (
+        get_lang_detector.strip_punctuations(punctuations_as_str + "\n a sentence")
+        == "\n a sentence"
+    )
 
 
 def test_contains_only_numbers(get_lang_detector):
@@ -116,14 +196,24 @@ def test_contains_only_numbers(get_lang_detector):
     assert get_lang_detector.contains_only_numbers("1234567890a") is False
     assert get_lang_detector.contains_only_numbers("1234567890 ") is True
     assert get_lang_detector.contains_only_numbers("1234567890 a") is False
-    assert get_lang_detector.contains_only_numbers("1234567890" + punctuations_as_str) is True
-    assert get_lang_detector.contains_only_numbers("1234567890" + punctuations_as_str + "a sentence") is False
+    assert (
+        get_lang_detector.contains_only_numbers("1234567890" + punctuations_as_str)
+        is True
+    )
+    assert (
+        get_lang_detector.contains_only_numbers(
+            "1234567890" + punctuations_as_str + "a sentence"
+        )
+        is False
+    )
 
 
 def test_contains_only_emails(get_lang_detector):
     assert get_lang_detector.contains_only_emails("abc@gmail.com") is True
     assert get_lang_detector.contains_only_emails("<abc@gmail.com>") is True
-    assert get_lang_detector.contains_only_emails("abc@gmail.com \n cdf@gmail.com") is True
+    assert (
+        get_lang_detector.contains_only_emails("abc@gmail.com \n cdf@gmail.com") is True
+    )
     assert get_lang_detector.contains_only_emails("Sent from abc@gmail.com") is False
 
 
@@ -159,7 +249,9 @@ def test_determine_langdetect(get_lang_detector):
     get_lang_detector.determine_langdetect()
     probs = []
     for i in range(10):
-        detection = get_lang_detector.detect_with_langdetect(list(lang_samples.keys())[0])
+        detection = get_lang_detector.detect_with_langdetect(
+            list(lang_samples.keys())[0]
+        )
         _, prob = detection[0]
         probs.append(prob)
     assert len(set(probs)) == 1
@@ -209,7 +301,13 @@ def test_detect_mixed_lang_with_langid(get_lang_detector, get_mixed_lang_docs):
     for doc in get_mixed_lang_docs:
         detection = get_lang_detector.detect_with_langid(doc)
         det_lang, prob = detection[0]
-        if (lang_num == 2) and get_mixed_lang_docs[doc][0] in ["en", "it", "pt", "zh", "ar"]:
+        if (lang_num == 2) and get_mixed_lang_docs[doc][0] in [
+            "en",
+            "it",
+            "pt",
+            "zh",
+            "ar",
+        ]:
             # detected lang is the second one in the doc
             assert det_lang == get_mixed_lang_docs[doc][1]
             assert prob > multi_detect_threshold
@@ -217,7 +315,12 @@ def test_detect_mixed_lang_with_langid(get_lang_detector, get_mixed_lang_docs):
             # detected lang is the second one in the doc
             assert det_lang == get_mixed_lang_docs[doc][1]
             assert prob > multi_detect_threshold
-        elif (lang_num == 3) and get_mixed_lang_docs[doc][0] in ["de", "it", "pt", "ru"]:
+        elif (lang_num == 3) and get_mixed_lang_docs[doc][0] in [
+            "de",
+            "it",
+            "pt",
+            "ru",
+        ]:
             # detected lang is completely wrong
             with pytest.raises(AssertionError):
                 assert det_lang == get_mixed_lang_docs[doc][0]
@@ -322,5 +425,9 @@ def test_detect_lang_sentences(get_lang_detector, get_mixed_lang_docs):
             assert lang_tree.begin() == 0
             assert lang_tree.end() == len(doc.split("\n"))
             for i, interval in enumerate(sorted(lang_tree.items())):
-                detected_lang = interval.data.split("-")[0] if lang_lib == "langdetect" else interval.data
+                detected_lang = (
+                    interval.data.split("-")[0]
+                    if lang_lib == "langdetect"
+                    else interval.data
+                )
                 assert detected_lang == get_mixed_lang_docs[doc][i]
