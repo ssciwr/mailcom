@@ -1,5 +1,6 @@
 from mailcom import utils
 import pytest
+from string import punctuation
 
 
 # these worked when we were using strings
@@ -62,6 +63,7 @@ lang_samples = {
     "مرحبًا، كيف حالك؟ آمل أن تكون بخير. أراك قريبًا!": "ar",
     "नमस्ते, कैसे हो? आशा है कि आप ठीक होंगे। जल्द ही मिलेंगे!": "hi",
 }
+punctuations_as_str = "".join(punctuation)
 single_detect_threshold = 0.7
 multi_detect_threshold = 0.4
 repeat_num = 5
@@ -89,6 +91,40 @@ def get_mixed_lang_docs():
         docs[text] = tmp_lang
 
     return docs
+
+
+def test_contains_only_punctuations(get_lang_detector):
+    assert get_lang_detector.contains_only_punctuations(".,;:!?") is True
+    assert get_lang_detector.contains_only_punctuations(".,;:!?a") is False
+    assert get_lang_detector.contains_only_punctuations(".,;:!? ") is True
+    assert get_lang_detector.contains_only_punctuations(".,;:!? a") is False
+    assert get_lang_detector.contains_only_punctuations(punctuations_as_str) is True
+    assert get_lang_detector.contains_only_punctuations(punctuations_as_str + "a sentence") is False
+
+
+def test_strip_punctuations(get_lang_detector):
+    assert get_lang_detector.strip_punctuations(".,;:!?") == ""
+    assert get_lang_detector.strip_punctuations(".,;:!?a") == "a"
+    assert get_lang_detector.strip_punctuations(".,;:!? ") == " "
+    assert get_lang_detector.strip_punctuations(".,;:!? a") == " a"
+    assert get_lang_detector.strip_punctuations(punctuations_as_str) == ""
+    assert get_lang_detector.strip_punctuations(punctuations_as_str + "\n a sentence") == "\n a sentence"
+
+
+def test_contains_only_numbers(get_lang_detector):
+    assert get_lang_detector.contains_only_numbers("1234567890") is True
+    assert get_lang_detector.contains_only_numbers("1234567890a") is False
+    assert get_lang_detector.contains_only_numbers("1234567890 ") is True
+    assert get_lang_detector.contains_only_numbers("1234567890 a") is False
+    assert get_lang_detector.contains_only_numbers("1234567890" + punctuations_as_str) is True
+    assert get_lang_detector.contains_only_numbers("1234567890" + punctuations_as_str + "a sentence") is False
+
+
+def test_contains_only_emails(get_lang_detector):
+    assert get_lang_detector.contains_only_emails("abc@gmail.com") is True
+    assert get_lang_detector.contains_only_emails("<abc@gmail.com>") is True
+    assert get_lang_detector.contains_only_emails("abc@gmail.com \n cdf@gmail.com") is True
+    assert get_lang_detector.contains_only_emails("Sent from abc@gmail.com") is False
 
 
 def test_lang_detector(get_lang_detector):
@@ -210,6 +246,46 @@ def test_get_detections(get_lang_detector):
     detection_langdetect = get_lang_detector.get_detections(sentence, "langdetect")
     assert detection_langid[0][0] == detection_langdetect[0][0]
     assert detection_langid[0][0] == lang_samples[sentence]
+
+
+def test_get_detections_empty(get_lang_detector):
+    sentence = " \n\n"
+    detection_langid = get_lang_detector.get_detections(sentence, "langid")
+    detection_langdetect = get_lang_detector.get_detections(sentence, "langdetect")
+    assert detection_langid[0][0] == detection_langdetect[0][0]
+    assert detection_langid[0][0] is None
+    assert detection_langid[0][1] == 0.0
+    assert detection_langdetect[0][1] == 0.0
+
+
+def test_get_detections_only_punctuations(get_lang_detector):
+    sentence = ".,;:!?"
+    detection_langid = get_lang_detector.get_detections(sentence, "langid")
+    detection_langdetect = get_lang_detector.get_detections(sentence, "langdetect")
+    assert detection_langid[0][0] == detection_langdetect[0][0]
+    assert detection_langid[0][0] is None
+    assert detection_langid[0][1] == 0.0
+    assert detection_langdetect[0][1] == 0.0
+
+
+def test_get_detections_only_numbers(get_lang_detector):
+    sentence = "1234567890"
+    detection_langid = get_lang_detector.get_detections(sentence, "langid")
+    detection_langdetect = get_lang_detector.get_detections(sentence, "langdetect")
+    assert detection_langid[0][0] == detection_langdetect[0][0]
+    assert detection_langid[0][0] is None
+    assert detection_langid[0][1] == 0.0
+    assert detection_langdetect[0][1] == 0.0
+
+
+def test_get_detections_only_emails(get_lang_detector):
+    sentence = "<abc@gmail.com>"
+    detection_langid = get_lang_detector.get_detections(sentence, "langid")
+    detection_langdetect = get_lang_detector.get_detections(sentence, "langdetect")
+    assert detection_langid[0][0] == detection_langdetect[0][0]
+    assert detection_langid[0][0] is None
+    assert detection_langid[0][1] == 0.0
+    assert detection_langdetect[0][1] == 0.0
 
 
 def test_get_detections_fail(get_lang_detector):
