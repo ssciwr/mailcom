@@ -1,3 +1,4 @@
+import math
 from mailcom import utils
 import pytest
 from string import punctuation
@@ -124,7 +125,8 @@ langid_langs = [
     "zu",
 ]
 lang_samples = {
-    "J'espère que tu vas bien! Je voulais partager avec toi quelques photos de mon dernier voyage!": "fr",
+    "J'espère que tu vas bien! "
+    "Je voulais partager avec toi quelques photos de mon dernier voyage!": "fr",
     "Hola, ¿cómo estás? Espero que estés bien. ¡Hasta pronto!": "es",
     "Hello, how are you? I hope you are well. See you soon!": "en",
     "Hallo, wie geht es dir? Ich hoffe, es geht dir gut. Bis bald!": "de",
@@ -377,8 +379,8 @@ def test_get_detections_empty(get_lang_detector):
     detection_langdetect = get_lang_detector.get_detections(sentence, "langdetect")
     assert detection_langid[0][0] == detection_langdetect[0][0]
     assert detection_langid[0][0] is None
-    assert detection_langid[0][1] == 0.0
-    assert detection_langdetect[0][1] == 0.0
+    assert math.isclose(detection_langid[0][1], 0.0)
+    assert math.isclose(detection_langdetect[0][1], 0.0)
 
 
 def test_get_detections_only_punctuations(get_lang_detector):
@@ -387,8 +389,8 @@ def test_get_detections_only_punctuations(get_lang_detector):
     detection_langdetect = get_lang_detector.get_detections(sentence, "langdetect")
     assert detection_langid[0][0] == detection_langdetect[0][0]
     assert detection_langid[0][0] is None
-    assert detection_langid[0][1] == 0.0
-    assert detection_langdetect[0][1] == 0.0
+    assert math.isclose(detection_langid[0][1], 0.0)
+    assert math.isclose(detection_langdetect[0][1], 0.0)
 
 
 def test_get_detections_only_numbers(get_lang_detector):
@@ -397,8 +399,8 @@ def test_get_detections_only_numbers(get_lang_detector):
     detection_langdetect = get_lang_detector.get_detections(sentence, "langdetect")
     assert detection_langid[0][0] == detection_langdetect[0][0]
     assert detection_langid[0][0] is None
-    assert detection_langid[0][1] == 0.0
-    assert detection_langdetect[0][1] == 0.0
+    assert math.isclose(detection_langid[0][1], 0.0)
+    assert math.isclose(detection_langdetect[0][1], 0.0)
 
 
 def test_get_detections_only_emails(get_lang_detector):
@@ -407,8 +409,8 @@ def test_get_detections_only_emails(get_lang_detector):
     detection_langdetect = get_lang_detector.get_detections(sentence, "langdetect")
     assert detection_langid[0][0] == detection_langdetect[0][0]
     assert detection_langid[0][0] is None
-    assert detection_langid[0][1] == 0.0
-    assert detection_langdetect[0][1] == 0.0
+    assert math.isclose(detection_langid[0][1], 0.0)
+    assert math.isclose(detection_langdetect[0][1], 0.0)
 
 
 def test_get_detections_fail(get_lang_detector):

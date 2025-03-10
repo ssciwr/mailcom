@@ -72,14 +72,16 @@ class LangDetector:
         return all("@" in word for word in text_as_list)
 
     def constrain_langid(self, lang_set=[]):
-        """Set constraint for language set of langid. Default is no constrained languages."""
+        """Set constraint for language set of langid.
+        Default is no constrained languages."""
         if lang_set:
             lang_intersec = list(set(lang_set) & set(self.lang_id.nb_classes))
             if lang_intersec:
                 self.lang_id.set_languages(lang_intersec)
             else:
                 raise ValueError(
-                    "No languages in the set are supported by langid. Please check the language set."
+                    "No languages in the set are supported by langid. "
+                    "Please check the language set."
                 )
 
     def determine_langdetect(self):
@@ -133,12 +135,15 @@ class LangDetector:
 
         Args:
             text (str): The text to detect the language of.
-            lang_lib (str): The lang_lib to use for detection. Options are "langid" and "langdetect".
+            lang_lib (str): The lang_lib to use for detection.
+                Options are "langid" and "langdetect".
 
         Returns:
             list(str, float): A list of detected languages and their probabilities.
         """
-        # make sure that the text is not empty, not just whitespace or newline, not only contains punctuations
+        # make sure that the text is not empty,
+        # not just whitespace or newline,
+        # not only contains punctuations
         if (
             text.strip().strip("\n")
             and not self.contains_only_punctuations(text)
@@ -164,7 +169,8 @@ class LangDetector:
 
         Args:
             sentences (str): The document to detect the languages of.
-            lang_lib (str): The lang_lib to use for detection. Options are "langid" and "langdetect".
+            lang_lib (str): The lang_lib to use for detection.
+                Options are "langid" and "langdetect".
 
         Returns:
             IntervalTree: An interval tree with the detected languages and their spans.
