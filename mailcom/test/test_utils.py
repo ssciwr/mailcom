@@ -173,6 +173,26 @@ def test_detect_singe_lang_with_langid(get_lang_detector):
         assert prob > single_detect_threshold
 
 
+def test_detect_single_lang_with_langid_error(get_lang_detector):
+    with pytest.raises(ValueError):
+        get_lang_detector.detect_with_langid(None)
+
+
+def test_detect_single_lang_with_langdetect_error(get_lang_detector):
+    with pytest.raises(ValueError):
+        get_lang_detector.detect_with_langdetect(None)
+    with pytest.raises(ValueError):
+        get_lang_detector.detect_with_langdetect("")
+    with pytest.raises(ValueError):
+        get_lang_detector.detect_with_langdetect(" \n\n")
+    with pytest.raises(ValueError):
+        get_lang_detector.detect_with_langdetect(".,;:!?")
+    with pytest.raises(ValueError):
+        get_lang_detector.detect_with_langdetect("1234567890")
+    with pytest.raises(ValueError):
+        get_lang_detector.detect_with_langdetect("<abc@gmail.com>")
+
+
 def test_detect_single_lang_with_langdetect(get_lang_detector):
     get_lang_detector.determine_langdetect()
     for sent, lang in lang_samples.items():

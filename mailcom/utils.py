@@ -164,17 +164,14 @@ class LangDetector:
         current_lang = ""
         for sent in sentences:
             if sent:
-                try:
-                    detections = self.get_detections(sent, lang_lib)
-                    # only take the first detection
-                    lang, _ = detections[0]
-                    if lang != current_lang:
-                        if current_lang:
-                            result_tree.addi(marked_idx, current_idx, current_lang)
-                            marked_idx = current_idx
-                        current_lang = lang
-                except Exception as e:
-                    raise ValueError("Error in detecting sentence {}: Error: {}".format(sent, e))
+                detections = self.get_detections(sent, lang_lib)
+                # only take the first detection
+                lang, _ = detections[0]
+                if lang != current_lang:
+                    if current_lang:
+                        result_tree.addi(marked_idx, current_idx, current_lang)
+                        marked_idx = current_idx
+                    current_lang = lang
             current_idx += 1
 
         result_tree.addi(marked_idx, current_idx, current_lang)
