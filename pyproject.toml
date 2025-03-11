@@ -28,7 +28,9 @@ dependencies = [
   "torch",
   "pandas",
   "jupyter",
-  "matplotlib"
+  "matplotlib",
+  "dateparser",
+  "datefinder",
 ]
 
 [project.optional-dependencies]
