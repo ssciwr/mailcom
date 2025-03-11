@@ -2,6 +2,10 @@ import os
 from langid.langid import LanguageIdentifier, model
 from langdetect import detect_langs, DetectorFactory
 from intervaltree import IntervalTree
+from transformers import pipeline
+from pathlib import Path
+from mailcom.inout import InoutHandler
+import pandas as pd
 
 
 def check_dir(path: str) -> bool:
@@ -20,6 +24,9 @@ class LangDetector:
     def __init__(self):
         self.lang_id = LanguageIdentifier.from_modelstring(model, norm_probs=True)
         self.detect_langs = detect_langs
+
+    def init_transformers(self, model="papluca/xlm-roberta-base-language-detection"):
+        self.lang_detector_trans = pipeline("text-classification", model=model)
 
     def contains_only_punctuations(self, text: str) -> bool:
         """Check if a given text contains only punctuations.
@@ -71,6 +78,19 @@ class LangDetector:
         text_as_list = [word for word in processed_text.split(" ") if word.strip()]
         return all("@" in word for word in text_as_list)
 
+    def contains_only_links(self, text: str) -> bool:
+        """Check if a given text contains only links.
+
+        Args:
+            text (str): The text to check.
+
+        Returns:
+            bool: True if the text contains only links, False otherwise.
+        """
+        processed_text = text.strip().strip("\n")
+        text_as_list = [word for word in processed_text.split(" ") if word.strip()]
+        return all(("http://" in word or ("https://" in word)) for word in text_as_list)
+
     def constrain_langid(self, lang_set=[]):
         """Set constraint for language set of langid.
         Default is no constrained languages."""
@@ -87,6 +107,23 @@ class LangDetector:
     def determine_langdetect(self):
         """Enforce consistent results for langdetect."""
         DetectorFactory.seed = 0
+
+    def detect_with_transformers(self, sentence: str) -> list[tuple[str, float]]:
+        """Dectect language of a given text using transformers library.
+
+        Args:
+            text (str): The text to detect the language of.
+
+        Returns:
+            list(str, float): The possible language and their probabilities.
+        """
+        detections = self.lang_detector_trans(sentence, top_k=2, truncation=True)
+        results = []
+        for detection in detections:
+            lang = detection["label"]
+            prob = detection["score"]
+            results.append((lang, prob))
+        return results
 
     def detect_with_langid(self, sentence: str) -> list[tuple[str, float]]:
         """Dectect language of a given text using langid library.
@@ -128,10 +165,8 @@ class LangDetector:
             )
         return results
 
-    def get_detections(
-        self, text: str, lang_lib="langdetect"
-    ) -> list[tuple[str, float]]:
-        """Get detections for a given text using a specified lang_lib.
+    def get_detections(self, text: str, lang_lib="trans") -> list[tuple[str, float]]:
+        """Get detections for a given text using a specified lang_lib or model.
 
         Args:
             text (str): The text to detect the language of.
@@ -149,12 +184,15 @@ class LangDetector:
             and not self.contains_only_punctuations(text)
             and not self.contains_only_numbers(text)
             and not self.contains_only_emails(text)
+            and not self.contains_only_links(text)
         ):
             if lang_lib == "langid":
                 return self.detect_with_langid(text)
             elif lang_lib == "langdetect":
                 self.determine_langdetect()
                 return self.detect_with_langdetect(text)
+            elif lang_lib == "trans":
+                return self.detect_with_transformers(text)
             else:
                 raise ValueError(
                     "Language library must be either 'langid' or 'langdetect'."
@@ -163,7 +201,7 @@ class LangDetector:
             return [(None, 0.0)]
 
     def detect_lang_sentences(
-        self, sentences: list[str], lang_lib="langdetect"
+        self, sentences: list[str], lang_lib="trans"
     ) -> IntervalTree:
         """Detect languages of a list of sentences using a specified language library.
 
@@ -193,3 +231,51 @@ class LangDetector:
 
         result_tree.addi(marked_idx, current_idx, current_lang)
         return result_tree
+
+
+if __name__ == "__main__":
+    # path where the input files can be found
+    path_input = Path("./mailcom/test/data_extended/heiBOX/")
+    # path where the output files should be written to
+    # this is generated if not present yet
+    path_output = Path("./data/out/")
+    output_filename = "lang_detection.csv"
+
+    # check that input dir is there
+    if not check_dir(path_input):
+        raise ValueError("Could not find input directory with eml files! Aborting ...")
+
+    # check that the output dir is there, if not generate
+    if not check_dir(path_output):
+        print("Generating output directory/ies.")
+        make_dir(path_output)
+    # process the text
+    io = InoutHandler(path_input)
+    io.list_of_files()
+
+    results = []
+
+    for file in io.email_list:
+        file_results = {"file": str(file.name)}
+        print("Parsing input file {}".format(file))
+        text = io.get_text(file)
+        text = io.get_html_text(text)
+
+        # Test functionality of LangDetector class in utils.py
+        lang_detector = LangDetector()
+        lang_detector.init_transformers()
+        sentences = text.split("\n")
+        for lang_lib in ["langid", "langdetect", "trans"]:
+            detected_lang = lang_detector.get_detections(text, lang_lib)
+            lang_tree = lang_detector.detect_lang_sentences(sentences, lang_lib)
+            file_results[lang_lib + "_text"] = "{}-{}".format(
+                str(detected_lang[0][0]), str(detected_lang[0][1])
+            )
+            file_results[lang_lib + "_sentence"] = str(lang_tree)
+
+        results.append(file_results)
+
+    # write results to file
+    df = pd.DataFrame(results)
+    df_reordered = df.iloc[:, [0, 1, 3, 5, 2, 4, 6]]
+    df_reordered.to_csv(path_output / output_filename, index=False)

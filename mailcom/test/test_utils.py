@@ -142,8 +142,7 @@ lang_samples = {
 punctuations_as_str = "".join(punctuation)
 single_detect_threshold = 0.7
 multi_detect_threshold = 0.4
-repeat_num = 5
-lang_num = 2  # tested up to 3 languages
+lang_num = 3  # tested up to 3 languages
 
 
 @pytest.fixture()
@@ -152,9 +151,17 @@ def get_lang_detector():
 
 
 @pytest.fixture()
+def get_lang_det_w_init():
+    lang_detector = utils.LangDetector()
+    lang_detector.init_transformers()
+    return lang_detector
+
+
+@pytest.fixture()
 def get_mixed_lang_docs():
     docs = {}
     sentences = list(lang_samples.keys())
+    repeat_num = 10
     for i in range(len(sentences) - (lang_num - 1)):
         # create a text with sentences in lang_num different languages,
         # each sentence is repeated repeat_num times before the next sentence is added
@@ -163,10 +170,20 @@ def get_mixed_lang_docs():
         for j in range(lang_num):
             tmp_sentences += [sentences[i + j]] * repeat_num + ["\n"]
             tmp_lang.append(lang_samples[sentences[i + j]])
+            repeat_num = max(0, repeat_num - repeat_num // 2)
         text = " ".join(tmp_sentences)
         docs[text] = tmp_lang
 
     return docs
+
+
+def test_init_transformers(get_lang_detector):
+    get_lang_detector.init_transformers()
+    assert get_lang_detector.lang_detector_trans is not None
+
+    # Test with an invalid model
+    with pytest.raises(OSError):
+        get_lang_detector.init_transformers(model="invalid-model")
 
 
 def test_contains_only_punctuations(get_lang_detector):
@@ -219,6 +236,16 @@ def test_contains_only_emails(get_lang_detector):
     assert get_lang_detector.contains_only_emails("Sent from abc@gmail.com") is False
 
 
+def test_contains_only_links(get_lang_detector):
+    assert get_lang_detector.contains_only_links("http://www.google.com") is True
+    assert get_lang_detector.contains_only_links("https://some.link") is True
+    assert get_lang_detector.contains_only_links("http://a.b https://a") is True
+    assert (
+        get_lang_detector.contains_only_links("Sent from http://www.google.com")
+        is False
+    )
+
+
 def test_lang_detector(get_lang_detector):
     assert get_lang_detector.lang_id.nb_classes == langid_langs
 
@@ -259,6 +286,20 @@ def test_determine_langdetect(get_lang_detector):
     assert len(set(probs)) == 1
 
 
+def test_detect_single_lang_with_transformers(get_lang_det_w_init):
+    for sent, lang in lang_samples.items():
+        detections = get_lang_det_w_init.detect_with_transformers(sent)
+        det_lang, prob = detections[0]
+        if lang == "ko":
+            # this transformer model does not support detecting Korean
+            with pytest.raises(AssertionError):
+                assert det_lang == lang
+                assert prob > single_detect_threshold
+        else:
+            assert det_lang == lang
+            assert prob > single_detect_threshold
+
+
 def test_detect_singe_lang_with_langid(get_lang_detector):
     for sent, lang in lang_samples.items():
         detection = get_lang_detector.detect_with_langid(sent)
@@ -297,6 +338,40 @@ def test_detect_single_lang_with_langdetect(get_lang_detector):
         det_lang = "zh" if det_lang == "zh-tw" else det_lang
         assert det_lang == lang
         assert prob > single_detect_threshold
+
+
+def test_detect_mixed_lang_with_transformers(get_lang_det_w_init, get_mixed_lang_docs):
+    for doc in get_mixed_lang_docs:
+        detections = get_lang_det_w_init.detect_with_transformers(doc)
+        det_lang, prob = detections[0]
+        if (lang_num == 2) and get_mixed_lang_docs[doc][0] in [
+            "en",
+            "it",
+            "zh",
+            "ko",
+            "ar",
+        ]:
+            # detected lang is the second one in the doc
+            # exception for ko, which is not supported by the transformer model
+            with pytest.raises(AssertionError):
+                assert det_lang == get_mixed_lang_docs[doc][0]
+                assert prob > multi_detect_threshold
+        elif (lang_num == 3) and get_mixed_lang_docs[doc][0] in [
+            "en",
+            "de",
+            "it",
+            "ru",
+            "zh",
+            "ko",
+        ]:
+            # detected lang is not the first one in the doc
+            # exception for ko, which is not supported by the transformer model
+            with pytest.raises(AssertionError):
+                assert det_lang == get_mixed_lang_docs[doc][0]
+                assert prob > multi_detect_threshold
+        else:
+            assert det_lang == get_mixed_lang_docs[doc][0]
+            assert prob > multi_detect_threshold
 
 
 def test_detect_mixed_lang_with_langid(get_lang_detector, get_mixed_lang_docs):
@@ -365,11 +440,13 @@ def test_detect_mixed_lang_with_langdetect(get_lang_detector, get_mixed_lang_doc
         print(" ".join(incomplete_detec))
 
 
-def test_get_detections(get_lang_detector):
+def test_get_detections(get_lang_det_w_init):
     sentence = list(lang_samples.keys())[0]
-    detection_langid = get_lang_detector.get_detections(sentence, "langid")
-    detection_langdetect = get_lang_detector.get_detections(sentence, "langdetect")
+    detection_langid = get_lang_det_w_init.get_detections(sentence, "langid")
+    detection_langdetect = get_lang_det_w_init.get_detections(sentence, "langdetect")
+    detection_trans = get_lang_det_w_init.get_detections(sentence, "trans")
     assert detection_langid[0][0] == detection_langdetect[0][0]
+    assert detection_langid[0][0] == detection_trans[0][0]
     assert detection_langid[0][0] == lang_samples[sentence]
 
 
@@ -419,11 +496,11 @@ def test_get_detections_fail(get_lang_detector):
         get_lang_detector.get_detections(sentence, "not_a_lib")
 
 
-def test_detect_lang_sentences(get_lang_detector, get_mixed_lang_docs):
-    for lang_lib in ["langid", "langdetect"]:
+def test_detect_lang_sentences(get_lang_det_w_init, get_mixed_lang_docs):
+    for lang_lib in ["langid", "langdetect", "trans"]:
         for doc in get_mixed_lang_docs:
             sentences = doc.split("\n")
-            lang_tree = get_lang_detector.detect_lang_sentences(sentences, lang_lib)
+            lang_tree = get_lang_det_w_init.detect_lang_sentences(sentences, lang_lib)
             assert lang_tree.begin() == 0
             assert lang_tree.end() == len(doc.split("\n"))
             for i, interval in enumerate(sorted(lang_tree.items())):
@@ -432,4 +509,9 @@ def test_detect_lang_sentences(get_lang_detector, get_mixed_lang_docs):
                     if lang_lib == "langdetect"
                     else interval.data
                 )
-                assert detected_lang == get_mixed_lang_docs[doc][i]
+                if get_mixed_lang_docs[doc][i] == "ko" and lang_lib == "trans":
+                    # this transformer model does not support detecting Korean
+                    with pytest.raises(AssertionError):
+                        assert detected_lang == get_mixed_lang_docs[doc][i]
+                else:
+                    assert detected_lang == get_mixed_lang_docs[doc][i]

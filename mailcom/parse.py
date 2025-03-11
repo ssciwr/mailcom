@@ -2,7 +2,7 @@ import spacy as sp
 from transformers import pipeline
 from pathlib import Path
 from mailcom.inout import InoutHandler
-from mailcom.utils import check_dir, make_dir, LangDetector
+from mailcom.utils import check_dir, make_dir
 
 # please modify this section depending on your setup
 # input language - either "es" or "fr"
