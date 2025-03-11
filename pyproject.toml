@@ -31,7 +31,9 @@ dependencies = [
   "matplotlib",
   "langid",
   "langdetect",
-  "intervaltree"
+  "intervaltree",
+  "dateparser",
+  "datefinder",
 ]
 
 [project.optional-dependencies]
