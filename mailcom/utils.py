@@ -9,6 +9,7 @@ import pandas as pd
 import dateparser
 import datefinder
 from datetime import datetime
+import dateparser.search
 
 
 def check_dir(path: Path) -> bool:
@@ -268,6 +269,17 @@ class TimeDetector:
         """
         return dateparser.parse(text)
 
+    def search_dates(self, text: str, langs=["es", "fr"]) -> list[(str, datetime)]:
+        """Search for dates in a given text.
+
+        Args:
+            text (str): The text to search for dates in.
+
+        Returns:
+            list[(str, datetime)]: A list of tuples containing the date string and the datetime object.
+        """
+        return dateparser.search.search_dates(text, languages=langs)
+
     def find_dates(self, text: str) -> list[datetime]:
         """Find dates in a given text.
 
@@ -275,7 +287,7 @@ class TimeDetector:
             text (str): The text to find dates in.
 
         Returns:
-            list[str]: A list of dates found in the text.
+            list[datetime]: A list of dates found in the text.
         """
         return list(datefinder.find_dates(text))
 
