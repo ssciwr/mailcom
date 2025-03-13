@@ -64,7 +64,7 @@ class Pseudonymize:
         try:
             # disable not needed components
             self.nlp_spacy = sp.load(
-                model, exclude=["morphologizer", "attribute_ruler", "lemmatizer", "ner"]
+                model, exclude=["attribute_ruler", "lemmatizer", "ner"]
             )
         except OSError:
             try:
@@ -75,7 +75,7 @@ class Pseudonymize:
                 sp.cli.download(model)
                 self.nlp_spacy = sp.load(
                     model,
-                    exclude=["morphologizer", "attribute_ruler", "lemmatizer", "ner"],
+                    exclude=["attribute_ruler", "lemmatizer", "ner"],
                 )
             except SystemExit:
                 raise SystemExit("Could not download {} from repo".format(model))

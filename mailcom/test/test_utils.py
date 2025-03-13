@@ -580,6 +580,35 @@ sample_dates = {
 }
 
 
+date_samples_fr = {
+    "absolute": [
+        "02/17/2009",  # NOUN
+        "17/02/2009",  # NUM
+        "2009/02/17",  # PROPN
+        "12 mars 2025",  # NUM -> NOUN -> NUM, nmod
+        "2/17/2009",  # PROPN
+        "17/2/2009",  # VERB
+        "2009/2/17",  # VERB
+        "09 février 2009",  # NOUN -> NOUN -> NUM, nmod
+        "2025-03-12",  # NOUN -> NOUN -> NUM
+        "ven. 14 mars 2025, 10:30",  # NUM -> NOUN -> NUM, nmod, 10:30 PROPN
+        "vendredi 14 mars 2025 à 10:30",  # NUM -> NOUN -> NUM, nmod, 10:30 PROPN
+        "14/03/2025 10:30",  # NOUN, 10:30 NOUN
+        "2025-03-14 10:30",  # NOUN -> NOUN -> NUM, 10:30 PROPN
+        "le 14 mars 2025",  # NUM -> NOUN -> NUM, nmod
+        "ce vendredi 14 mars 2025",  # NUM -> NOUN -> NUM, nmod
+        "2 avril 2015",  # NUM -> NOUN -> NUM, nmod
+        "6/12/25",  # NOUN
+    ]
+}
+sent_fr = "Alice sera présente le {} et apportera 100$."
+another_sent_fr = "Alice est arrivée hier à 10:00 AM."
+
+
+def get_sample_sentences(idx):
+    return sent_fr.format(date_samples_fr["absolute"][idx])
+
+
 def test_parse_time(get_time_detector):
     for date_str, date_obj in sample_dates["absolute"].items():
         assert get_time_detector.parse_time(date_str) == date_obj
@@ -655,3 +684,35 @@ def test_find_dates(get_time_detector):
             assert get_time_detector.find_dates(extra_info + date_str) == []
         else:
             assert get_time_detector.find_dates(extra_info + date_str) == [date_obj]
+
+
+def test_extract_date_time_fr(get_time_detector):
+    sample_sentence = get_sample_sentences(11)
+    get_time_detector.parse.init_spacy("fr")
+    doc = get_time_detector.parse.nlp_spacy(sample_sentence)
+    extracted_date_time = get_time_detector.extract_date_time(doc)
+    assert len(extracted_date_time) == 2
+    assert extracted_date_time[0][0].text == "14/03/2025"
+    assert extracted_date_time[0][1] == datetime.datetime(2025, 3, 14, 0, 0)
+    assert extracted_date_time[1][0].text == "10:30"
+    assert extracted_date_time[1][1].date() == datetime.date.today()
+    assert extracted_date_time[1][1].time() == datetime.time(10, 30)
+
+
+def test_merge_date_time_fr(get_time_detector):
+    sample_sentence = get_sample_sentences(11)
+    get_time_detector.parse.init_spacy("fr")
+    doc = get_time_detector.parse.nlp_spacy(sample_sentence)
+    extracted_date_time = get_time_detector.extract_date_time(doc)
+    merged_date_time = get_time_detector.merge_date_time(extracted_date_time, doc)
+    assert len(merged_date_time) == 1
+    assert merged_date_time[0][0] == "14/03/2025 10:30"
+    assert merged_date_time[0][1] == datetime.datetime(2025, 3, 14, 10, 30)
+
+
+def test_get_date_time_fr(get_time_detector):
+    sample_sentence = get_sample_sentences(11)
+    results = get_time_detector.get_date_time(sample_sentence, lang="fr")
+    assert len(results) == 1
+    assert results[0][0] == "14/03/2025 10:30"
+    assert results[0][1] == datetime.datetime(2025, 3, 14, 10, 30)
