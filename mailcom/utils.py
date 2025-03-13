@@ -308,6 +308,40 @@ class TimeDetector:
                     extracted_date_time.append((token, parsed_time))
         return extracted_date_time
 
+    def _get_next_sibling(self, token: object) -> object:
+        """Get the next sibling of a token.
+
+        Args:
+            token (object): The spaCy token.
+
+        Returns:
+            object: The next sibling of the token.
+        """
+        for child in token.head.children:
+            if child.i > token.i:
+                return child
+        return None
+
+    def is_time_mergeable(self, first_token: object, second_token: object) -> bool:
+        """Check if the two time tokens can be merged.
+
+        Args:
+            first_token (object): The first spaCy token.
+            second_token (object): The second spaCy token.
+
+        Returns:
+            bool: True if the tokens can be merged, False otherwise.
+        """
+        if not (
+            dateparser.parse(first_token.text) and dateparser.parse(second_token.text)
+        ):
+            return False
+        elif first_token.head == second_token.head or second_token.head == first_token:
+            return True
+        elif self._get_next_sibling(first_token) == second_token:
+            return True
+        return False
+
     def merge_date_time(
         self, extracted_datetime: list, doc: object
     ) -> list[(str, datetime, int, int)]:
@@ -327,8 +361,8 @@ class TimeDetector:
         count = 0
         for token, parsed_time in extracted_datetime:
             if count < len(extracted_datetime) - 1:
-                next_token, next_parsed_time = extracted_datetime[count + 1]
-                if (token.nbor() == next_token) and (token.head == next_token.head):
+                next_token, _ = extracted_datetime[count + 1]
+                if self.is_time_mergeable(token, next_token):
                     new_text = doc[token.i : next_token.i + 1].text
                     new_parsed_time = dateparser.parse(new_text)
                     merged_datetime.append(

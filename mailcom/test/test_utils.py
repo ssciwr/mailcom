@@ -594,11 +594,13 @@ date_samples_fr = {
         "ven. 14 mars 2025, 10:30",  # NUM -> NOUN -> NUM, nmod, 10:30 PROPN
         "vendredi 14 mars 2025 à 10:30",  # NUM -> NOUN -> NUM, nmod, 10:30 PROPN
         "14/03/2025 10:30",  # NOUN, 10:30 NOUN
+        "14/03/2025 à 10:30",  # NOUN, 10:30 PROPN
         "2025-03-14 10:30",  # NOUN -> NOUN -> NUM, 10:30 PROPN
         "le 14 mars 2025",  # NUM -> NOUN -> NUM, nmod
         "ce vendredi 14 mars 2025",  # NUM -> NOUN -> NUM, nmod
         "2 avril 2015",  # NUM -> NOUN -> NUM, nmod
         "6/12/25",  # NOUN
+        "17/04/2024 um 17:23 Uhr",
     ]
 }
 sent_fr = "Alice sera présente le {} et apportera 100$."
@@ -687,7 +689,7 @@ def test_find_dates(get_time_detector):
 
 
 def test_extract_date_time_fr(get_time_detector):
-    sample_sentence = get_sample_sentences(11)
+    sample_sentence = get_sample_sentences(12)
     get_time_detector.parse.init_spacy("fr")
     doc = get_time_detector.parse.nlp_spacy(sample_sentence)
     extracted_date_time = get_time_detector.extract_date_time(doc)
@@ -699,20 +701,37 @@ def test_extract_date_time_fr(get_time_detector):
     assert extracted_date_time[1][1].time() == datetime.time(10, 30)
 
 
+def test_get_next_sibling(get_time_detector):
+    sample_sentence = get_sample_sentences(12)
+    get_time_detector.parse.init_spacy("fr")
+    doc = get_time_detector.parse.nlp_spacy(sample_sentence)
+    token = doc[6]
+    assert get_time_detector._get_next_sibling(token) == doc[8]
+    assert get_time_detector._get_next_sibling(doc[len(doc) - 1]) == None
+
+
+def test_is_time_mergeable(get_time_detector):
+    sample_sentence = get_sample_sentences(12)
+    get_time_detector.parse.init_spacy("fr")
+    doc = get_time_detector.parse.nlp_spacy(sample_sentence)
+    assert get_time_detector.is_time_mergeable(doc[4], doc[6]) == True
+    assert get_time_detector.is_time_mergeable(doc[6], doc[8]) == False
+
+
 def test_merge_date_time_fr(get_time_detector):
-    sample_sentence = get_sample_sentences(11)
+    sample_sentence = get_sample_sentences(12)
     get_time_detector.parse.init_spacy("fr")
     doc = get_time_detector.parse.nlp_spacy(sample_sentence)
     extracted_date_time = get_time_detector.extract_date_time(doc)
     merged_date_time = get_time_detector.merge_date_time(extracted_date_time, doc)
     assert len(merged_date_time) == 1
-    assert merged_date_time[0][0] == "14/03/2025 10:30"
+    assert merged_date_time[0][0] == "14/03/2025 à 10:30"
     assert merged_date_time[0][1] == datetime.datetime(2025, 3, 14, 10, 30)
 
 
 def test_get_date_time_fr(get_time_detector):
-    sample_sentence = get_sample_sentences(11)
+    sample_sentence = get_sample_sentences(18)
     results = get_time_detector.get_date_time(sample_sentence, lang="fr")
     assert len(results) == 1
-    assert results[0][0] == "14/03/2025 10:30"
-    assert results[0][1] == datetime.datetime(2025, 3, 14, 10, 30)
+    assert results[0][0] == "17/04/2024 um 17:23"
+    assert results[0][1] == datetime.datetime(2024, 4, 17, 17, 23)
