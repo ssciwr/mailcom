@@ -8,15 +8,27 @@ from mailcom.inout import InoutHandler
 import pandas as pd
 
 
-def check_dir(path: str) -> bool:
+def check_dir(path: Path) -> bool:
+    """Check if a directory exists at a given path.
+
+    Args:
+        path (pathlib.Path)): The path to check.
+
+    Returns:
+        bool: True if the directory exists, False otherwise.
+    """
     if not os.path.exists(path):
         raise OSError("Path {} does not exist".format(path))
     else:
         return True
 
 
-def make_dir(path: str):
-    # make directory at path
+def make_dir(path: Path) -> None:
+    """Make a directory at a given path.
+
+    Args:
+        path (pathlib.Path): The path to make a directory at.
+    """
     os.makedirs(path + "/")
 
 
@@ -117,6 +129,10 @@ class LangDetector:
         Returns:
             list(str, float): The possible language and their probabilities.
         """
+        # checking for attribute first instead of catching exception
+        # to avoid repetition of code
+        if not hasattr(self, "lang_detector_trans"):
+            self.init_transformers()
         detections = self.lang_detector_trans(sentence, top_k=2, truncation=True)
         results = []
         for detection in detections:
@@ -165,13 +181,14 @@ class LangDetector:
             )
         return results
 
-    def get_detections(self, text: str, lang_lib="trans") -> list[tuple[str, float]]:
+    def get_detections(self, text: str, lang_lib="langid") -> list[tuple[str, float]]:
         """Get detections for a given text using a specified lang_lib or model.
 
         Args:
             text (str): The text to detect the language of.
             lang_lib (str): The lang_lib to use for detection.
-                Options are "langid" and "langdetect".
+                Options are "langid", "langdetect" and "trans".
+                The default is "langid".
 
         Returns:
             list(str, float): A list of detected languages and their probabilities.
@@ -195,20 +212,20 @@ class LangDetector:
                 return self.detect_with_transformers(text)
             else:
                 raise ValueError(
-                    "Language library must be either 'langid' or 'langdetect'."
+                    "Language library must be either 'langid', 'langdetect' or 'trans'."
                 )
         else:
             return [(None, 0.0)]
 
     def detect_lang_sentences(
-        self, sentences: list[str], lang_lib="trans"
+        self, sentences: list[str], lang_lib="langid"
     ) -> IntervalTree:
         """Detect languages of a list of sentences using a specified language library.
 
         Args:
             sentences (str): The document to detect the languages of.
             lang_lib (str): The lang_lib to use for detection.
-                Options are "langid" and "langdetect".
+                Options are "langid", "langdetect" and "trans".
 
         Returns:
             IntervalTree: An interval tree with the detected languages and their spans.

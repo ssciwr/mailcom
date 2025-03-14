@@ -10,7 +10,6 @@ from mailcom.utils import check_dir, make_dir, LangDetector
 lang = "es"
 # lang = "fr"
 # path where the input files can be found
-# path_input = Path("./mailcom/test/data/")
 path_input = Path("./data/in/")
 # path where the output files should be written to
 # this is generated if not present yet
@@ -135,8 +134,6 @@ class Pseudonymize:
             # if none is found, choose a new pseudonym
             if pseudonym == "":
                 try:
-                    # TODO: clean up the below comment after addressing the question
-                    # question: is the new pseudonym always a France one?
                     pseudonym = self.pseudo_first_names["fr"][
                         n_pseudonyms_used
                     ]  # reaches end of the list
@@ -255,24 +252,9 @@ if __name__ == "__main__":
     for idx, email in enumerate(io.get_email_list()):
         if not email["content"]:
             continue
-        # mabe here the stripping of dates and email addresses should take place
-        # and of unnecessary punctuation
-        # to get more accurate language detection
-        text = pseudonymizer.pseudonymize_email_addresses(text)
         # detect and set the language of the text
         lang_detector = LangDetector()
         language = lang_detector.get_detections(text=text)
-        print(
-            "langdetect: detected [(language, probability)] {} in email {}".format(
-                language, file
-            )
-        )
-        language = lang_detector.get_detections(text=text, lang_lib="langid")
-        print(
-            "langid: detected [(language, probability)] {} in email {}".format(
-                language, file
-            )
-        )
         # here we would now set the spacy language and download model if required
         # Test functionality of Pseudonymize class
         _ = pseudonymizer.pseudonymize(email)
