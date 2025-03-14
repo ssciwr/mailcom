@@ -4,24 +4,22 @@ import pytest
 from string import punctuation
 
 
-# these worked when we were using strings
-# with the update to Path, we need to change the tests
 def test_check_dir(tmpdir):
     mydir = tmpdir.mkdir("sub")
-    assert utils.check_dir(str(mydir))
+    assert utils.check_dir(mydir)
     with pytest.raises(OSError):
-        utils.check_dir(str(tmpdir.join("sub2")))
+        utils.check_dir(tmpdir.join("sub2"))
 
 
 def test_make_dir(tmpdir):
     mydir = tmpdir.join("sub")
-    utils.make_dir(str(mydir))
+    utils.make_dir(mydir)
     assert mydir.check()
 
 
 def test_check_dir_fail():
     with pytest.raises(OSError):
-        utils.check_dir(str("mydir"))
+        utils.check_dir("mydir")
 
 
 # test cases for email language detection
@@ -277,10 +275,9 @@ def test_constrain_langid_fail(get_lang_detector):
 def test_determine_langdetect(get_lang_detector):
     get_lang_detector.determine_langdetect()
     probs = []
-    for i in range(10):
-        detection = get_lang_detector.detect_with_langdetect(
-            list(lang_samples.keys())[0]
-        )
+    for _ in range(10):
+        sample_text = list(lang_samples.keys())[0]
+        detection = get_lang_detector.detect_with_langdetect(sample_text)
         _, prob = detection[0]
         probs.append(prob)
     assert len(set(probs)) == 1
@@ -298,6 +295,12 @@ def test_detect_single_lang_with_transformers(get_lang_det_w_init):
         else:
             assert det_lang == lang
             assert prob > single_detect_threshold
+
+
+def test_detect_single_lang_with_transformers_no_init(get_lang_detector):
+    # check that the transformers model is initialized if not explicitly done
+    get_lang_detector.detect_with_transformers("This is a test.")
+    assert get_lang_detector.lang_detector_trans
 
 
 def test_detect_singe_lang_with_langid(get_lang_detector):
