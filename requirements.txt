@@ -4,3 +4,6 @@ es_core_news_md @ https://github.com/explosion/spacy-models/releases/download/es
 transformers
 pandas
 jupyter
+langid
+langdetect
+intervaltree
