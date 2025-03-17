@@ -2,7 +2,7 @@ import spacy as sp
 from transformers import pipeline
 from pathlib import Path
 from mailcom.inout import InoutHandler
-from mailcom.utils import check_dir, make_dir, LangDetector
+from mailcom.utils import check_dir, make_dir
 
 # please modify this section depending on your setup
 # input language - either "es" or "fr"
@@ -252,10 +252,6 @@ if __name__ == "__main__":
     for idx, email in enumerate(io.get_email_list()):
         if not email["content"]:
             continue
-        # detect and set the language of the text
-        lang_detector = LangDetector()
-        language = lang_detector.get_detections(text=text)
-        # here we would now set the spacy language and download model if required
         # Test functionality of Pseudonymize class
         _ = pseudonymizer.pseudonymize(email)
         print("New text:", email["pseudo_content"])

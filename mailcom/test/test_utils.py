@@ -23,7 +23,7 @@ def test_check_dir_fail():
 
 
 # test cases for email language detection
-langid_langs = [
+LANGID_LANGS = [
     "af",
     "am",
     "an",
@@ -137,10 +137,10 @@ lang_samples = {
     "مرحبًا، كيف حالك؟ آمل أن تكون بخير. أراك قريبًا!": "ar",
     "नमस्ते, कैसे हो? आशा है कि आप ठीक होंगे। जल्द ही मिलेंगे!": "hi",
 }
-punctuations_as_str = "".join(punctuation)
-single_detect_threshold = 0.7
-multi_detect_threshold = 0.4
-lang_num = 3  # tested up to 3 languages
+PUNCTUATIONS_AS_STR = "".join(punctuation)
+SINGLE_DETECT_THRESHOLD = 0.7
+MULTI_DETECT_THRESHOLD = 0.4
+lang_num = 2  # tested up to 3 languages
 
 
 @pytest.fixture()
@@ -189,9 +189,9 @@ def test_contains_only_punctuations(get_lang_detector):
     assert get_lang_detector.contains_only_punctuations(".,;:!?a") is False
     assert get_lang_detector.contains_only_punctuations(".,;:!? ") is True
     assert get_lang_detector.contains_only_punctuations(".,;:!? a") is False
-    assert get_lang_detector.contains_only_punctuations(punctuations_as_str) is True
+    assert get_lang_detector.contains_only_punctuations(PUNCTUATIONS_AS_STR) is True
     assert (
-        get_lang_detector.contains_only_punctuations(punctuations_as_str + "a sentence")
+        get_lang_detector.contains_only_punctuations(PUNCTUATIONS_AS_STR + "a sentence")
         is False
     )
 
@@ -201,9 +201,9 @@ def test_strip_punctuations(get_lang_detector):
     assert get_lang_detector.strip_punctuations(".,;:!?a") == "a"
     assert get_lang_detector.strip_punctuations(".,;:!? ") == " "
     assert get_lang_detector.strip_punctuations(".,;:!? a") == " a"
-    assert get_lang_detector.strip_punctuations(punctuations_as_str) == ""
+    assert get_lang_detector.strip_punctuations(PUNCTUATIONS_AS_STR) == ""
     assert (
-        get_lang_detector.strip_punctuations(punctuations_as_str + "\n a sentence")
+        get_lang_detector.strip_punctuations(PUNCTUATIONS_AS_STR + "\n a sentence")
         == "\n a sentence"
     )
 
@@ -214,12 +214,12 @@ def test_contains_only_numbers(get_lang_detector):
     assert get_lang_detector.contains_only_numbers("1234567890 ") is True
     assert get_lang_detector.contains_only_numbers("1234567890 a") is False
     assert (
-        get_lang_detector.contains_only_numbers("1234567890" + punctuations_as_str)
+        get_lang_detector.contains_only_numbers("1234567890" + PUNCTUATIONS_AS_STR)
         is True
     )
     assert (
         get_lang_detector.contains_only_numbers(
-            "1234567890" + punctuations_as_str + "a sentence"
+            "1234567890" + PUNCTUATIONS_AS_STR + "a sentence"
         )
         is False
     )
@@ -245,7 +245,7 @@ def test_contains_only_links(get_lang_detector):
 
 
 def test_lang_detector(get_lang_detector):
-    assert get_lang_detector.lang_id.nb_classes == langid_langs
+    assert get_lang_detector.lang_id.nb_classes == LANGID_LANGS
 
 
 def test_constrain_langid(get_lang_detector):
@@ -257,7 +257,7 @@ def test_constrain_langid(get_lang_detector):
 def test_constrain_langid_empty(get_lang_detector):
     lang_set = []
     get_lang_detector.constrain_langid(lang_set)
-    assert get_lang_detector.lang_id.nb_classes == langid_langs
+    assert get_lang_detector.lang_id.nb_classes == LANGID_LANGS
 
 
 def test_constrain_langid_intersec(get_lang_detector):
@@ -291,10 +291,10 @@ def test_detect_single_lang_with_transformers(get_lang_det_w_init):
             # this transformer model does not support detecting Korean
             with pytest.raises(AssertionError):
                 assert det_lang == lang
-                assert prob > single_detect_threshold
+                assert prob > SINGLE_DETECT_THRESHOLD
         else:
             assert det_lang == lang
-            assert prob > single_detect_threshold
+            assert prob > SINGLE_DETECT_THRESHOLD
 
 
 def test_detect_single_lang_with_transformers_no_init(get_lang_detector):
@@ -308,7 +308,7 @@ def test_detect_singe_lang_with_langid(get_lang_detector):
         detection = get_lang_detector.detect_with_langid(sent)
         det_lang, prob = detection[0]
         assert det_lang == lang
-        assert prob > single_detect_threshold
+        assert prob > SINGLE_DETECT_THRESHOLD
 
 
 def test_detect_single_lang_with_langid_error(get_lang_detector):
@@ -340,107 +340,116 @@ def test_detect_single_lang_with_langdetect(get_lang_detector):
         det_lang = "zh" if det_lang == "zh-cn" else det_lang
         det_lang = "zh" if det_lang == "zh-tw" else det_lang
         assert det_lang == lang
-        assert prob > single_detect_threshold
+        assert prob > SINGLE_DETECT_THRESHOLD
 
 
 def test_detect_mixed_lang_with_transformers(get_lang_det_w_init, get_mixed_lang_docs):
     for doc in get_mixed_lang_docs:
         detections = get_lang_det_w_init.detect_with_transformers(doc)
         det_lang, prob = detections[0]
-        if (lang_num == 2) and get_mixed_lang_docs[doc][0] in [
+        exceptions_two_langs = (lang_num == 2) and get_mixed_lang_docs[doc][0] in [
             "en",
             "it",
             "zh",
             "ko",
             "ar",
-        ]:
-            # detected lang is the second one in the doc
-            # exception for ko, which is not supported by the transformer model
-            with pytest.raises(AssertionError):
-                assert det_lang == get_mixed_lang_docs[doc][0]
-                assert prob > multi_detect_threshold
-        elif (lang_num == 3) and get_mixed_lang_docs[doc][0] in [
+        ]
+        exceptions_three_langs = (lang_num == 3) and get_mixed_lang_docs[doc][0] in [
             "en",
             "de",
             "it",
             "ru",
             "zh",
             "ko",
-        ]:
-            # detected lang is not the first one in the doc
-            # exception for ko, which is not supported by the transformer model
+        ]
+        if exceptions_two_langs or exceptions_three_langs:
+            # detected lang is incorrect
             with pytest.raises(AssertionError):
                 assert det_lang == get_mixed_lang_docs[doc][0]
-                assert prob > multi_detect_threshold
+                assert prob > MULTI_DETECT_THRESHOLD
         else:
             assert det_lang == get_mixed_lang_docs[doc][0]
-            assert prob > multi_detect_threshold
+            assert prob > MULTI_DETECT_THRESHOLD
 
 
 def test_detect_mixed_lang_with_langid(get_lang_detector, get_mixed_lang_docs):
     for doc in get_mixed_lang_docs:
+        if lang_num > 3:
+            continue
+
         detection = get_lang_detector.detect_with_langid(doc)
         det_lang, prob = detection[0]
-        if (lang_num == 2) and get_mixed_lang_docs[doc][0] in [
+        exceptions_two_langs = (lang_num == 2) and get_mixed_lang_docs[doc][0] in [
             "en",
             "it",
             "pt",
             "zh",
             "ar",
-        ]:
-            # detected lang is the second one in the doc
-            assert det_lang == get_mixed_lang_docs[doc][1]
-            assert prob > multi_detect_threshold
-        elif (lang_num == 3) and get_mixed_lang_docs[doc][0] in ["en", "zh", "ar"]:
-            # detected lang is the second one in the doc
-            assert det_lang == get_mixed_lang_docs[doc][1]
-            assert prob > multi_detect_threshold
-        elif (lang_num == 3) and get_mixed_lang_docs[doc][0] in [
+        ]
+        exceptions_three_langs = (lang_num == 3) and get_mixed_lang_docs[doc][0] in [
+            "en",
+            "zh",
+            "ar",
+        ]
+        failed_three_langs = (lang_num == 3) and get_mixed_lang_docs[doc][0] in [
             "de",
             "it",
             "pt",
             "ru",
-        ]:
+        ]
+        if exceptions_two_langs or exceptions_three_langs:
+            # detected lang is the second one in the doc
+            assert det_lang == get_mixed_lang_docs[doc][1]
+            assert prob > MULTI_DETECT_THRESHOLD
+        elif failed_three_langs:
             # detected lang is completely wrong
             with pytest.raises(AssertionError):
                 assert det_lang == get_mixed_lang_docs[doc][0]
-                assert prob > multi_detect_threshold
-        elif lang_num > 3:
-            # not tested for more than 3 languages
-            pass
+                assert prob > MULTI_DETECT_THRESHOLD
         else:
             assert det_lang == get_mixed_lang_docs[doc][0]
-            assert prob > multi_detect_threshold
+            assert prob > MULTI_DETECT_THRESHOLD
 
 
 def test_detect_mixed_lang_with_langdetect(get_lang_detector, get_mixed_lang_docs):
     get_lang_detector.determine_langdetect()
-    if lang_num == 2:
-        incomplete_detec = []
-        for doc in get_mixed_lang_docs:
-            detections = get_lang_detector.detect_with_langdetect(doc)
-            det_lang1, prob1 = detections[0]
-            if get_mixed_lang_docs[doc][0] in ["de", "it", "pt", "zh", "ko", "ar"]:
-                # detected lang is wrong
-                with pytest.raises(AssertionError):
-                    assert det_lang1 == get_mixed_lang_docs[doc][0]
-                    assert prob1 > multi_detect_threshold
-            else:
+    incomplete_detec = []
+    for doc in get_mixed_lang_docs:
+        if lang_num > 2:
+            continue
+
+        detections = get_lang_detector.detect_with_langdetect(doc)
+        det_lang1, prob1 = detections[0]
+        wrong_detect_first_lang = get_mixed_lang_docs[doc][0] in [
+            "de",
+            "it",
+            "pt",
+            "zh",
+            "ko",
+            "ar",
+        ]
+        if wrong_detect_first_lang:
+            with pytest.raises(AssertionError):
                 assert det_lang1 == get_mixed_lang_docs[doc][0]
-                assert prob1 > multi_detect_threshold
-            if len(detections) > 1:
-                det_lang2, prob2 = detections[1]
-                if get_mixed_lang_docs[doc][0] in ["en", "pt", "ar"]:
-                    # detected lang is completely wrong
-                    with pytest.raises(AssertionError):
-                        assert det_lang2 == get_mixed_lang_docs[doc][1]
-                        assert prob2 > multi_detect_threshold
-                else:
-                    assert det_lang2 == get_mixed_lang_docs[doc][1]
-            else:
-                incomplete_detec.append(doc)
-                incomplete_detec.append("\n")
-        print(" ".join(incomplete_detec))
+                assert prob1 > MULTI_DETECT_THRESHOLD
+        else:
+            assert det_lang1 == get_mixed_lang_docs[doc][0]
+            assert prob1 > MULTI_DETECT_THRESHOLD
+
+        wrong_detect_second_lang = len(detections) > 1 and (
+            get_mixed_lang_docs[doc][0] in ["en", "pt", "ar"]
+        )
+        if wrong_detect_second_lang:
+            with pytest.raises(AssertionError):
+                assert detections[1][0] == get_mixed_lang_docs[doc][1]
+                assert detections[1][1] > MULTI_DETECT_THRESHOLD
+        elif len(detections) <= 1:
+            incomplete_detec.append(doc)
+            incomplete_detec.append("\n")
+        else:
+            assert detections[1][0] == get_mixed_lang_docs[doc][1]
+            assert detections[1][1] > MULTI_DETECT_THRESHOLD
+    print(" ".join(incomplete_detec))
 
 
 def test_get_detections(get_lang_det_w_init):
@@ -499,22 +508,39 @@ def test_get_detections_fail(get_lang_detector):
         get_lang_detector.get_detections(sentence, "not_a_lib")
 
 
-def test_detect_lang_sentences(get_lang_det_w_init, get_mixed_lang_docs):
-    for lang_lib in ["langid", "langdetect", "trans"]:
-        for doc in get_mixed_lang_docs:
-            sentences = doc.split("\n")
-            lang_tree = get_lang_det_w_init.detect_lang_sentences(sentences, lang_lib)
-            assert lang_tree.begin() == 0
-            assert lang_tree.end() == len(doc.split("\n"))
-            for i, interval in enumerate(sorted(lang_tree.items())):
-                detected_lang = (
-                    interval.data.split("-")[0]
-                    if lang_lib == "langdetect"
-                    else interval.data
-                )
-                if get_mixed_lang_docs[doc][i] == "ko" and lang_lib == "trans":
-                    # this transformer model does not support detecting Korean
-                    with pytest.raises(AssertionError):
-                        assert detected_lang == get_mixed_lang_docs[doc][i]
-                else:
+def test_detect_lang_sentences_langid(get_lang_det_w_init, get_mixed_lang_docs):
+    for doc in get_mixed_lang_docs:
+        sentences = doc.split("\n")
+        lang_tree = get_lang_det_w_init.detect_lang_sentences(sentences, "langid")
+        assert lang_tree.begin() == 0
+        assert lang_tree.end() == len(doc.split("\n"))
+        for i, interval in enumerate(sorted(lang_tree.items())):
+            detected_lang = interval.data
+            assert detected_lang == get_mixed_lang_docs[doc][i]
+
+
+def test_detect_lang_sentences_langdetect(get_lang_det_w_init, get_mixed_lang_docs):
+    for doc in get_mixed_lang_docs:
+        sentences = doc.split("\n")
+        lang_tree = get_lang_det_w_init.detect_lang_sentences(sentences, "langdetect")
+        assert lang_tree.begin() == 0
+        assert lang_tree.end() == len(doc.split("\n"))
+        for i, interval in enumerate(sorted(lang_tree.items())):
+            detected_lang = interval.data.split("-")[0]
+            assert detected_lang == get_mixed_lang_docs[doc][i]
+
+
+def test_detect_lang_sentences_trans(get_lang_det_w_init, get_mixed_lang_docs):
+    for doc in get_mixed_lang_docs:
+        sentences = doc.split("\n")
+        lang_tree = get_lang_det_w_init.detect_lang_sentences(sentences, "trans")
+        assert lang_tree.begin() == 0
+        assert lang_tree.end() == len(doc.split("\n"))
+        for i, interval in enumerate(sorted(lang_tree.items())):
+            detected_lang = interval.data
+            if get_mixed_lang_docs[doc][i] == "ko":
+                # this transformer model does not support detecting Korean
+                with pytest.raises(AssertionError):
                     assert detected_lang == get_mixed_lang_docs[doc][i]
+            else:
+                assert detected_lang == get_mixed_lang_docs[doc][i]
