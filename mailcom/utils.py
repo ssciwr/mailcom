@@ -269,14 +269,17 @@ if __name__ == "__main__":
     # process the text
     io = InoutHandler(path_input)
     io.list_of_files()
+    io.process_emails()
 
     results = []
 
-    for file in io.email_list:
-        file_results = {"file": str(file.name)}
-        print("Parsing input file {}".format(file))
-        text = io.get_text(file)
-        text = io.get_html_text(text)
+    for idx, email_path in enumerate(zip(io.get_email_list(), io.email_path_list)):
+        email, path = email_path
+        if not email["content"]:
+            continue
+        file_results = {"file": str(path.name)}
+        print("Parsing input file {}".format(path.name))
+        text = email["content"]
 
         # Test functionality of LangDetector class in utils.py
         lang_detector = LangDetector()
