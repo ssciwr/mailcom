@@ -552,7 +552,7 @@ def get_time_detector():
     return utils.TimeDetector()
 
 
-sample_dates = {
+sample_parsed_dates = {
     "absolute": {
         "2025-03-10": datetime.datetime(2025, 3, 10, 0, 0),
         "2025-03-10 12:15:20": datetime.datetime(2025, 3, 10, 12, 15, 20),
@@ -580,54 +580,184 @@ sample_dates = {
 }
 
 
-date_samples_fr = {
-    "absolute": [
-        "02/17/2009",  # NOUN
-        "17/02/2009",  # NUM
-        "2009/02/17",  # PROPN
-        "12 mars 2025",  # NUM -> NOUN -> NUM, nmod
-        "2/17/2009",  # PROPN
-        "17/2/2009",  # VERB
-        "2009/2/17",  # VERB
-        "09 février 2009",  # NOUN -> NOUN -> NUM, nmod
-        "2025-03-12",  # NOUN -> NOUN -> NUM
-        "ven. 14 mars 2025, 10:30",  # NUM -> NOUN -> NUM, nmod, 10:30 PROPN
-        "vendredi 14 mars 2025 à 10:30",  # NUM -> NOUN -> NUM, nmod, 10:30 PROPN
-        "14/03/2025 10:30",  # NOUN, 10:30 NOUN
-        "14/03/2025 à 10:30",  # NOUN, 10:30 PROPN
-        "2025-03-14 10:30",  # NOUN -> NOUN -> NUM, 10:30 PROPN
-        "le 14 mars 2025",  # NUM -> NOUN -> NUM, nmod
-        "ce vendredi 14 mars 2025",  # NUM -> NOUN -> NUM, nmod
-        "2 avril 2015",  # NUM -> NOUN -> NUM, nmod
-        "6/12/25",  # NOUN
-        "17/04/2024 um 17:23 Uhr",
-        "Mittwoch, 17. April 2024 um 17:23 Uhr",
-        "mié., 17 abr. 2024 17:20:18 +0200",  # es but it appears in fr emails
-    ]
-}
 sent_fr = "Alice sera présente le {} et apportera 100$."
-another_sent_fr = "Alice est arrivée hier à 10:00 AM."
+sample_dates_fr = {
+    "absolute": {
+        "02/17/2009": {  # NOUN
+            "multi": [],
+            "single": ["02/17/2009"],
+            "total": ["02/17/2009"],
+            "detect": ["02/17/2009"],
+            "merge": [],
+        },
+        "17/02/2009": {  # NUM
+            "multi": [],
+            "single": ["17/02/2009"],
+            "total": ["17/02/2009"],
+            "detect": ["17/02/2009"],
+            "merge": [],
+        },
+        "2009/02/17": {  # PROPN
+            "multi": [],
+            "single": ["2009/02/17"],
+            "total": ["2009/02/17"],
+            "detect": ["2009/02/17"],
+            "merge": [],
+        },
+        "12 mars 2025": {  # NUM -> NOUN -> NUM, nmod
+            "multi": ["12 mars 2025"],
+            "single": [],
+            "total": ["12 mars 2025"],
+            "detect": ["12 mars 2025"],
+            "merge": [],
+        },
+        "2/17/2009": {  # PROPN
+            "multi": [],
+            "single": ["2/17/2009"],
+            "total": ["2/17/2009"],
+            "detect": ["2/17/2009"],
+            "merge": [],
+        },
+        "17/2/2009": {  # VERB
+            "multi": [],
+            "single": ["17/2/2009"],
+            "total": ["17/2/2009"],
+            "detect": ["17/2/2009"],
+            "merge": [],
+        },
+        "2009/2/17": {  # VERB
+            "multi": [],
+            "single": ["2009/2/17"],
+            "total": ["2009/2/17"],
+            "detect": ["2009/2/17"],
+            "merge": [],
+        },
+        "09 février 2009": {  # NOUN -> NOUN -> NUM, nmod
+            "multi": ["09 février 2009"],
+            "single": [],
+            "total": ["09 février 2009"],
+            "detect": ["09 février 2009"],
+            "merge": [],
+        },
+        "2025-03-12": {  # NOUN -> NOUN -> NUM
+            "multi": ["2025-03-12"],
+            "single": [],
+            "total": ["2025-03-12"],
+            "detect": ["2025-03-12"],
+            "merge": [],
+        },
+        "ven. 14 mars 2025, 10:30": {  # NUM -> NOUN -> NUM, nmod, 10:30 PROPN
+            "multi": ["14 mars 2025"],
+            "single": ["ven", "10:30"],
+            "total": ["ven", "14 mars 2025", "10:30"],
+            "detect": ["ven. 14 mars 2025, 10:30"],
+            "merge": [(4, 6), (8, 10)],
+        },
+        "vendredi 14 mars 2025 à 10:30": {  # NUM -> NOUN -> NUM, nmod, 10:30 PROPN
+            "multi": ["14 mars 2025"],
+            "single": ["vendredi", "10:30"],
+            "total": ["vendredi", "14 mars 2025", "10:30"],
+            "detect": ["vendredi 14 mars 2025 à 10:30"],
+            "merge": [(4, 5), (7, 9)],
+        },
+        "14/03/2025 10:30": {  # NOUN, 10:30 NOUN
+            "multi": [],
+            "single": ["14/03/2025", "10:30"],
+            "total": ["14/03/2025", "10:30"],
+            "detect": ["14/03/2025 10:30"],
+            "merge": [(4, 5)],
+        },
+        "14/03/2025 à 10:30": {  # NOUN, 10:30 PROPN
+            "multi": [],
+            "single": ["14/03/2025", "10:30"],
+            "total": ["14/03/2025", "10:30"],
+            "detect": ["14/03/2025 à 10:30"],
+            "merge": [(4, 6)],
+        },
+        "2025-03-14 10:30": {  # NOUN -> NOUN -> NUM, 10:30 PROPN
+            "multi": ["2025-03-14"],
+            "single": ["10:30"],
+            "total": ["2025-03-14", "10:30"],
+            "detect": ["2025-03-14 10:30"],
+            "merge": [(8, 9)],
+        },
+        "le 14 mars 2025": {  # NUM -> NOUN -> NUM, nmod
+            "multi": ["14 mars 2025"],
+            "single": [],
+            "total": ["14 mars 2025"],
+            "detect": ["le 14 mars 2025"],
+            "merge": [],
+        },
+        "ce vendredi 14 mars 2025": {  # NUM -> NOUN -> NUM, nmod
+            "multi": ["14 mars 2025"],
+            "single": ["vendredi"],
+            "total": ["vendredi", "14 mars 2025"],
+            "detect": ["vendredi 14 mars 2025"],
+            "merge": [],
+        },
+        "2 avril 2015": {  # NUM -> NOUN -> NUM, nmod
+            "multi": ["2 avril 2015"],
+            "single": [],
+            "total": ["2 avril 2015"],
+            "detect": ["2 avril 2015"],
+            "merge": [],
+        },
+        "6/12/25": {  # NOUN
+            "multi": [],
+            "single": ["6/12/25"],
+            "total": ["6/12/25"],
+            "detect": ["6/12/25"],
+            "merge": [],
+        },
+        "17/04/2024 um 17:23 Uhr": {
+            "multi": [],
+            "single": ["17/04/2024", "17:23"],
+            "total": ["17/04/2024", "17:23"],
+            "detect": ["17/04/2024 um 17:23"],
+            "merge": [(4, 6)],
+        },
+        "Mittwoch, 17. April 2024 um 17:23 Uhr": {
+            "multi": ["17. April 2024"],
+            "single": ["Mittwoch", "17:23"],
+            "total": ["Mittwoch", "17. April 2024", "17:23"],
+            "detect": ["Mittwoch, 17. April 2024 um 17:23"],
+            "merge": [(4, 6), (9, 11)],
+        },
+        "mié., 17 abr. 2024 17:20:18 +0200": {  # es but it appears in fr emails
+            "multi": ["17 abr. 2024"],
+            "single": ["mié", "17:20:18", "+0200"],
+            "total": ["mié", "17 abr. 2024", "17:20:18", "+0200"],
+            "detect": ["mié., 17 abr. 2024 17:20:18 +0200"],
+            "merge": [(4, 7), (10, 11), (11, 12)],
+        },
+    },
+    "relative": {},
+}
+date_type = "absolute"
+sample_date = "Mittwoch, 17. April 2024 um 17:23 Uhr"
+date_info = sample_dates_fr[date_type][sample_date]
 
 
-def get_sample_sentences(idx):
-    return sent_fr.format(date_samples_fr["absolute"][idx])
+@pytest.fixture()
+def get_sample_sentences():
+    return sent_fr.format(sample_date)
 
 
 def test_parse_time(get_time_detector):
-    for date_str, date_obj in sample_dates["absolute"].items():
+    for date_str, date_obj in sample_parsed_dates["absolute"].items():
         assert get_time_detector.parse_time(date_str) == date_obj
-    for date_str, date_obj in sample_dates["relative"].items():
+    for date_str, date_obj in sample_parsed_dates["relative"].items():
         assert get_time_detector.parse_time(date_str).date() == date_obj
-    for date_str in sample_dates["invalid"]:
+    for date_str in sample_parsed_dates["invalid"]:
         assert get_time_detector.parse_time(date_str) is None
-    for date_str, date_obj in sample_dates["confusing"].items():
+    for date_str, date_obj in sample_parsed_dates["confusing"].items():
         assert get_time_detector.parse_time(date_str) == date_obj
 
 
 def test_search_dates(get_time_detector):
     extra_info_en = "The date in the email is: "
     extra_info_fr = "La date dans l'e-mail est: "
-    for i, data in enumerate(sample_dates["absolute"].items()):
+    for i, data in enumerate(sample_parsed_dates["absolute"].items()):
         date_str, date_obj = data
         if i < 4:
             results = get_time_detector.search_dates(
@@ -642,7 +772,7 @@ def test_search_dates(get_time_detector):
             )
             assert results[0][0] == date_str
             assert results[0][1] == date_obj
-    for i, data in enumerate(sample_dates["relative"].items()):
+    for i, data in enumerate(sample_parsed_dates["relative"].items()):
         date_str, date_obj = data
         if i < 5:
             results = get_time_detector.search_dates(
@@ -657,12 +787,12 @@ def test_search_dates(get_time_detector):
             if date_str not in ["il y a deux semaines", "il y a 2 semaines"]:
                 assert results[0][0] == date_str
                 assert results[0][1].date() == date_obj
-    for date_str in sample_dates["invalid"]:
+    for date_str in sample_parsed_dates["invalid"]:
         assert (
             get_time_detector.search_dates(extra_info_en + date_str, langs=["en"])
             == None
         )
-    for date_str, date_obj in sample_dates["confusing"].items():
+    for date_str, date_obj in sample_parsed_dates["confusing"].items():
         if date_str == "10.03.2025":
             with pytest.raises(AssertionError):
                 assert get_time_detector.search_dates(
@@ -676,85 +806,75 @@ def test_search_dates(get_time_detector):
 
 def test_find_dates(get_time_detector):
     extra_info = "The date in the email is: "
-    for date_str, date_obj in sample_dates["absolute"].items():
+    for date_str, date_obj in sample_parsed_dates["absolute"].items():
         assert get_time_detector.find_dates(extra_info + date_str) == [date_obj]
-    for date_str, date_obj in sample_dates["relative"].items():
+    for date_str, date_obj in sample_parsed_dates["relative"].items():
         if date_str not in ["2 weeks ago", "il y a 2 semaines"]:
             assert get_time_detector.find_dates(extra_info + date_str) == []
-    for date_str in sample_dates["invalid"]:
+    for date_str in sample_parsed_dates["invalid"]:
         assert get_time_detector.find_dates(extra_info + date_str) == []
-    for date_str, date_obj in sample_dates["confusing"].items():
+    for date_str, date_obj in sample_parsed_dates["confusing"].items():
         if date_str == "2025-15-10":
             assert get_time_detector.find_dates(extra_info + date_str) == []
         else:
             assert get_time_detector.find_dates(extra_info + date_str) == [date_obj]
 
 
-def test_extract_date_time_multi_word_fr(get_time_detector):
-    sample_sentence = get_sample_sentences(19)
+def test_extract_date_time_multi_word_fr(get_time_detector, get_sample_sentences):
     get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy(sample_sentence)
+    doc = get_time_detector.parse.nlp_spacy(get_sample_sentences)
     multi_word_date_time, marked_locations = (
         get_time_detector.extract_date_time_multi_words(doc)
     )
-    assert len(multi_word_date_time) == 1
-    assert len(marked_locations) == 1
-    assert multi_word_date_time[0][0].text == "17. April 2024"
+    assert len(multi_word_date_time) == len(date_info["multi"])
+    assert len(marked_locations) == len(date_info["multi"])
+    for multi_time, sample_time in zip(multi_word_date_time, date_info["multi"]):
+        assert multi_time[0].text == sample_time
 
 
-def test_extract_date_time_single_word_fr(get_time_detector):
-    sample_sentence = get_sample_sentences(19)
+def test_extract_date_time_single_word_fr(get_time_detector, get_sample_sentences):
     get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy(sample_sentence)
+    doc = get_time_detector.parse.nlp_spacy(get_sample_sentences)
     _, marked_locations = get_time_detector.extract_date_time_multi_words(doc)
     word_date_time = get_time_detector.extract_date_time_single_word(
         doc, marked_locations
     )
-    assert len(word_date_time) == 2
-    assert word_date_time[0][0].text == "Mittwoch"
-    assert word_date_time[1][0].text == "17:23"
-    assert word_date_time[1][1].date() == datetime.date.today()
-    assert word_date_time[1][1].time() == datetime.time(17, 23)
+    assert len(word_date_time) == len(date_info["single"])
+    for single_time, sample_time in zip(word_date_time, date_info["single"]):
+        assert single_time[0].text == sample_time
 
 
-def test_get_start_end(get_time_detector):
-    sample_sentence = get_sample_sentences(19)
+def test_get_start_end(get_time_detector, get_sample_sentences):
     get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy(sample_sentence)
+    doc = get_time_detector.parse.nlp_spacy(get_sample_sentences)
     assert get_time_detector._get_start_end(doc[0]) == (0, 0)
     assert get_time_detector._get_start_end(doc[1]) == (1, 1)
     assert get_time_detector._get_start_end(doc[2:7]) == (2, 6)
 
 
-def test_extract_date_time_fr(get_time_detector):
-    sample_sentence = get_sample_sentences(19)
+def test_extract_date_time_fr(get_time_detector, get_sample_sentences):
     get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy(sample_sentence)
+    doc = get_time_detector.parse.nlp_spacy(get_sample_sentences)
     extracted_date_time = get_time_detector.extract_date_time(doc)
-    assert len(extracted_date_time) == 3
-    assert extracted_date_time[0][0].text == "Mittwoch"
-    assert extracted_date_time[1][0].text == "17. April 2024"
-    assert extracted_date_time[1][1] == datetime.datetime(2024, 4, 17, 0, 0)
-    assert extracted_date_time[2][0].text == "17:23"
-    assert extracted_date_time[2][1].date() == datetime.date.today()
-    assert extracted_date_time[2][1].time() == datetime.time(17, 23)
+    assert len(extracted_date_time) == len(date_info["total"])
+    for e_time, sample_time in zip(extracted_date_time, date_info["total"]):
+        assert e_time[0].text == sample_time
 
 
-def test_get_next_sibling(get_time_detector):
-    sample_sentence = get_sample_sentences(12)
+def test_get_next_sibling(get_time_detector, get_sample_sentences):
     get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy(sample_sentence)
-    token = doc[6]
-    assert get_time_detector._get_next_sibling(token) == doc[8]
+    doc = get_time_detector.parse.nlp_spacy(get_sample_sentences)
+    token = doc[0]
+    assert get_time_detector._get_next_sibling(token) == doc[1]
     assert get_time_detector._get_next_sibling(doc[len(doc) - 1]) == None
 
 
-def test_is_time_mergeable(get_time_detector):
-    sample_sentence = get_sample_sentences(12)
+def test_is_time_mergeable(get_time_detector, get_sample_sentences):
     get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy(sample_sentence)
-    assert get_time_detector.is_time_mergeable(doc[4], doc[6], doc) == True
-    assert get_time_detector.is_time_mergeable(doc[6], doc[8], doc) == False
+    doc = get_time_detector.parse.nlp_spacy(get_sample_sentences)
+    for s_id, e_id in date_info["merge"]:
+        assert get_time_detector.is_time_mergeable(doc[s_id], doc[e_id], doc) == True
+    assert get_time_detector.is_time_mergeable(doc[0], doc[7], doc) == False
 
 
 def test_add_merged_datetime_empty(get_time_detector):
@@ -793,20 +913,18 @@ def test_add_merged_datetime_overlapping(get_time_detector):
     assert merged_datetime[0][3] == len(new_text)
 
 
-def test_merge_date_time_fr(get_time_detector):
-    sample_sentence = get_sample_sentences(12)
+def test_merge_date_time_fr(get_time_detector, get_sample_sentences):
     get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy(sample_sentence)
+    doc = get_time_detector.parse.nlp_spacy(get_sample_sentences)
     extracted_date_time = get_time_detector.extract_date_time(doc)
     merged_date_time = get_time_detector.merge_date_time(extracted_date_time, doc)
-    assert len(merged_date_time) == 1
-    assert merged_date_time[0][0] == "14/03/2025 à 10:30"
-    assert merged_date_time[0][1] == datetime.datetime(2025, 3, 14, 10, 30)
+    assert len(merged_date_time) == len(date_info["detect"])
+    for m_time, sample_time in zip(merged_date_time, date_info["detect"]):
+        assert m_time[0] == sample_time
 
 
-def test_get_date_time_fr(get_time_detector):
-    sample_sentence = get_sample_sentences(19)
-    results = get_time_detector.get_date_time(sample_sentence, lang="fr")
-    assert len(results) == 1
-    assert results[0][0] == "Mittwoch, 17. April 2024 um 17:23"
-    assert results[0][1] == datetime.datetime(2024, 4, 17, 17, 23)
+def test_get_date_time_fr(get_time_detector, get_sample_sentences):
+    results = get_time_detector.get_date_time(get_sample_sentences, lang="fr")
+    assert len(results) == len(date_info["detect"])
+    for result, sample_time in zip(results, date_info["detect"]):
+        assert result[0] == sample_time

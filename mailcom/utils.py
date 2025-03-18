@@ -428,8 +428,8 @@ class TimeDetector:
             return True
 
         is_seperated_by_at_punc = (  # e.g. 17. April 2024 at 17:23
-            doc[e_first_id + 1].text in ["at", "um", "à", "a las", ","]
-            and self._get_start_end(doc[e_first_id + 2])[1] == s_second_id
+            doc[e_first_id + 1].text in ["at", "um", "à", "a las", ",", ".", ".,"]
+            and self._get_start_end(doc[e_first_id + 2])[0] == s_second_id
         )
 
         if is_seperated_by_at_punc:
