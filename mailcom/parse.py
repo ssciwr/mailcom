@@ -1,8 +1,8 @@
-import os
 import spacy as sp
 from transformers import pipeline
 from pathlib import Path
 from mailcom.inout import InoutHandler
+from mailcom.utils import check_dir, make_dir
 
 # please modify this section depending on your setup
 # input language - either "es" or "fr"
@@ -10,7 +10,7 @@ from mailcom.inout import InoutHandler
 lang = "es"
 # lang = "fr"
 # path where the input files can be found
-path_input = Path("./mailcom/test/data/")
+path_input = Path("./data/in/")
 # path where the output files should be written to
 # this is generated if not present yet
 path_output = Path("./data/out/")
@@ -104,6 +104,8 @@ class Pseudonymize:
         return text_as_sents
 
     def get_ner(self, sentence):
+        if not hasattr(self, "ner_recognizer"):
+            self.init_transformers()
         ner = self.ner_recognizer(sentence)
         return ner
 
@@ -114,7 +116,7 @@ class Pseudonymize:
         used_pseudonyms = [
             ne["pseudonym"] if "pseudonym" in ne else "" for ne in self.ne_list
         ]
-        # amount of pseudonyms for PER used
+        # amount of pseudonyms for PER used (PER for "PERSON")
         n_pseudonyms_used = [ne["entity_group"] for ne in self.ne_list].count("PER")
         # check all variations of the name
         name_variations = [
@@ -232,26 +234,10 @@ class Pseudonymize:
         return email["pseudo_content"]
 
 
-def check_dir(path: str) -> bool:
-    if not os.path.exists(path):
-        raise OSError("Path {} does not exist".format(path))
-    else:
-        return True
-
-
-def make_dir(path: str):
-    # make directory at path
-    os.makedirs(path + "/")
-
-
 if __name__ == "__main__":
-    # nlp_spacy = init_spacy(lang)
-    # nlp_transformers = init_transformers()
-
     # check that input dir is there
     if not check_dir(path_input):
         raise ValueError("Could not find input directory with eml files! Aborting ...")
-
     # check that the output dir is there, if not generate
     if not check_dir(path_output):
         print("Generating output directory/ies.")
@@ -263,7 +249,7 @@ if __name__ == "__main__":
     # html_files = list_of_files(path_input, "html")
     pseudonymizer = Pseudonymize()
     pseudonymizer.init_spacy("fr")
-    pseudonymizer.init_transformers()
+    # the above init now needs to move to after detect language
     for idx, email in enumerate(io.get_email_list()):
         if not email["content"]:
             continue
