@@ -273,8 +273,7 @@ if __name__ == "__main__":
 
     results = []
 
-    for idx, email_path in enumerate(zip(io.get_email_list(), io.email_path_list)):
-        email, path = email_path
+    for email, path in zip(io.get_email_list(), io.email_path_list):
         if not email["content"]:
             continue
         file_results = {"file": str(path.name)}

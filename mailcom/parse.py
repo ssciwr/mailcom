@@ -104,6 +104,8 @@ class Pseudonymize:
         return text_as_sents
 
     def get_ner(self, sentence):
+        if not hasattr(self, "ner_recognizer"):
+            self.init_transformers()
         ner = self.ner_recognizer(sentence)
         return ner
 
@@ -248,7 +250,6 @@ if __name__ == "__main__":
     pseudonymizer = Pseudonymize()
     pseudonymizer.init_spacy("fr")
     # the above init now needs to move to after detect language
-    pseudonymizer.init_transformers()
     for idx, email in enumerate(io.get_email_list()):
         if not email["content"]:
             continue
