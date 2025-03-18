@@ -734,7 +734,7 @@ sample_dates_fr = {
     "relative": {},
 }
 date_type = "absolute"
-sample_date = "Mittwoch, 17. April 2024 um 17:23 Uhr"
+sample_date = list(sample_dates_fr[date_type].keys())[0]
 date_info = sample_dates_fr[date_type][sample_date]
 
 
@@ -921,6 +921,25 @@ def test_merge_date_time_fr(get_time_detector, get_sample_sentences):
     assert len(merged_date_time) == len(date_info["detect"])
     for m_time, sample_time in zip(merged_date_time, date_info["detect"]):
         assert m_time[0] == sample_time
+
+
+def test_merg_date_time_empty(get_time_detector):
+    get_time_detector.parse.init_spacy("fr")
+    doc = get_time_detector.parse.nlp_spacy("Alice")
+    extracted_date_time = get_time_detector.extract_date_time(doc)
+    merged_date_time = get_time_detector.merge_date_time(extracted_date_time, doc)
+    assert len(merged_date_time) == 0
+
+
+def test_merge_date_time_one_item(get_time_detector):
+    get_time_detector.parse.init_spacy("fr")
+    doc = get_time_detector.parse.nlp_spacy("14 mars 2025")
+    extracted_date_time = get_time_detector.extract_date_time(doc)
+    merged_date_time = get_time_detector.merge_date_time(extracted_date_time, doc)
+    assert len(merged_date_time) == 1
+    assert merged_date_time[0][0] == "14 mars 2025"
+    assert merged_date_time[0][2] == 0
+    assert merged_date_time[0][3] == 12
 
 
 def test_get_date_time_fr(get_time_detector, get_sample_sentences):

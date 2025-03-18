@@ -479,6 +479,26 @@ class TimeDetector:
                 the date string, the datetime object, the start index and the end index
         """
         merged_datetime = []
+
+        if not extracted_datetime:
+            return merged_datetime
+
+        if len(extracted_datetime) == 1:
+            e_time, e_parsed_time = extracted_datetime[0]
+            e_text = e_time.text
+            s_word = self._get_start_end(e_time)[0]
+            e_word = self._get_start_end(e_time)[1]
+            s_idx = doc[s_word].idx
+            e_idx = doc[e_word].idx + len(doc[e_word])
+            return [
+                (
+                    e_text,
+                    e_parsed_time,
+                    s_idx,
+                    e_idx,
+                )
+            ]
+
         count = 0
         current_pointer, current_parsed_time = extracted_datetime[count]
 
