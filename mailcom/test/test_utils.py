@@ -549,7 +549,7 @@ def test_detect_lang_sentences_trans(get_lang_det_w_init, get_mixed_lang_docs):
 
 @pytest.fixture()
 def get_time_detector():
-    return utils.TimeDetector()
+    return utils.TimeDetector(lang="fr")
 
 
 sample_parsed_dates = {
@@ -821,8 +821,8 @@ def test_find_dates(get_time_detector):
 
 
 def test_extract_date_time_multi_word_fr(get_time_detector, get_sample_sentences):
-    get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy(get_sample_sentences)
+    get_time_detector.init_spacy("fr")
+    doc = get_time_detector.nlp_spacy(get_sample_sentences)
     multi_word_date_time, marked_locations = (
         get_time_detector.extract_date_time_multi_words(doc)
     )
@@ -833,8 +833,8 @@ def test_extract_date_time_multi_word_fr(get_time_detector, get_sample_sentences
 
 
 def test_extract_date_time_single_word_fr(get_time_detector, get_sample_sentences):
-    get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy(get_sample_sentences)
+    get_time_detector.init_spacy("fr")
+    doc = get_time_detector.nlp_spacy(get_sample_sentences)
     _, marked_locations = get_time_detector.extract_date_time_multi_words(doc)
     word_date_time = get_time_detector.extract_date_time_single_word(
         doc, marked_locations
@@ -845,16 +845,16 @@ def test_extract_date_time_single_word_fr(get_time_detector, get_sample_sentence
 
 
 def test_get_start_end(get_time_detector, get_sample_sentences):
-    get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy(get_sample_sentences)
+    get_time_detector.init_spacy("fr")
+    doc = get_time_detector.nlp_spacy(get_sample_sentences)
     assert get_time_detector._get_start_end(doc[0]) == (0, 0)
     assert get_time_detector._get_start_end(doc[1]) == (1, 1)
     assert get_time_detector._get_start_end(doc[2:7]) == (2, 6)
 
 
 def test_extract_date_time_fr(get_time_detector, get_sample_sentences):
-    get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy(get_sample_sentences)
+    get_time_detector.init_spacy("fr")
+    doc = get_time_detector.nlp_spacy(get_sample_sentences)
     extracted_date_time = get_time_detector.extract_date_time(doc)
     assert len(extracted_date_time) == len(date_info["total"])
     for e_time, sample_time in zip(extracted_date_time, date_info["total"]):
@@ -862,16 +862,16 @@ def test_extract_date_time_fr(get_time_detector, get_sample_sentences):
 
 
 def test_get_next_sibling(get_time_detector, get_sample_sentences):
-    get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy(get_sample_sentences)
+    get_time_detector.init_spacy("fr")
+    doc = get_time_detector.nlp_spacy(get_sample_sentences)
     token = doc[0]
     assert get_time_detector._get_next_sibling(token) == doc[1]
     assert get_time_detector._get_next_sibling(doc[len(doc) - 1]) == None
 
 
 def test_is_time_mergeable(get_time_detector, get_sample_sentences):
-    get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy(get_sample_sentences)
+    get_time_detector.init_spacy("fr")
+    doc = get_time_detector.nlp_spacy(get_sample_sentences)
     for s_id, e_id in date_info["merge"]:
         assert get_time_detector.is_time_mergeable(doc[s_id], doc[e_id], doc) == True
     assert get_time_detector.is_time_mergeable(doc[0], doc[7], doc) == False
@@ -914,8 +914,8 @@ def test_add_merged_datetime_overlapping(get_time_detector):
 
 
 def test_merge_date_time_fr(get_time_detector, get_sample_sentences):
-    get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy(get_sample_sentences)
+    get_time_detector.init_spacy("fr")
+    doc = get_time_detector.nlp_spacy(get_sample_sentences)
     extracted_date_time = get_time_detector.extract_date_time(doc)
     merged_date_time = get_time_detector.merge_date_time(extracted_date_time, doc)
     assert len(merged_date_time) == len(date_info["detect"])
@@ -924,16 +924,16 @@ def test_merge_date_time_fr(get_time_detector, get_sample_sentences):
 
 
 def test_merg_date_time_empty(get_time_detector):
-    get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy("Alice")
+    get_time_detector.init_spacy("fr")
+    doc = get_time_detector.nlp_spacy("Alice")
     extracted_date_time = get_time_detector.extract_date_time(doc)
     merged_date_time = get_time_detector.merge_date_time(extracted_date_time, doc)
     assert len(merged_date_time) == 0
 
 
 def test_merge_date_time_one_item(get_time_detector):
-    get_time_detector.parse.init_spacy("fr")
-    doc = get_time_detector.parse.nlp_spacy("14 mars 2025")
+    get_time_detector.init_spacy("fr")
+    doc = get_time_detector.nlp_spacy("14 mars 2025")
     extracted_date_time = get_time_detector.extract_date_time(doc)
     merged_date_time = get_time_detector.merge_date_time(extracted_date_time, doc)
     assert len(merged_date_time) == 1
@@ -943,7 +943,9 @@ def test_merge_date_time_one_item(get_time_detector):
 
 
 def test_get_date_time_fr(get_time_detector, get_sample_sentences):
-    results = get_time_detector.get_date_time(get_sample_sentences, lang="fr")
+    results = get_time_detector.get_date_time(
+        get_sample_sentences, lang=get_time_detector.lang
+    )
     assert len(results) == len(date_info["detect"])
     for result, sample_time in zip(results, date_info["detect"]):
         assert result[0] == sample_time

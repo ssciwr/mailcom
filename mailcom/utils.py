@@ -10,7 +10,7 @@ import dateparser
 import datefinder
 from datetime import datetime
 import dateparser.search
-from mailcom.parse import Pseudonymize
+import spacy as sp
 from spacy.matcher import Matcher
 from spacy.tokens import Token
 from pandas import Interval
@@ -259,8 +259,36 @@ class LangDetector:
 
 
 class TimeDetector:
-    def __init__(self):
-        self.parse = Pseudonymize()
+    def __init__(self, lang):
+        self.lang = lang
+
+        self.spacy_default_model_dict = {
+            "es": "es_core_news_md",
+            "fr": "fr_core_news_md",
+        }
+
+    # refactor later with parse.py
+    def init_spacy(self, language: str, model="default"):
+        if model == "default":
+            model = self.spacy_default_model_dict[language]
+        try:
+            # disable not needed components
+            self.nlp_spacy = sp.load(
+                model, exclude=["attribute_ruler", "lemmatizer", "ner"]
+            )
+        except OSError:
+            try:
+                print(
+                    "Could not find model in standard directory. Trying to download model from repo."  # noqa
+                )
+                # try downloading model
+                sp.cli.download(model)
+                self.nlp_spacy = sp.load(
+                    model,
+                    exclude=["attribute_ruler", "lemmatizer", "ner"],
+                )
+            except SystemExit:
+                raise SystemExit("Could not download {} from repo".format(model))
 
     def parse_time(self, text: str) -> datetime:
         """Parse the time from text format to datetime format.
@@ -308,7 +336,7 @@ class TimeDetector:
         """
         multi_word_date_time = []
         marked_locations = []
-        matcher = Matcher(self.parse.nlp_spacy.vocab)
+        matcher = Matcher(self.nlp_spacy.vocab)
         patterns = [
             [{"POS": "NOUN"}, {"POS": "NOUN"}, {"POS": "NUM"}],
             [
@@ -559,8 +587,9 @@ class TimeDetector:
             list[(str, datetime, int, int)]: A list of tuples containing
                 the date string, the datetime object, the start index and the end index
         """
-        self.parse.init_spacy(lang)
-        doc = self.parse.nlp_spacy(text)
+        if not hasattr(self, "nlp_spacy"):
+            self.init_spacy(self.lang)
+        doc = self.nlp_spacy(text)
         extracted_date_time = self.extract_date_time(doc)
         merged_date_time = self.merge_date_time(extracted_date_time, doc)
         return merged_date_time
