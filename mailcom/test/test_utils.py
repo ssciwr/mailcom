@@ -809,11 +809,25 @@ sample_dates_fr = {
             "detect": ["09 février 2009"],
             "merge": [],
         },
-        "2025-03-12": {  # NOUN -> NOUN -> NUM
+        "2025-03-12": {  # NOUN-NOUN-NUM
             "multi": ["2025-03-12"],
             "single": [],
             "total": ["2025-03-12"],
             "detect": ["2025-03-12"],
+            "merge": [],
+        },
+        "2025-03-01": {  # NOUN-NOUN-NOUN
+            "multi": ["2025-03-01"],
+            "single": [],
+            "total": ["2025-03-01"],
+            "detect": ["2025-03-01"],
+            "merge": [],
+        },
+        "2025-11-20": {  # NOUN-NOUN-NUM
+            "multi": ["2025-11-20"],
+            "single": [],
+            "total": ["2025-11-20"],
+            "detect": ["2025-11-20"],
             "merge": [],
         },
         "ven. 14 mars 2025, 10:30": {  # NUM -> NOUN -> NUM, nmod, 10:30 PROPN
@@ -855,7 +869,7 @@ sample_dates_fr = {
             "multi": ["14 mars 2025"],
             "single": [],
             "total": ["14 mars 2025"],
-            "detect": ["le 14 mars 2025"],
+            "detect": ["14 mars 2025"],
             "merge": [],
         },
         "ce vendredi 14 mars 2025": {  # NUM -> NOUN -> NUM, nmod
@@ -900,22 +914,94 @@ sample_dates_fr = {
             "detect": ["mié., 17 abr. 2024 17:20:18 +0200"],
             "merge": [(4, 7), (10, 11), (11, 12)],
         },
+        "Wednesday, April 17th 2024 at 17:23": {
+            "multi": ["April 17th 2024 at"],
+            "single": ["Wednesday", "17:23"],
+            "total": ["Wednesday", "April 17th 2024 at", "17:23"],
+            "detect": ["Wednesday, April 17th 2024 at 17:23"],
+            "merge": [(4, 6), (8, 10)],
+        },
     },
     "relative": {},
 }
 date_type = "absolute"
-sample_date = list(sample_dates_fr[date_type].keys())[1]
-date_info = sample_dates_fr[date_type][sample_date]
 
 
-@pytest.fixture()
-def get_sample_sentences():
-    return sent_fr.format(sample_date)
+@pytest.fixture(params=[date for date in sample_dates_fr[date_type]])
+def get_date_samples(request):
+    return sent_fr.format(request.param), sample_dates_fr[date_type][request.param]
 
 
 @pytest.mark.pattern
-def test_extract_date_time_multi_word_fr(get_time_detector, get_sample_sentences):
-    doc = get_time_detector.nlp_spacy(get_sample_sentences)
+def test_unite_unite_overlapping_words_empty(get_time_detector):
+    words, locations = get_time_detector.unite_overlapping_words([], [], None)
+    assert words == []
+    assert locations == []
+
+
+@pytest.mark.pattern
+def test_unite_unite_overlapping_words_single_item(get_time_detector):
+    time_words = [("19/03/2025", None)]
+    locations = [(0, 1)]
+    updated_words, updated_locations = get_time_detector.unite_overlapping_words(
+        time_words, locations, None
+    )
+    assert updated_words == time_words
+    assert updated_locations == locations
+
+
+@pytest.mark.pattern
+def test_unite_unite_overlapping_words_no_overlap(get_time_detector):
+    sent = "19/03/2025 something in between 10:30"
+    doc = get_time_detector.nlp_spacy(sent)
+    time_words = [(doc[0:1], None), (doc[4:5], None)]
+    locations = [(0, 1), (4, 5)]
+    updated_words, updated_locations = get_time_detector.unite_overlapping_words(
+        time_words, locations, None
+    )
+    assert updated_words == time_words
+    assert updated_locations == locations
+
+
+@pytest.mark.pattern
+def test_unite_unite_overlapping_words_overlap_end(get_time_detector):
+    sent = "19/03/2025 10:30"
+    doc = get_time_detector.nlp_spacy(sent)
+    time_words = [(doc[0:1], None), (doc[1:2], None)]
+    locations = [(0, 1), (1, 2)]
+    updated_words, updated_locations = get_time_detector.unite_overlapping_words(
+        time_words, locations, doc
+    )
+    assert len(updated_words) == 1
+    assert updated_words[0][0].text == "19/03/2025 10:30"
+    assert updated_locations == [(0, 2)]
+
+
+@pytest.mark.pattern
+def test_unite_overlapping_words_overlap_non_end(get_time_detector):
+    sent = "17:13 something 19/03/2025 10:30 something in between 12:30"
+    doc = get_time_detector.nlp_spacy(sent)
+    time_words = [
+        (doc[0:1], None),
+        (doc[2:3], None),
+        (doc[3:4], None),
+        (doc[7:8], None),
+    ]
+    locations = [(0, 1), (2, 3), (3, 4), (7, 8)]
+    updated_words, updated_locations = get_time_detector.unite_overlapping_words(
+        time_words, locations, doc
+    )
+    assert len(updated_words) == 3
+    assert updated_words[0][0].text == "17:13"
+    assert updated_words[1][0].text == "19/03/2025 10:30"
+    assert updated_words[2][0].text == "12:30"
+    assert updated_locations == [(0, 1), (2, 4), (7, 8)]
+
+
+@pytest.mark.pattern
+def test_extract_date_time_multi_word_fr(get_time_detector, get_date_samples):
+    sample_sentence, date_info = get_date_samples
+    doc = get_time_detector.nlp_spacy(sample_sentence)
     multi_word_date_time, marked_locations = (
         get_time_detector.extract_date_time_multi_words(doc)
     )
@@ -926,8 +1012,9 @@ def test_extract_date_time_multi_word_fr(get_time_detector, get_sample_sentences
 
 
 @pytest.mark.pattern
-def test_extract_date_time_single_word_fr(get_time_detector, get_sample_sentences):
-    doc = get_time_detector.nlp_spacy(get_sample_sentences)
+def test_extract_date_time_single_word_fr(get_time_detector, get_date_samples):
+    sample_sentence, date_info = get_date_samples
+    doc = get_time_detector.nlp_spacy(sample_sentence)
     _, marked_locations = get_time_detector.extract_date_time_multi_words(doc)
     word_date_time = get_time_detector.extract_date_time_single_word(
         doc, marked_locations
@@ -938,16 +1025,18 @@ def test_extract_date_time_single_word_fr(get_time_detector, get_sample_sentence
 
 
 @pytest.mark.pattern
-def test_get_start_end(get_time_detector, get_sample_sentences):
-    doc = get_time_detector.nlp_spacy(get_sample_sentences)
+def test_get_start_end(get_time_detector, get_date_samples):
+    sample_sentence, _ = get_date_samples
+    doc = get_time_detector.nlp_spacy(sample_sentence)
     assert get_time_detector._get_start_end(doc[0]) == (0, 0)
     assert get_time_detector._get_start_end(doc[1]) == (1, 1)
     assert get_time_detector._get_start_end(doc[2:7]) == (2, 6)
 
 
 @pytest.mark.pattern
-def test_extract_date_time_fr(get_time_detector, get_sample_sentences):
-    doc = get_time_detector.nlp_spacy(get_sample_sentences)
+def test_extract_date_time_fr(get_time_detector, get_date_samples):
+    sample_sentence, date_info = get_date_samples
+    doc = get_time_detector.nlp_spacy(sample_sentence)
     extracted_date_time = get_time_detector.extract_date_time(doc)
     assert len(extracted_date_time) == len(date_info["total"])
     for e_time, sample_time in zip(extracted_date_time, date_info["total"]):
@@ -955,16 +1044,18 @@ def test_extract_date_time_fr(get_time_detector, get_sample_sentences):
 
 
 @pytest.mark.pattern
-def test_get_next_sibling(get_time_detector, get_sample_sentences):
-    doc = get_time_detector.nlp_spacy(get_sample_sentences)
+def test_get_next_sibling(get_time_detector, get_date_samples):
+    sample_sentence, _ = get_date_samples
+    doc = get_time_detector.nlp_spacy(sample_sentence)
     token = doc[0]
     assert get_time_detector._get_next_sibling(token) == doc[1]
     assert get_time_detector._get_next_sibling(doc[len(doc) - 1]) == None
 
 
 @pytest.mark.pattern
-def test_is_time_mergeable(get_time_detector, get_sample_sentences):
-    doc = get_time_detector.nlp_spacy(get_sample_sentences)
+def test_is_time_mergeable(get_time_detector, get_date_samples):
+    sample_sentence, date_info = get_date_samples
+    doc = get_time_detector.nlp_spacy(sample_sentence)
     for s_id, e_id in date_info["merge"]:
         assert get_time_detector.is_time_mergeable(doc[s_id], doc[e_id], doc) == True
     assert get_time_detector.is_time_mergeable(doc[0], doc[7], doc) == False
@@ -1010,8 +1101,9 @@ def test_add_merged_datetime_overlapping(get_time_detector):
 
 
 @pytest.mark.pattern
-def test_merge_date_time_fr(get_time_detector, get_sample_sentences):
-    doc = get_time_detector.nlp_spacy(get_sample_sentences)
+def test_merge_date_time_fr(get_time_detector, get_date_samples):
+    sample_sentence, date_info = get_date_samples
+    doc = get_time_detector.nlp_spacy(sample_sentence)
     extracted_date_time = get_time_detector.extract_date_time(doc)
     merged_date_time = get_time_detector.merge_date_time(extracted_date_time, doc)
     assert len(merged_date_time) == len(date_info["detect"])
@@ -1039,9 +1131,10 @@ def test_merge_date_time_one_item(get_time_detector):
 
 
 @pytest.mark.pattern
-def test_get_date_time_fr(get_time_detector, get_sample_sentences):
+def test_get_date_time_fr(get_time_detector, get_date_samples):
+    sample_sentence, date_info = get_date_samples
     results = get_time_detector.get_date_time(
-        get_sample_sentences, lang=get_time_detector.lang
+        sample_sentence, lang=get_time_detector.lang
     )
     assert len(results) == len(date_info["detect"])
     for result, sample_time in zip(results, date_info["detect"]):

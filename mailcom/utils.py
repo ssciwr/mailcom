@@ -13,7 +13,6 @@ import dateparser.search
 import spacy as sp
 from spacy.matcher import Matcher
 from spacy.tokens import Token
-from pandas import Interval
 
 
 def check_dir(path: Path) -> bool:
@@ -296,17 +295,38 @@ class TimeDetector:
         self.nlp_spacy = self.spacy_loader.nlp_spacy
 
         self.patterns = [
-            [{"POS": "NOUN"}, {"POS": "NOUN"}, {"POS": "NUM"}],
-            [
+            [  # 09 février 2009
+                {"POS": "NOUN", "TEXT": {"NOT_IN": ["-"]}},
+                {"POS": "NOUN", "TEXT": {"NOT_IN": ["-"]}},
+                {"POS": "NUM"},
+            ],
+            [  # 14 mars 2025 or 17 abr. 2024 or 17. April 2024
                 {"POS": "NUM"},
                 {"IS_PUNCT": True, "OP": "?"},
                 {},
                 {"IS_PUNCT": True, "OP": "?"},
                 {"POS": "NUM"},
             ],
-            [{"POS": "X"}, {"POS": "X"}, {"POS": "X"}],
-            [{"POS": "NOUN"}, {"POS": "NOUN"}],
+            [{"POS": "X"}, {"POS": "X"}, {"POS": "X"}],  # April 17th 2024
+            [  # 2025-03-12
+                {"POS": "NOUN"},
+                {"TEXT": "-"},
+                {"POS": "NOUN"},
+                {"TEXT": "-"},
+                {"POS": "NUM"},
+            ],
+            [  # 2025-03-01
+                {"POS": "NOUN"},
+                {"TEXT": "-"},
+                {"POS": "NOUN"},
+                {"TEXT": "-"},
+                {"POS": "NOUN"},
+            ],
         ]
+
+        self.time_seps = ["at", "um", "à", "a las", ",", ".", "-"]
+        self.special_time_seps = [".,"]
+        self.time_single_word = ["NOUN", "NUM", "PROPN", "VERB"]
 
     def add_pattern(self, pattern: list[dict]) -> None:
         """Add a new pattern to the matcher
@@ -370,6 +390,52 @@ class TimeDetector:
         """
         return list(datefinder.find_dates(text))
 
+    def unite_overlapping_words(
+        self, multi_word_date_time: list, marked_locations: list, doc: object
+    ) -> tuple[list, list]:
+        """Unite overlapping words between two items in the matched multi-word date time.
+
+        Args:
+            multi_word_date_time (list): A list of multi-word date time.
+            marked_locations (list): A list of marked locations of dates
+                in multiple word format.
+            doc (object): The spacy doc object.
+
+        Returns:
+            tuple[list, list]: A list of updated multi-word date time and
+                a list of marked locations.
+        """
+        updated_multi_word_date_time = []
+        updated_marked_locations = []
+
+        if len(multi_word_date_time) <= 1:
+            return multi_word_date_time, marked_locations
+
+        count = 0
+
+        while count < len(multi_word_date_time) - 1:
+            current_span, _ = multi_word_date_time[count]
+            next_span, _ = multi_word_date_time[count + 1]
+            if current_span.end >= next_span.start:
+                united_span = doc[current_span.start : next_span.end]
+                parsed_time = self.parse_time(united_span.text)
+                # assuming that the united span is a valid date
+                updated_multi_word_date_time.append((united_span, parsed_time))
+                updated_marked_locations.append((current_span.start, next_span.end))
+                count += 2
+
+            else:
+                updated_multi_word_date_time.append(multi_word_date_time[count])
+                updated_marked_locations.append(marked_locations[count])
+                count += 1
+
+        if count == len(multi_word_date_time) - 1:
+            # the last item is not united
+            updated_multi_word_date_time.append(multi_word_date_time[-1])
+            updated_marked_locations.append(marked_locations[-1])
+
+        return updated_multi_word_date_time, updated_marked_locations
+
     def extract_date_time_multi_words(self, doc: object) -> tuple[list, list]:
         """Extract time from a given text when it is multiple words.
         E.g. 12 mars 2025, 17. April 2024
@@ -388,10 +454,15 @@ class TimeDetector:
         matches = matcher(doc)
         for _, start, end in matches:
             span = doc[start:end]
-            parsed_time = dateparser.parse(span.text)
+            parsed_time = self.parse_time(span.text)
             if parsed_time:
                 multi_word_date_time.append((span, parsed_time))
                 marked_locations.append((start, end))
+
+        if len(multi_word_date_time) > 1:
+            multi_word_date_time, marked_locations = self.unite_overlapping_words(
+                multi_word_date_time, marked_locations, doc
+            )
         return multi_word_date_time, marked_locations
 
     def extract_date_time_single_word(
@@ -410,11 +481,11 @@ class TimeDetector:
         """
         word_date_time = []
         for token in doc:
-            potential_time = token.pos_ in ["NOUN", "NUM", "PROPN", "VERB"] and all(
+            potential_time = token.pos_ in self.time_single_word and all(
                 (token.i < loc[0] or token.i >= loc[1]) for loc in marked_locations
             )
             if potential_time:
-                parsed_time = dateparser.parse(token.text)
+                parsed_time = self.parse_time(token.text)
                 if parsed_time:
                     word_date_time.append((token, parsed_time))
         return word_date_time
@@ -473,7 +544,9 @@ class TimeDetector:
         """Check if the two time tokens can be merged.
         True: if they are next to each other in the token list,
             or
-            the word in between them in ["at", "um", "à", "a las"]
+            the word in between them in ["at", "um", "à", "a las", ",", ".", "-"],
+            or
+            the words in between them are [".,"]
         False: otherwise
 
         Args:
@@ -490,12 +563,17 @@ class TimeDetector:
         if is_adjacent_words:
             return True
 
-        is_seperated_by_at_punc = (  # e.g. 17. April 2024 at 17:23
-            doc[e_first_id + 1].text in ["at", "um", "à", "a las", ",", ".", ".,"]
+        is_separated_by_time_seps = (  # e.g. 17. April 2024 at 17:23
+            doc[e_first_id + 1].text in self.time_seps
             and self._get_start_end(doc[e_first_id + 2])[0] == s_second_id
         )
 
-        if is_seperated_by_at_punc:
+        is_separated_by_special_time_seps = (  # e.g. mié., 17 abr. 2024
+            doc[e_first_id + 1 : e_first_id + 3].text in self.special_time_seps
+            and self._get_start_end(doc[e_first_id + 3])[0] == s_second_id
+        )
+
+        if is_separated_by_time_seps or is_separated_by_special_time_seps:
             return True
 
         return False
@@ -518,9 +596,8 @@ class TimeDetector:
             last_item = merged_datetime[-1]
             _, _, last_s_idx, last_e_idx = last_item
             _, _, new_s_idx, new_e_idx = new_item
-            last_interval = Interval(last_s_idx, last_e_idx, closed="left")
-            new_interval = Interval(new_s_idx, new_e_idx, closed="left")
-            if last_interval.overlaps(new_interval):
+            # when the new item contains the last item
+            if new_s_idx <= last_s_idx and new_e_idx >= last_e_idx:
                 # delete the last item and add the new item
                 merged_datetime.pop()
                 merged_datetime.append(new_item)
@@ -567,13 +644,16 @@ class TimeDetector:
 
         while count < len(extracted_datetime) - 1:
             next_pointer, next_parsed_time = extracted_datetime[count + 1]
-            if self.is_time_mergeable(current_pointer, next_pointer, doc):
-                s_word = self._get_start_end(current_pointer)[0]
-                e_word = self._get_start_end(next_pointer)[1]
-                s_idx = doc[s_word].idx
-                e_idx = doc[e_word].idx + len(doc[e_word])
-                new_text = doc[s_word : e_word + 1].text
-                new_parsed_time = dateparser.parse(new_text)
+            s_word = self._get_start_end(current_pointer)[0]
+            e_word = self._get_start_end(next_pointer)[1]
+            s_idx = doc[s_word].idx
+            e_idx = doc[e_word].idx + len(doc[e_word])
+            new_text = doc[s_word : e_word + 1].text
+            new_parsed_time = self.parse_time(new_text)
+            if (
+                self.is_time_mergeable(current_pointer, next_pointer, doc)
+                and new_parsed_time
+            ):
                 self.add_merged_datetime(
                     merged_datetime,
                     (
