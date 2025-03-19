@@ -176,6 +176,7 @@ def get_mixed_lang_docs():
     return docs
 
 
+@pytest.mark.langdet
 def test_init_transformers(get_lang_detector):
     get_lang_detector.init_transformers()
     assert get_lang_detector.lang_detector_trans is not None
@@ -185,6 +186,7 @@ def test_init_transformers(get_lang_detector):
         get_lang_detector.init_transformers(model="invalid-model")
 
 
+@pytest.mark.langdet
 def test_contains_only_punctuations(get_lang_detector):
     assert get_lang_detector.contains_only_punctuations(".,;:!?") is True
     assert get_lang_detector.contains_only_punctuations(".,;:!?a") is False
@@ -197,6 +199,7 @@ def test_contains_only_punctuations(get_lang_detector):
     )
 
 
+@pytest.mark.langdet
 def test_strip_punctuations(get_lang_detector):
     assert get_lang_detector.strip_punctuations(".,;:!?") == ""
     assert get_lang_detector.strip_punctuations(".,;:!?a") == "a"
@@ -209,6 +212,7 @@ def test_strip_punctuations(get_lang_detector):
     )
 
 
+@pytest.mark.langdet
 def test_contains_only_numbers(get_lang_detector):
     assert get_lang_detector.contains_only_numbers("1234567890") is True
     assert get_lang_detector.contains_only_numbers("1234567890a") is False
@@ -226,6 +230,7 @@ def test_contains_only_numbers(get_lang_detector):
     )
 
 
+@pytest.mark.langdet
 def test_contains_only_emails(get_lang_detector):
     assert get_lang_detector.contains_only_emails("abc@gmail.com") is True
     assert get_lang_detector.contains_only_emails("<abc@gmail.com>") is True
@@ -235,6 +240,7 @@ def test_contains_only_emails(get_lang_detector):
     assert get_lang_detector.contains_only_emails("Sent from abc@gmail.com") is False
 
 
+@pytest.mark.langdet
 def test_contains_only_links(get_lang_detector):
     assert get_lang_detector.contains_only_links("http://www.google.com") is True
     assert get_lang_detector.contains_only_links("https://some.link") is True
@@ -245,34 +251,40 @@ def test_contains_only_links(get_lang_detector):
     )
 
 
+@pytest.mark.langdet
 def test_lang_detector(get_lang_detector):
     assert get_lang_detector.lang_id.nb_classes == LANGID_LANGS
 
 
+@pytest.mark.langdet
 def test_constrain_langid(get_lang_detector):
     lang_set = ["es", "fr"]
     get_lang_detector.constrain_langid(lang_set)
     assert get_lang_detector.lang_id.nb_classes == lang_set
 
 
+@pytest.mark.langdet
 def test_constrain_langid_empty(get_lang_detector):
     lang_set = []
     get_lang_detector.constrain_langid(lang_set)
     assert get_lang_detector.lang_id.nb_classes == LANGID_LANGS
 
 
+@pytest.mark.langdet
 def test_constrain_langid_intersec(get_lang_detector):
     lang_set = ["es", "fr", "not_a_language"]
     get_lang_detector.constrain_langid(lang_set)
     assert get_lang_detector.lang_id.nb_classes == ["es", "fr"]
 
 
+@pytest.mark.langdet
 def test_constrain_langid_fail(get_lang_detector):
     lang_set = ["not_a_language"]
     with pytest.raises(ValueError):
         get_lang_detector.constrain_langid(lang_set)
 
 
+@pytest.mark.langdet
 def test_determine_langdetect(get_lang_detector):
     get_lang_detector.determine_langdetect()
     probs = []
@@ -284,6 +296,7 @@ def test_determine_langdetect(get_lang_detector):
     assert len(set(probs)) == 1
 
 
+@pytest.mark.langdet
 def test_detect_single_lang_with_transformers(get_lang_det_w_init):
     for sent, lang in lang_samples.items():
         detections = get_lang_det_w_init.detect_with_transformers(sent)
@@ -298,12 +311,14 @@ def test_detect_single_lang_with_transformers(get_lang_det_w_init):
             assert prob > SINGLE_DETECT_THRESHOLD
 
 
+@pytest.mark.langdet
 def test_detect_single_lang_with_transformers_no_init(get_lang_detector):
     # check that the transformers model is initialized if not explicitly done
     get_lang_detector.detect_with_transformers("This is a test.")
     assert get_lang_detector.lang_detector_trans
 
 
+@pytest.mark.langdet
 def test_detect_singe_lang_with_langid(get_lang_detector):
     for sent, lang in lang_samples.items():
         detection = get_lang_detector.detect_with_langid(sent)
@@ -312,11 +327,13 @@ def test_detect_singe_lang_with_langid(get_lang_detector):
         assert prob > SINGLE_DETECT_THRESHOLD
 
 
+@pytest.mark.langdet
 def test_detect_single_lang_with_langid_error(get_lang_detector):
     with pytest.raises(ValueError):
         get_lang_detector.detect_with_langid(None)
 
 
+@pytest.mark.langdet
 def test_detect_single_lang_with_langdetect_error(get_lang_detector):
     with pytest.raises(ValueError):
         get_lang_detector.detect_with_langdetect(None)
@@ -332,6 +349,7 @@ def test_detect_single_lang_with_langdetect_error(get_lang_detector):
         get_lang_detector.detect_with_langdetect("<abc@gmail.com>")
 
 
+@pytest.mark.langdet
 def test_detect_single_lang_with_langdetect(get_lang_detector):
     get_lang_detector.determine_langdetect()
     for sent, lang in lang_samples.items():
@@ -344,6 +362,7 @@ def test_detect_single_lang_with_langdetect(get_lang_detector):
         assert prob > SINGLE_DETECT_THRESHOLD
 
 
+@pytest.mark.langdet
 def test_detect_mixed_lang_with_transformers(get_lang_det_w_init, get_mixed_lang_docs):
     for doc in get_mixed_lang_docs:
         detections = get_lang_det_w_init.detect_with_transformers(doc)
@@ -373,6 +392,7 @@ def test_detect_mixed_lang_with_transformers(get_lang_det_w_init, get_mixed_lang
             assert prob > MULTI_DETECT_THRESHOLD
 
 
+@pytest.mark.langdet
 def test_detect_mixed_lang_with_langid(get_lang_detector, get_mixed_lang_docs):
     for doc in get_mixed_lang_docs:
         if lang_num > 3:
@@ -412,6 +432,7 @@ def test_detect_mixed_lang_with_langid(get_lang_detector, get_mixed_lang_docs):
             assert prob > MULTI_DETECT_THRESHOLD
 
 
+@pytest.mark.langdet
 def test_detect_mixed_lang_with_langdetect(get_lang_detector, get_mixed_lang_docs):
     get_lang_detector.determine_langdetect()
     incomplete_detec = []
@@ -453,6 +474,7 @@ def test_detect_mixed_lang_with_langdetect(get_lang_detector, get_mixed_lang_doc
     print(" ".join(incomplete_detec))
 
 
+@pytest.mark.langdet
 def test_get_detections(get_lang_det_w_init):
     sentence = list(lang_samples.keys())[0]
     detection_langid = get_lang_det_w_init.get_detections(sentence, "langid")
@@ -463,6 +485,7 @@ def test_get_detections(get_lang_det_w_init):
     assert detection_langid[0][0] == lang_samples[sentence]
 
 
+@pytest.mark.langdet
 def test_get_detections_empty(get_lang_detector):
     sentence = " \n\n"
     detection_langid = get_lang_detector.get_detections(sentence, "langid")
@@ -473,6 +496,7 @@ def test_get_detections_empty(get_lang_detector):
     assert math.isclose(detection_langdetect[0][1], 0.0)
 
 
+@pytest.mark.langdet
 def test_get_detections_only_punctuations(get_lang_detector):
     sentence = ".,;:!?"
     detection_langid = get_lang_detector.get_detections(sentence, "langid")
@@ -483,6 +507,7 @@ def test_get_detections_only_punctuations(get_lang_detector):
     assert math.isclose(detection_langdetect[0][1], 0.0)
 
 
+@pytest.mark.langdet
 def test_get_detections_only_numbers(get_lang_detector):
     sentence = "1234567890"
     detection_langid = get_lang_detector.get_detections(sentence, "langid")
@@ -493,6 +518,7 @@ def test_get_detections_only_numbers(get_lang_detector):
     assert math.isclose(detection_langdetect[0][1], 0.0)
 
 
+@pytest.mark.langdet
 def test_get_detections_only_emails(get_lang_detector):
     sentence = "<abc@gmail.com>"
     detection_langid = get_lang_detector.get_detections(sentence, "langid")
@@ -503,12 +529,14 @@ def test_get_detections_only_emails(get_lang_detector):
     assert math.isclose(detection_langdetect[0][1], 0.0)
 
 
+@pytest.mark.langdet
 def test_get_detections_fail(get_lang_detector):
     sentence = list(lang_samples.keys())[0]
     with pytest.raises(ValueError):
         get_lang_detector.get_detections(sentence, "not_a_lib")
 
 
+@pytest.mark.langdet
 def test_detect_lang_sentences_langid(get_lang_det_w_init, get_mixed_lang_docs):
     for doc in get_mixed_lang_docs:
         sentences = doc.split("\n")
@@ -520,6 +548,7 @@ def test_detect_lang_sentences_langid(get_lang_det_w_init, get_mixed_lang_docs):
             assert detected_lang == get_mixed_lang_docs[doc][i]
 
 
+@pytest.mark.langdet
 def test_detect_lang_sentences_langdetect(get_lang_det_w_init, get_mixed_lang_docs):
     for doc in get_mixed_lang_docs:
         sentences = doc.split("\n")
@@ -531,6 +560,7 @@ def test_detect_lang_sentences_langdetect(get_lang_det_w_init, get_mixed_lang_do
             assert detected_lang == get_mixed_lang_docs[doc][i]
 
 
+@pytest.mark.langdet
 def test_detect_lang_sentences_trans(get_lang_det_w_init, get_mixed_lang_docs):
     for doc in get_mixed_lang_docs:
         sentences = doc.split("\n")
@@ -564,49 +594,6 @@ def get_time_detector():
     return utils.TimeDetector(lang="fr")
 
 
-def test_add_incorrect_patterns(get_time_detector):
-    incorrect_patterns = [
-        None,
-        [],
-        {},
-        1,
-        "pattern",
-        ["pattern"],
-        {"pattern": "pattern"},
-    ]
-    for pattern in incorrect_patterns:
-        with pytest.raises(ValueError):
-            get_time_detector.add_pattern(pattern)
-
-
-def test_add_correct_patterns(get_time_detector):
-    ogr_len = len(get_time_detector.patterns)
-    correct_pattern = [{"POS": "NOUN"}]
-    get_time_detector.add_pattern(correct_pattern)
-    assert len(get_time_detector.patterns) == ogr_len + 1
-
-
-def test_add_duplicate_patterns(get_time_detector):
-    pattern = get_time_detector.patterns[0]
-    with pytest.raises(ValueError):
-        get_time_detector.add_pattern(pattern)
-
-
-def test_remove_existent_patterns(get_time_detector):
-    ogr_len = len(get_time_detector.patterns)
-    pattern = get_time_detector.patterns[0]
-    get_time_detector.remove_pattern(pattern)
-    assert len(get_time_detector.patterns) == ogr_len - 1
-    assert pattern not in get_time_detector.patterns
-
-
-def test_remove_non_existent_patterns(get_time_detector):
-    non_existent_pattern = [{"POS": "VERB"}, None, []]
-    for pattern in non_existent_pattern:
-        with pytest.raises(ValueError):
-            get_time_detector.remove_pattern(pattern)
-
-
 sample_parsed_dates = {
     "absolute": {
         "2025-03-10": datetime.datetime(2025, 3, 10, 0, 0),
@@ -633,6 +620,134 @@ sample_parsed_dates = {
         "2025-15-10": datetime.datetime(2025, 10, 15, 0, 0),
     },
 }
+
+
+@pytest.mark.datelib
+def test_parse_time(get_time_detector):
+    for date_str, date_obj in sample_parsed_dates["absolute"].items():
+        assert get_time_detector.parse_time(date_str) == date_obj
+    for date_str, date_obj in sample_parsed_dates["relative"].items():
+        assert get_time_detector.parse_time(date_str).date() == date_obj
+    for date_str in sample_parsed_dates["invalid"]:
+        assert get_time_detector.parse_time(date_str) is None
+    for date_str, date_obj in sample_parsed_dates["confusing"].items():
+        assert get_time_detector.parse_time(date_str) == date_obj
+
+
+@pytest.mark.datelib
+def test_search_dates(get_time_detector):
+    extra_info_en = "The date in the email is: "
+    extra_info_fr = "La date dans l'e-mail est: "
+    for i, data in enumerate(sample_parsed_dates["absolute"].items()):
+        date_str, date_obj = data
+        if i < 4:
+            results = get_time_detector.search_dates(
+                extra_info_en + date_str, langs=["en"]
+            )
+            if date_str not in ["15.03.2025"]:
+                assert results[0][0] == date_str
+                assert results[0][1] == date_obj
+        else:
+            results = get_time_detector.search_dates(
+                extra_info_fr + date_str, langs=["fr"]
+            )
+            assert results[0][0] == date_str
+            assert results[0][1] == date_obj
+    for i, data in enumerate(sample_parsed_dates["relative"].items()):
+        date_str, date_obj = data
+        if i < 5:
+            results = get_time_detector.search_dates(
+                extra_info_en + date_str, langs=["en"]
+            )
+            assert results[0][0] == date_str
+            assert results[0][1].date() == date_obj
+        else:
+            results = get_time_detector.search_dates(
+                extra_info_fr + date_str, langs=["fr"]
+            )
+            if date_str not in ["il y a deux semaines", "il y a 2 semaines"]:
+                assert results[0][0] == date_str
+                assert results[0][1].date() == date_obj
+    for date_str in sample_parsed_dates["invalid"]:
+        assert (
+            get_time_detector.search_dates(extra_info_en + date_str, langs=["en"])
+            == None
+        )
+    for date_str, date_obj in sample_parsed_dates["confusing"].items():
+        if date_str == "10.03.2025":
+            with pytest.raises(AssertionError):
+                assert get_time_detector.search_dates(
+                    extra_info_en + date_str, langs=["en"]
+                ) == [(date_str, date_obj)]
+        else:
+            assert get_time_detector.search_dates(
+                extra_info_en + date_str, langs=["en"]
+            ) == [(date_str, date_obj)]
+
+
+@pytest.mark.datelib
+def test_find_dates(get_time_detector):
+    extra_info = "The date in the email is: "
+    for date_str, date_obj in sample_parsed_dates["absolute"].items():
+        assert get_time_detector.find_dates(extra_info + date_str) == [date_obj]
+    for date_str, date_obj in sample_parsed_dates["relative"].items():
+        if date_str not in ["2 weeks ago", "il y a 2 semaines"]:
+            assert get_time_detector.find_dates(extra_info + date_str) == []
+    for date_str in sample_parsed_dates["invalid"]:
+        assert get_time_detector.find_dates(extra_info + date_str) == []
+    for date_str, date_obj in sample_parsed_dates["confusing"].items():
+        if date_str == "2025-15-10":
+            assert get_time_detector.find_dates(extra_info + date_str) == []
+        else:
+            assert get_time_detector.find_dates(extra_info + date_str) == [date_obj]
+
+
+@pytest.mark.pattern
+def test_add_incorrect_patterns(get_time_detector):
+    incorrect_patterns = [
+        None,
+        [],
+        {},
+        1,
+        "pattern",
+        ["pattern"],
+        {"pattern": "pattern"},
+    ]
+    for pattern in incorrect_patterns:
+        with pytest.raises(ValueError):
+            get_time_detector.add_pattern(pattern)
+
+
+@pytest.mark.pattern
+def test_add_correct_patterns(get_time_detector):
+    ogr_len = len(get_time_detector.patterns)
+    correct_pattern = [{"POS": "NOUN"}]
+    get_time_detector.add_pattern(correct_pattern)
+    assert len(get_time_detector.patterns) == ogr_len + 1
+
+
+@pytest.mark.pattern
+def test_add_duplicate_patterns(get_time_detector):
+    pattern = get_time_detector.patterns[0]
+    with pytest.raises(ValueError):
+        get_time_detector.add_pattern(pattern)
+
+
+@pytest.mark.pattern
+def test_remove_existent_patterns(get_time_detector):
+    ogr_len = len(get_time_detector.patterns)
+    pattern = get_time_detector.patterns[0]
+    get_time_detector.remove_pattern(pattern)
+    assert len(get_time_detector.patterns) == ogr_len - 1
+    assert pattern not in get_time_detector.patterns
+
+
+@pytest.mark.pattern
+def test_remove_non_existent_patterns(get_time_detector):
+    non_existent_pattern = [{"POS": "VERB"}, None, []]
+    for pattern in non_existent_pattern:
+        with pytest.raises(ValueError):
+            get_time_detector.remove_pattern(pattern)
 
 
 sent_fr = "Alice sera présente le {} et apportera 100$."
@@ -789,7 +904,7 @@ sample_dates_fr = {
     "relative": {},
 }
 date_type = "absolute"
-sample_date = list(sample_dates_fr[date_type].keys())[0]
+sample_date = list(sample_dates_fr[date_type].keys())[1]
 date_info = sample_dates_fr[date_type][sample_date]
 
 
@@ -798,83 +913,7 @@ def get_sample_sentences():
     return sent_fr.format(sample_date)
 
 
-def test_parse_time(get_time_detector):
-    for date_str, date_obj in sample_parsed_dates["absolute"].items():
-        assert get_time_detector.parse_time(date_str) == date_obj
-    for date_str, date_obj in sample_parsed_dates["relative"].items():
-        assert get_time_detector.parse_time(date_str).date() == date_obj
-    for date_str in sample_parsed_dates["invalid"]:
-        assert get_time_detector.parse_time(date_str) is None
-    for date_str, date_obj in sample_parsed_dates["confusing"].items():
-        assert get_time_detector.parse_time(date_str) == date_obj
-
-
-def test_search_dates(get_time_detector):
-    extra_info_en = "The date in the email is: "
-    extra_info_fr = "La date dans l'e-mail est: "
-    for i, data in enumerate(sample_parsed_dates["absolute"].items()):
-        date_str, date_obj = data
-        if i < 4:
-            results = get_time_detector.search_dates(
-                extra_info_en + date_str, langs=["en"]
-            )
-            if date_str not in ["15.03.2025"]:
-                assert results[0][0] == date_str
-                assert results[0][1] == date_obj
-        else:
-            results = get_time_detector.search_dates(
-                extra_info_fr + date_str, langs=["fr"]
-            )
-            assert results[0][0] == date_str
-            assert results[0][1] == date_obj
-    for i, data in enumerate(sample_parsed_dates["relative"].items()):
-        date_str, date_obj = data
-        if i < 5:
-            results = get_time_detector.search_dates(
-                extra_info_en + date_str, langs=["en"]
-            )
-            assert results[0][0] == date_str
-            assert results[0][1].date() == date_obj
-        else:
-            results = get_time_detector.search_dates(
-                extra_info_fr + date_str, langs=["fr"]
-            )
-            if date_str not in ["il y a deux semaines", "il y a 2 semaines"]:
-                assert results[0][0] == date_str
-                assert results[0][1].date() == date_obj
-    for date_str in sample_parsed_dates["invalid"]:
-        assert (
-            get_time_detector.search_dates(extra_info_en + date_str, langs=["en"])
-            == None
-        )
-    for date_str, date_obj in sample_parsed_dates["confusing"].items():
-        if date_str == "10.03.2025":
-            with pytest.raises(AssertionError):
-                assert get_time_detector.search_dates(
-                    extra_info_en + date_str, langs=["en"]
-                ) == [(date_str, date_obj)]
-        else:
-            assert get_time_detector.search_dates(
-                extra_info_en + date_str, langs=["en"]
-            ) == [(date_str, date_obj)]
-
-
-def test_find_dates(get_time_detector):
-    extra_info = "The date in the email is: "
-    for date_str, date_obj in sample_parsed_dates["absolute"].items():
-        assert get_time_detector.find_dates(extra_info + date_str) == [date_obj]
-    for date_str, date_obj in sample_parsed_dates["relative"].items():
-        if date_str not in ["2 weeks ago", "il y a 2 semaines"]:
-            assert get_time_detector.find_dates(extra_info + date_str) == []
-    for date_str in sample_parsed_dates["invalid"]:
-        assert get_time_detector.find_dates(extra_info + date_str) == []
-    for date_str, date_obj in sample_parsed_dates["confusing"].items():
-        if date_str == "2025-15-10":
-            assert get_time_detector.find_dates(extra_info + date_str) == []
-        else:
-            assert get_time_detector.find_dates(extra_info + date_str) == [date_obj]
-
-
+@pytest.mark.pattern
 def test_extract_date_time_multi_word_fr(get_time_detector, get_sample_sentences):
     doc = get_time_detector.nlp_spacy(get_sample_sentences)
     multi_word_date_time, marked_locations = (
@@ -886,6 +925,7 @@ def test_extract_date_time_multi_word_fr(get_time_detector, get_sample_sentences
         assert multi_time[0].text == sample_time
 
 
+@pytest.mark.pattern
 def test_extract_date_time_single_word_fr(get_time_detector, get_sample_sentences):
     doc = get_time_detector.nlp_spacy(get_sample_sentences)
     _, marked_locations = get_time_detector.extract_date_time_multi_words(doc)
@@ -897,6 +937,7 @@ def test_extract_date_time_single_word_fr(get_time_detector, get_sample_sentence
         assert single_time[0].text == sample_time
 
 
+@pytest.mark.pattern
 def test_get_start_end(get_time_detector, get_sample_sentences):
     doc = get_time_detector.nlp_spacy(get_sample_sentences)
     assert get_time_detector._get_start_end(doc[0]) == (0, 0)
@@ -904,6 +945,7 @@ def test_get_start_end(get_time_detector, get_sample_sentences):
     assert get_time_detector._get_start_end(doc[2:7]) == (2, 6)
 
 
+@pytest.mark.pattern
 def test_extract_date_time_fr(get_time_detector, get_sample_sentences):
     doc = get_time_detector.nlp_spacy(get_sample_sentences)
     extracted_date_time = get_time_detector.extract_date_time(doc)
@@ -912,6 +954,7 @@ def test_extract_date_time_fr(get_time_detector, get_sample_sentences):
         assert e_time[0].text == sample_time
 
 
+@pytest.mark.pattern
 def test_get_next_sibling(get_time_detector, get_sample_sentences):
     doc = get_time_detector.nlp_spacy(get_sample_sentences)
     token = doc[0]
@@ -919,6 +962,7 @@ def test_get_next_sibling(get_time_detector, get_sample_sentences):
     assert get_time_detector._get_next_sibling(doc[len(doc) - 1]) == None
 
 
+@pytest.mark.pattern
 def test_is_time_mergeable(get_time_detector, get_sample_sentences):
     doc = get_time_detector.nlp_spacy(get_sample_sentences)
     for s_id, e_id in date_info["merge"]:
@@ -926,6 +970,7 @@ def test_is_time_mergeable(get_time_detector, get_sample_sentences):
     assert get_time_detector.is_time_mergeable(doc[0], doc[7], doc) == False
 
 
+@pytest.mark.pattern
 def test_add_merged_datetime_empty(get_time_detector):
     merged_datetime = []
     new_text = "14/03/2025 à 10:30"
@@ -938,6 +983,7 @@ def test_add_merged_datetime_empty(get_time_detector):
     assert merged_datetime[0][3] == len(new_text)
 
 
+@pytest.mark.pattern
 def test_add_merged_datetime_non_overlapping(get_time_detector):
     merged_datetime = [("14/03/2025 à 10:30", None, 0, 18)]
     new_text = "17:23"
@@ -950,6 +996,7 @@ def test_add_merged_datetime_non_overlapping(get_time_detector):
     assert merged_datetime[1][3] == 18 + len(new_text)
 
 
+@pytest.mark.pattern
 def test_add_merged_datetime_overlapping(get_time_detector):
     merged_datetime = [("14/03/2025", None, 0, 11)]
     new_text = "14/03/2025 à 10:30"
@@ -962,6 +1009,7 @@ def test_add_merged_datetime_overlapping(get_time_detector):
     assert merged_datetime[0][3] == len(new_text)
 
 
+@pytest.mark.pattern
 def test_merge_date_time_fr(get_time_detector, get_sample_sentences):
     doc = get_time_detector.nlp_spacy(get_sample_sentences)
     extracted_date_time = get_time_detector.extract_date_time(doc)
@@ -971,6 +1019,7 @@ def test_merge_date_time_fr(get_time_detector, get_sample_sentences):
         assert m_time[0] == sample_time
 
 
+@pytest.mark.pattern
 def test_merg_date_time_empty(get_time_detector):
     doc = get_time_detector.nlp_spacy("Alice")
     extracted_date_time = get_time_detector.extract_date_time(doc)
@@ -978,6 +1027,7 @@ def test_merg_date_time_empty(get_time_detector):
     assert len(merged_date_time) == 0
 
 
+@pytest.mark.pattern
 def test_merge_date_time_one_item(get_time_detector):
     doc = get_time_detector.nlp_spacy("14 mars 2025")
     extracted_date_time = get_time_detector.extract_date_time(doc)
@@ -988,6 +1038,7 @@ def test_merge_date_time_one_item(get_time_detector):
     assert merged_date_time[0][3] == 12
 
 
+@pytest.mark.pattern
 def test_get_date_time_fr(get_time_detector, get_sample_sentences):
     results = get_time_detector.get_date_time(
         get_sample_sentences, lang=get_time_detector.lang
