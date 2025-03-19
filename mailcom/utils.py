@@ -258,16 +258,13 @@ class LangDetector:
         return result_tree
 
 
-class TimeDetector:
-    def __init__(self, lang):
-        self.lang = lang
-
+class SpacyLoader:
+    def __init__(self):
         self.spacy_default_model_dict = {
             "es": "es_core_news_md",
             "fr": "fr_core_news_md",
         }
 
-    # refactor later with parse.py
     def init_spacy(self, language: str, model="default"):
         if model == "default":
             model = self.spacy_default_model_dict[language]
@@ -289,6 +286,56 @@ class TimeDetector:
                 )
             except SystemExit:
                 raise SystemExit("Could not download {} from repo".format(model))
+
+
+class TimeDetector:
+    def __init__(self, lang):
+        self.lang = lang
+        self.spacy_loader = SpacyLoader()
+        self.spacy_loader.init_spacy(self.lang)
+        self.nlp_spacy = self.spacy_loader.nlp_spacy
+
+        self.patterns = [
+            [{"POS": "NOUN"}, {"POS": "NOUN"}, {"POS": "NUM"}],
+            [
+                {"POS": "NUM"},
+                {"IS_PUNCT": True, "OP": "?"},
+                {},
+                {"IS_PUNCT": True, "OP": "?"},
+                {"POS": "NUM"},
+            ],
+            [{"POS": "X"}, {"POS": "X"}, {"POS": "X"}],
+            [{"POS": "NOUN"}, {"POS": "NOUN"}],
+        ]
+
+    def add_pattern(self, pattern: list[dict]) -> None:
+        """Add a new pattern to the matcher
+        if it's a non-empty list of dictionaries and not already present.
+
+        Args:
+            pattern (list[dict]): The pattern to add to the matcher.
+        """
+        incorrect_format = (
+            not pattern
+            or not isinstance(pattern, list)
+            or not all(isinstance(item, dict) for item in pattern)
+        )
+        if incorrect_format:
+            raise ValueError("Pattern must be a non-empty list of dictionaries.")
+        if pattern in self.patterns:
+            raise ValueError("Pattern is already present in the matcher.")
+        self.patterns.append(pattern)
+
+    def remove_pattern(self, pattern: list) -> None:
+        """Remove pattern from the matcher if it's present.
+
+        Args:
+            pattern (list): The pattern to remove from the matcher.
+        """
+        try:
+            self.patterns.remove(pattern)
+        except ValueError:
+            raise ValueError("Pattern is not present in the matcher.")
 
     def parse_time(self, text: str) -> datetime:
         """Parse the time from text format to datetime format.
@@ -337,19 +384,7 @@ class TimeDetector:
         multi_word_date_time = []
         marked_locations = []
         matcher = Matcher(self.nlp_spacy.vocab)
-        patterns = [
-            [{"POS": "NOUN"}, {"POS": "NOUN"}, {"POS": "NUM"}],
-            [
-                {"POS": "NUM"},
-                {"IS_PUNCT": True, "OP": "?"},
-                {},
-                {"IS_PUNCT": True, "OP": "?"},
-                {"POS": "NUM"},
-            ],
-            [{"POS": "X"}, {"POS": "X"}, {"POS": "X"}],
-            [{"POS": "NOUN"}, {"POS": "NOUN"}],
-        ]
-        matcher.add("DATE", patterns)
+        matcher.add("DATE", self.patterns)
         matches = matcher(doc)
         for _, start, end in matches:
             span = doc[start:end]
@@ -587,8 +622,6 @@ class TimeDetector:
             list[(str, datetime, int, int)]: A list of tuples containing
                 the date string, the datetime object, the start index and the end index
         """
-        if not hasattr(self, "nlp_spacy"):
-            self.init_spacy(self.lang)
         doc = self.nlp_spacy(text)
         extracted_date_time = self.extract_date_time(doc)
         merged_date_time = self.merge_date_time(extracted_date_time, doc)
