@@ -23,6 +23,23 @@ def test_check_dir_fail():
         utils.check_dir("mydir")
 
 
+def test_clean_up_content():
+    sent_1 = "Hello, how are you?"
+    sent_2 = "I'm fine, thank you."
+    expected_text = "Hello, how are you?\nI'm fine, thank you."
+    assert (
+        utils.clean_up_content(sent_1 + "\n\n\n" + sent_2 + "\n\n")[0] == expected_text
+    )
+    assert (
+        utils.clean_up_content("      " + sent_1 + "\n" + sent_2 + "      ")[0]
+        == expected_text
+    )
+    assert (
+        utils.clean_up_content("      " + sent_1 + "\n\n" + sent_2 + "      ")[0]
+        == expected_text
+    )
+
+
 # test cases for email language detection
 LANGID_LANGS = [
     "af",
@@ -583,8 +600,8 @@ def get_spacy_loader():
 
 
 def test_init_spacy(get_spacy_loader):
-    with pytest.raises(KeyError):
-        get_spacy_loader.init_spacy("not_a_language")
+    get_spacy_loader.init_spacy("use_default")
+    assert get_spacy_loader.nlp_spacy is not None
     with pytest.raises(SystemExit):
         get_spacy_loader.init_spacy("fr", "not_an_existing_spacy_model")
 
@@ -1131,11 +1148,30 @@ def test_merge_date_time_one_item(get_time_detector):
 
 
 @pytest.mark.pattern
+def test_filter_non_numbers(get_time_detector):
+    date_times = [
+        ("14 mars 2025", None, 0, 12),
+        ("10:30", None, 13, 18),
+        ("17:23", None, 19, 24),
+        ("a", None, 25, 26),
+        ("b", None, 27, 28),
+        ("An", None, 29, 31),
+    ]
+    assert get_time_detector.filter_non_numbers([]) == []
+    assert get_time_detector.filter_non_numbers(date_times) == date_times[0:3]
+
+
+@pytest.mark.pattern
 def test_get_date_time_fr(get_time_detector, get_date_samples):
     sample_sentence, date_info = get_date_samples
-    results = get_time_detector.get_date_time(
-        sample_sentence, lang=get_time_detector.lang
-    )
+    results = get_time_detector.get_date_time(sample_sentence)
     assert len(results) == len(date_info["detect"])
     for result, sample_time in zip(results, date_info["detect"]):
         assert result[0] == sample_time
+
+
+@pytest.mark.pattern
+def test_get_date_time_fr_non_numbers(get_time_detector):
+    # somehow "An" and "a" are detected as dates
+    assert get_time_detector.get_date_time("An") == []
+    assert get_time_detector.get_date_time("a") == []

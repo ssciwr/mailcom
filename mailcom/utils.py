@@ -39,6 +39,22 @@ def make_dir(path: Path) -> None:
     os.makedirs(path + "/")
 
 
+def clean_up_content(content: str) -> tuple[str, list]:
+    """Clean up the content of an email.
+
+    Args:
+        content (str): The content of the email.
+
+    Returns:
+        tuple[str, list]: The cleaned up content and a list of cleaned up sentences.
+    """
+    # remove extra newlines and extra heading and trailing whitespaces
+    sentences = content.split("\n")
+    updated_sentences = [sent.strip() for sent in sentences if sent.strip()]
+    updated_content = "\n".join(updated_sentences)
+    return updated_content, updated_sentences
+
+
 class LangDetector:
     def __init__(self):
         self.lang_id = LanguageIdentifier.from_modelstring(model, norm_probs=True)
@@ -262,11 +278,16 @@ class SpacyLoader:
         self.spacy_default_model_dict = {
             "es": "es_core_news_md",
             "fr": "fr_core_news_md",
+            "de": "de_core_news_md",
+            "pt": "pt_core_news_md",
         }
 
     def init_spacy(self, language: str, model="default"):
         if model == "default":
-            model = self.spacy_default_model_dict[language]
+            # use German as the default language
+            model = self.spacy_default_model_dict.get(
+                language, self.spacy_default_model_dict["de"]
+            )
         try:
             # disable not needed components
             self.nlp_spacy = sp.load(
@@ -691,7 +712,25 @@ class TimeDetector:
 
         return merged_datetime
 
-    def get_date_time(self, text: str, lang="fr") -> list[(str, datetime, int, int)]:
+    def filter_non_numbers(
+        self, date_time: list[(str, datetime, int, int)]
+    ) -> list[(str, datetime, int, int)]:
+        """Filter out the date time phrases that do not contain numbers.
+
+        Args:
+            date_time (list[(str, datetime, int, int)]): The list of date and time and their positions.
+
+        Returns:
+            list[(str, datetime, int, int)]: The filtered list of date and time and their positions.
+        """
+        updated_date_time = []
+        for dt in date_time:
+            words = dt[0].split()
+            if any(char.isdigit() for word in words for char in word):
+                updated_date_time.append(dt)
+        return updated_date_time
+
+    def get_date_time(self, text: str) -> list[(str, datetime, int, int)]:
         """Get the date and time from a given text.
 
         Args:
@@ -705,7 +744,10 @@ class TimeDetector:
         doc = self.nlp_spacy(text)
         extracted_date_time = self.extract_date_time(doc)
         merged_date_time = self.merge_date_time(extracted_date_time, doc)
-        return merged_date_time
+
+        # only keep the date time phrases that contain numbers
+        results = self.filter_non_numbers(merged_date_time)
+        return results
 
 
 if __name__ == "__main__":
@@ -714,7 +756,8 @@ if __name__ == "__main__":
     # path where the output files should be written to
     # this is generated if not present yet
     path_output = Path("./data/out/")
-    output_filename = "lang_detection.csv"
+    lang_detect_lib = "langid"
+    output_filename = "{}_time_detection.csv".format(lang_detect_lib)
 
     # check that input dir is there
     if not check_dir(path_input):
@@ -731,28 +774,49 @@ if __name__ == "__main__":
 
     results = []
 
+    lang_detector = LangDetector()
+
     for email, path in zip(io.get_email_list(), io.email_path_list):
         if not email["content"]:
             continue
         file_results = {"file": str(path.name)}
         print("Parsing input file {}".format(path.name))
-        text = email["content"]
+        text, sentences = clean_up_content(email["content"])
+        file_results["text"] = text
+        file_results["sentences"] = sentences
 
-        # Test functionality of LangDetector class in utils.py
-        lang_detector = LangDetector()
-        lang_detector.init_transformers()
-        sentences = text.split("\n")
-        for lang_lib in ["langid", "langdetect", "trans"]:
-            detected_lang = lang_detector.get_detections(text, lang_lib)
-            lang_tree = lang_detector.detect_lang_sentences(sentences, lang_lib)
-            file_results[lang_lib + "_text"] = "{}-{}".format(
-                str(detected_lang[0][0]), str(detected_lang[0][1])
+        # detect language of the email first
+        detected_lang = lang_detector.get_detections(text, lang_lib=lang_detect_lib)
+        file_results["lang_text"] = "{}-{}".format(
+            str(detected_lang[0][0]), str(detected_lang[0][1])
+        )
+
+        # detect time based on the language
+        time_detector = TimeDetector(detected_lang[0][0])
+        detected_time = time_detector.get_date_time(text)
+        detected_time_str = [det[0] for det in detected_time]
+        file_results["time_text"] = detected_time_str
+
+        # detect lang and time for each sentence
+        lang_tree = lang_detector.detect_lang_sentences(
+            sentences, lang_lib=lang_detect_lib
+        )
+        time_sents = []
+        for interval in sorted(lang_tree):
+            portion_text = "\n".join(sentences[interval.begin : interval.end])
+            lang_sent = interval.data
+            time_detector = TimeDetector(lang_sent)
+            detected_time_sent = time_detector.get_date_time(portion_text)
+            detected_time_sent_str = [det[0] for det in detected_time_sent]
+            time_sents.append(
+                "{}-{}-{}-{}".format(
+                    interval.begin, interval.end, lang_sent, detected_time_sent_str
+                )
             )
-            file_results[lang_lib + "_sentence"] = str(lang_tree)
+        file_results["time_sents"] = time_sents
 
         results.append(file_results)
 
     # write results to file
     df = pd.DataFrame(results)
-    df_reordered = df.iloc[:, [0, 1, 3, 5, 2, 4, 6]]
-    df_reordered.to_csv(path_output / output_filename, index=False)
+    df.to_csv(path_output / output_filename, index=False)
