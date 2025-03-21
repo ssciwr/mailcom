@@ -2,7 +2,7 @@ import spacy as sp
 from transformers import pipeline
 from pathlib import Path
 from mailcom.inout import InoutHandler
-from mailcom.utils import check_dir, make_dir
+from mailcom.utils import check_dir, make_dir, SpacyLoader
 
 # please modify this section depending on your setup
 # input language - either "es" or "fr"
@@ -22,11 +22,6 @@ tool = "transformers"
 
 class Pseudonymize:
     def __init__(self):
-
-        self.spacy_default_model_dict = {
-            "es": "es_core_news_md",
-            "fr": "fr_core_news_md",
-        }
 
         self.pseudo_first_names = {
             "es": [
@@ -59,26 +54,9 @@ class Pseudonymize:
         self.ne_list = []
 
     def init_spacy(self, language: str, model="default"):
-        if model == "default":
-            model = self.spacy_default_model_dict[language]
-        try:
-            # disable not needed components
-            self.nlp_spacy = sp.load(
-                model, exclude=["attribute_ruler", "lemmatizer", "ner"]
-            )
-        except OSError:
-            try:
-                print(
-                    "Could not find model in standard directory. Trying to download model from repo."  # noqa
-                )
-                # try downloading model
-                sp.cli.download(model)
-                self.nlp_spacy = sp.load(
-                    model,
-                    exclude=["attribute_ruler", "lemmatizer", "ner"],
-                )
-            except SystemExit:
-                raise SystemExit("Could not download {} from repo".format(model))
+        spacy_loader = SpacyLoader()
+        spacy_loader.init_spacy(language, model)
+        self.nlp_spacy = spacy_loader.nlp_spacy
 
     def init_transformers(
         self,
