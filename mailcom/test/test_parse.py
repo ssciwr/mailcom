@@ -36,8 +36,8 @@ def get_default_fr():
 
 
 def test_init_spacy(get_instant):
-    with pytest.raises(KeyError):
-        get_instant.init_spacy("not_a_language")
+    get_instant.init_spacy("use_default")
+    assert get_instant.nlp_spacy is not None
     with pytest.raises(SystemExit):
         get_instant.init_spacy("fr", "not_an_existing_spacy_model")
 
