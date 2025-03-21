@@ -611,6 +611,11 @@ def get_time_detector():
     return utils.TimeDetector(lang="fr")
 
 
+@pytest.fixture()
+def get_time_detector_strict():
+    return utils.TimeDetector(lang="fr", strict_parsing="strict")
+
+
 sample_parsed_dates = {
     "absolute": {
         "2025-03-10": datetime.datetime(2025, 3, 10, 0, 0),
@@ -636,11 +641,12 @@ sample_parsed_dates = {
         "10.03.2025": datetime.datetime(2025, 10, 3, 0, 0),
         "2025-15-10": datetime.datetime(2025, 10, 15, 0, 0),
     },
+    "incomplete": ["18", "Mittwoch", "2025", "10:30"],
 }
 
 
 @pytest.mark.datelib
-def test_parse_time(get_time_detector):
+def test_parse_time_non_strict(get_time_detector):
     for date_str, date_obj in sample_parsed_dates["absolute"].items():
         assert get_time_detector.parse_time(date_str) == date_obj
     for date_str, date_obj in sample_parsed_dates["relative"].items():
@@ -649,6 +655,22 @@ def test_parse_time(get_time_detector):
         assert get_time_detector.parse_time(date_str) is None
     for date_str, date_obj in sample_parsed_dates["confusing"].items():
         assert get_time_detector.parse_time(date_str) == date_obj
+    for date_str in sample_parsed_dates["incomplete"]:
+        assert get_time_detector.parse_time(date_str) is not None
+
+
+@pytest.mark.datelib
+def test_parse_time_strict(get_time_detector_strict):
+    for date_str, date_obj in sample_parsed_dates["absolute"].items():
+        assert get_time_detector_strict.parse_time(date_str) == date_obj
+    for date_str, date_obj in sample_parsed_dates["relative"].items():
+        assert get_time_detector_strict.parse_time(date_str).date() == date_obj
+    for date_str in sample_parsed_dates["invalid"]:
+        assert get_time_detector_strict.parse_time(date_str) is None
+    for date_str, date_obj in sample_parsed_dates["confusing"].items():
+        assert get_time_detector_strict.parse_time(date_str) == date_obj
+    for date_str in sample_parsed_dates["incomplete"]:
+        assert get_time_detector_strict.parse_time(date_str) is None
 
 
 @pytest.mark.datelib
@@ -719,6 +741,23 @@ def test_find_dates(get_time_detector):
             assert get_time_detector.find_dates(extra_info + date_str) == [date_obj]
 
 
+@pytest.mark.strict
+def test_init_strict_patterns(get_time_detector_strict):
+    assert "strict" not in get_time_detector_strict.patterns
+    get_time_detector_strict.init_strict_patterns()
+    assert "strict" in get_time_detector_strict.patterns
+    assert len(get_time_detector_strict.patterns["strict"]) == len(
+        get_time_detector_strict.patterns["non-strict"]
+    )
+    for p_n, p_s in zip(
+        get_time_detector_strict.patterns["non-strict"],
+        get_time_detector_strict.patterns["strict"][
+            0 : len(get_time_detector_strict.patterns["non-strict"])
+        ],
+    ):
+        assert len(p_s) == len(p_n) + 2
+
+
 @pytest.mark.pattern
 def test_add_incorrect_patterns(get_time_detector):
     incorrect_patterns = [
@@ -732,31 +771,34 @@ def test_add_incorrect_patterns(get_time_detector):
     ]
     for pattern in incorrect_patterns:
         with pytest.raises(ValueError):
-            get_time_detector.add_pattern(pattern)
+            get_time_detector.add_pattern(pattern, "non-strict")
 
 
 @pytest.mark.pattern
 def test_add_correct_patterns(get_time_detector):
-    ogr_len = len(get_time_detector.patterns)
+    mode = "non-strict"
+    ogr_len = len(get_time_detector.patterns[mode])
     correct_pattern = [{"POS": "NOUN"}]
-    get_time_detector.add_pattern(correct_pattern)
-    assert len(get_time_detector.patterns) == ogr_len + 1
+    get_time_detector.add_pattern(correct_pattern, mode)
+    assert len(get_time_detector.patterns[mode]) == ogr_len + 1
 
 
 @pytest.mark.pattern
 def test_add_duplicate_patterns(get_time_detector):
-    pattern = get_time_detector.patterns[0]
+    mode = "non-strict"
+    pattern = get_time_detector.patterns[mode][0]
     with pytest.raises(ValueError):
-        get_time_detector.add_pattern(pattern)
+        get_time_detector.add_pattern(pattern, mode)
 
 
 @pytest.mark.pattern
 def test_remove_existent_patterns(get_time_detector):
-    ogr_len = len(get_time_detector.patterns)
-    pattern = get_time_detector.patterns[0]
-    get_time_detector.remove_pattern(pattern)
-    assert len(get_time_detector.patterns) == ogr_len - 1
-    assert pattern not in get_time_detector.patterns
+    mode = "non-strict"
+    ogr_len = len(get_time_detector.patterns[mode])
+    pattern = get_time_detector.patterns[mode][0]
+    get_time_detector.remove_pattern(pattern, mode)
+    assert len(get_time_detector.patterns[mode]) == ogr_len - 1
+    assert pattern not in get_time_detector.patterns[mode]
 
 
 @pytest.mark.pattern
@@ -764,7 +806,7 @@ def test_remove_non_existent_patterns(get_time_detector):
     non_existent_pattern = [{"POS": "VERB"}, None, []]
     for pattern in non_existent_pattern:
         with pytest.raises(ValueError):
-            get_time_detector.remove_pattern(pattern)
+            get_time_detector.remove_pattern(pattern, "non-strict")
 
 
 sent_fr = "Alice sera présente le {} et apportera 100$."
@@ -776,6 +818,7 @@ sample_dates_fr = {
             "total": ["02/17/2009"],
             "detect": ["02/17/2009"],
             "merge": [],
+            "strict": [],
         },
         "17/02/2009": {  # NUM
             "multi": [],
@@ -783,6 +826,7 @@ sample_dates_fr = {
             "total": ["17/02/2009"],
             "detect": ["17/02/2009"],
             "merge": [],
+            "strict": [],
         },
         "2009/02/17": {  # PROPN
             "multi": [],
@@ -790,6 +834,7 @@ sample_dates_fr = {
             "total": ["2009/02/17"],
             "detect": ["2009/02/17"],
             "merge": [],
+            "strict": [],
         },
         "12 mars 2025": {  # NUM -> NOUN -> NUM, nmod
             "multi": ["12 mars 2025"],
@@ -797,6 +842,7 @@ sample_dates_fr = {
             "total": ["12 mars 2025"],
             "detect": ["12 mars 2025"],
             "merge": [],
+            "strict": [],
         },
         "2/17/2009": {  # PROPN
             "multi": [],
@@ -804,6 +850,7 @@ sample_dates_fr = {
             "total": ["2/17/2009"],
             "detect": ["2/17/2009"],
             "merge": [],
+            "strict": [],
         },
         "17/2/2009": {  # VERB
             "multi": [],
@@ -811,6 +858,7 @@ sample_dates_fr = {
             "total": ["17/2/2009"],
             "detect": ["17/2/2009"],
             "merge": [],
+            "strict": [],
         },
         "2009/2/17": {  # VERB
             "multi": [],
@@ -818,6 +866,7 @@ sample_dates_fr = {
             "total": ["2009/2/17"],
             "detect": ["2009/2/17"],
             "merge": [],
+            "strict": [],
         },
         "09 février 2009": {  # NOUN -> NOUN -> NUM, nmod
             "multi": ["09 février 2009"],
@@ -825,6 +874,7 @@ sample_dates_fr = {
             "total": ["09 février 2009"],
             "detect": ["09 février 2009"],
             "merge": [],
+            "strict": [],
         },
         "2025-03-12": {  # NOUN-NOUN-NUM
             "multi": ["2025-03-12"],
@@ -832,6 +882,7 @@ sample_dates_fr = {
             "total": ["2025-03-12"],
             "detect": ["2025-03-12"],
             "merge": [],
+            "strict": [],
         },
         "2025-03-01": {  # NOUN-NOUN-NOUN
             "multi": ["2025-03-01"],
@@ -839,6 +890,7 @@ sample_dates_fr = {
             "total": ["2025-03-01"],
             "detect": ["2025-03-01"],
             "merge": [],
+            "strict": [],
         },
         "2025-11-20": {  # NOUN-NOUN-NUM
             "multi": ["2025-11-20"],
@@ -846,6 +898,7 @@ sample_dates_fr = {
             "total": ["2025-11-20"],
             "detect": ["2025-11-20"],
             "merge": [],
+            "strict": [],
         },
         "ven. 14 mars 2025, 10:30": {  # NUM -> NOUN -> NUM, nmod, 10:30 PROPN
             "multi": ["14 mars 2025"],
@@ -853,6 +906,7 @@ sample_dates_fr = {
             "total": ["ven", "14 mars 2025", "10:30"],
             "detect": ["ven. 14 mars 2025, 10:30"],
             "merge": [(4, 6), (8, 10)],
+            "strict": ["14 mars 2025, 10:30"],
         },
         "vendredi 14 mars 2025 à 10:30": {  # NUM -> NOUN -> NUM, nmod, 10:30 PROPN
             "multi": ["14 mars 2025"],
@@ -860,6 +914,7 @@ sample_dates_fr = {
             "total": ["vendredi", "14 mars 2025", "10:30"],
             "detect": ["vendredi 14 mars 2025 à 10:30"],
             "merge": [(4, 5), (7, 9)],
+            "strict": ["14 mars 2025 à 10:30"],
         },
         "14/03/2025 10:30": {  # NOUN, 10:30 NOUN
             "multi": [],
@@ -867,6 +922,7 @@ sample_dates_fr = {
             "total": ["14/03/2025", "10:30"],
             "detect": ["14/03/2025 10:30"],
             "merge": [(4, 5)],
+            "strict": [],  # 14/03/2025 is one word
         },
         "14/03/2025 à 10:30": {  # NOUN, 10:30 PROPN
             "multi": [],
@@ -874,6 +930,7 @@ sample_dates_fr = {
             "total": ["14/03/2025", "10:30"],
             "detect": ["14/03/2025 à 10:30"],
             "merge": [(4, 6)],
+            "strict": [],  # 14/03/2025 is one word
         },
         "2025-03-14 10:30": {  # NOUN -> NOUN -> NUM, 10:30 PROPN
             "multi": ["2025-03-14"],
@@ -881,6 +938,7 @@ sample_dates_fr = {
             "total": ["2025-03-14", "10:30"],
             "detect": ["2025-03-14 10:30"],
             "merge": [(8, 9)],
+            "strict": ["2025-03-14 10:30"],
         },
         "le 14 mars 2025": {  # NUM -> NOUN -> NUM, nmod
             "multi": ["14 mars 2025"],
@@ -888,6 +946,7 @@ sample_dates_fr = {
             "total": ["14 mars 2025"],
             "detect": ["14 mars 2025"],
             "merge": [],
+            "strict": [],
         },
         "ce vendredi 14 mars 2025": {  # NUM -> NOUN -> NUM, nmod
             "multi": ["14 mars 2025"],
@@ -895,6 +954,7 @@ sample_dates_fr = {
             "total": ["vendredi", "14 mars 2025"],
             "detect": ["vendredi 14 mars 2025"],
             "merge": [],
+            "strict": [],
         },
         "2 avril 2015": {  # NUM -> NOUN -> NUM, nmod
             "multi": ["2 avril 2015"],
@@ -902,6 +962,7 @@ sample_dates_fr = {
             "total": ["2 avril 2015"],
             "detect": ["2 avril 2015"],
             "merge": [],
+            "strict": [],
         },
         "6/12/25": {  # NOUN
             "multi": [],
@@ -909,6 +970,7 @@ sample_dates_fr = {
             "total": ["6/12/25"],
             "detect": ["6/12/25"],
             "merge": [],
+            "strict": [],
         },
         "17/04/2024 um 17:23 Uhr": {
             "multi": [],
@@ -916,6 +978,7 @@ sample_dates_fr = {
             "total": ["17/04/2024", "17:23"],
             "detect": ["17/04/2024 um 17:23"],
             "merge": [(4, 6)],
+            "strict": [],  # 17/04/2024 is one word
         },
         "Mittwoch, 17. April 2024 um 17:23 Uhr": {
             "multi": ["17. April 2024"],
@@ -923,6 +986,7 @@ sample_dates_fr = {
             "total": ["Mittwoch", "17. April 2024", "17:23"],
             "detect": ["Mittwoch, 17. April 2024 um 17:23"],
             "merge": [(4, 6), (9, 11)],
+            "strict": ["17. April 2024 um 17:23"],
         },
         "mié., 17 abr. 2024 17:20:18 +0200": {  # es but it appears in fr emails
             "multi": ["17 abr. 2024"],
@@ -930,6 +994,7 @@ sample_dates_fr = {
             "total": ["mié", "17 abr. 2024", "17:20:18", "+0200"],
             "detect": ["mié., 17 abr. 2024 17:20:18 +0200"],
             "merge": [(4, 7), (10, 11), (11, 12)],
+            "strict": ["17 abr. 2024 17:20:18 +0200"],
         },
         "Wednesday, April 17th 2024 at 17:23": {
             "multi": ["April 17th 2024 at"],
@@ -937,6 +1002,31 @@ sample_dates_fr = {
             "total": ["Wednesday", "April 17th 2024 at", "17:23"],
             "detect": ["Wednesday, April 17th 2024 at 17:23"],
             "merge": [(4, 6), (8, 10)],
+            "strict": ["April 17th 2024 at 17:23"],
+        },
+        "el 24 a las 3": {
+            "multi": [],
+            "single": ["24", "3"],
+            "total": ["24", "3"],
+            "detect": ["24 a las 3"],
+            "merge": [(5, 8)],
+            "strict": [],
+        },
+        "Mittwoch, 17. April 2024 17:02": {
+            "multi": ["17. April 2024"],
+            "single": ["Mittwoch", "17:02"],
+            "total": ["Mittwoch", "17. April 2024", "17:02"],
+            "detect": ["Mittwoch, 17. April 2024 17:02"],
+            "merge": [(4, 6), (9, 10)],
+            "strict": ["17. April 2024 17:02"],
+        },
+        "am Mittwoch, 17. April 2024 um 16:58:57": {
+            "multi": ["17. April 2024"],
+            "single": ["Mittwoch", "16:58:57"],
+            "total": ["Mittwoch", "17. April 2024", "16:58:57"],
+            "detect": ["Mittwoch, 17. April 2024 um 16:58:57"],
+            "merge": [(5, 7), (10, 12)],
+            "strict": ["17. April 2024 um 16:58:57"],
         },
     },
     "relative": {},
@@ -1175,3 +1265,12 @@ def test_get_date_time_fr_non_numbers(get_time_detector):
     # somehow "An" and "a" are detected as dates
     assert get_time_detector.get_date_time("An") == []
     assert get_time_detector.get_date_time("a") == []
+
+
+@pytest.mark.strict
+def test_get_date_time_fr_strict(get_time_detector_strict, get_date_samples):
+    sample_sentence, date_info = get_date_samples
+    results = get_time_detector_strict.get_date_time(sample_sentence)
+    assert len(results) == len(date_info["strict"])
+    for result, sample_time in zip(results, date_info["strict"]):
+        assert result[0] == sample_time

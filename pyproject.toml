@@ -49,6 +49,7 @@ Issues = "https://github.com/ssciwr/mailcom/issues"
 [tool.pytest.ini_options]
 markers = [
     "pattern: marks using pattern method",
+    "strict: marks using pattern method with strict mode",
     "langdet: marks tests related to language detection",
     "datelib : marks tests related to date library",
 ]

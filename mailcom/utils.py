@@ -309,52 +309,77 @@ class SpacyLoader:
 
 
 class TimeDetector:
-    def __init__(self, lang):
+
+    def __init__(self, lang, strict_parsing="non-strict"):
         self.lang = lang
         self.spacy_loader = SpacyLoader()
         self.spacy_loader.init_spacy(self.lang)
         self.nlp_spacy = self.spacy_loader.nlp_spacy
+        # parse incomplete dates or not
+        self.strict_parsing = strict_parsing
 
-        self.patterns = [
-            [  # 09 février 2009
-                {"POS": "NOUN", "TEXT": {"NOT_IN": ["-"]}},
-                {"POS": "NOUN", "TEXT": {"NOT_IN": ["-"]}},
-                {"POS": "NUM"},
-            ],
-            [  # 14 mars 2025 or 17 abr. 2024 or 17. April 2024
-                {"POS": "NUM"},
-                {"IS_PUNCT": True, "OP": "?"},
-                {},
-                {"IS_PUNCT": True, "OP": "?"},
-                {"POS": "NUM"},
-            ],
-            [{"POS": "X"}, {"POS": "X"}, {"POS": "X"}],  # April 17th 2024
-            [  # 2025-03-12
-                {"POS": "NOUN"},
-                {"TEXT": "-"},
-                {"POS": "NOUN"},
-                {"TEXT": "-"},
-                {"POS": "NUM"},
-            ],
-            [  # 2025-03-01
-                {"POS": "NOUN"},
-                {"TEXT": "-"},
-                {"POS": "NOUN"},
-                {"TEXT": "-"},
-                {"POS": "NOUN"},
-            ],
+        self.patterns = {
+            "non-strict": [
+                [  # 09 février 2009
+                    {"POS": "NOUN", "TEXT": {"NOT_IN": ["-"]}},
+                    {"POS": "NOUN", "TEXT": {"NOT_IN": ["-"]}},
+                    {"POS": "NUM"},
+                ],
+                [  # 14 mars 2025 or 17 abr. 2024 or 17. April 2024
+                    {"POS": "NUM"},
+                    {"IS_PUNCT": True, "OP": "?"},
+                    {},
+                    {"IS_PUNCT": True, "OP": "?"},
+                    {"POS": "NUM"},
+                ],
+                [{"POS": "X"}, {"POS": "X"}, {"POS": "X"}],  # April 17th 2024
+                [  # 2025-03-12
+                    {"POS": "NOUN"},
+                    {"TEXT": "-"},
+                    {"POS": "NOUN"},
+                    {"TEXT": "-"},
+                    {"POS": "NUM"},
+                ],
+                [  # 2025-03-01
+                    {"POS": "NOUN"},
+                    {"TEXT": "-"},
+                    {"POS": "NOUN"},
+                    {"TEXT": "-"},
+                    {"POS": "NOUN"},
+                ],
+            ]
+        }
+
+        # the two below lists need to be updated for each language
+        self.time_seps = ["at", "um", "à", ",", ".", "-"]
+        self.special_time_seps = [".,", "a las"]
+        # SpaCy may not detect numbers as NUM
+        # when the language setting differs from the actual language
+        self.time_single_word = ["NOUN", "NUM", "PROPN", "VERB", "PRON", "X", "ADV"]
+
+    def init_strict_patterns(self) -> None:
+        """Add strict patterns to the matcher for strict parsing cases."""
+        # patterns for the strict parsing cases based on the non-strict ones
+        # strict cases: date [] time, e.g. 09 février 2009 17:23
+        possible_time_word = {"POS": {"IN": []}}
+        possible_time_word["POS"]["IN"] = self.time_single_word
+        hour_minutes_patterns = [
+            {"OP": "?"},  # separator between date and time is optional
+        ]
+        hour_minutes_patterns.append(possible_time_word)
+        strict_patterns = [
+            p + hour_minutes_patterns for p in self.patterns["non-strict"]
         ]
 
-        self.time_seps = ["at", "um", "à", "a las", ",", ".", "-"]
-        self.special_time_seps = [".,"]
-        self.time_single_word = ["NOUN", "NUM", "PROPN", "VERB"]
+        self.patterns["strict"] = strict_patterns
 
-    def add_pattern(self, pattern: list[dict]) -> None:
+    def add_pattern(self, pattern: list[dict], mode: str) -> None:
         """Add a new pattern to the matcher
         if it's a non-empty list of dictionaries and not already present.
 
         Args:
             pattern (list[dict]): The pattern to add to the matcher.
+            mode (str): The mode of the pattern, either "strict" or "non-strict".
         """
         incorrect_format = (
             not pattern
@@ -363,18 +388,19 @@ class TimeDetector:
         )
         if incorrect_format:
             raise ValueError("Pattern must be a non-empty list of dictionaries.")
-        if pattern in self.patterns:
+        if pattern in self.patterns[mode]:
             raise ValueError("Pattern is already present in the matcher.")
-        self.patterns.append(pattern)
+        self.patterns[mode].append(pattern)
 
-    def remove_pattern(self, pattern: list) -> None:
+    def remove_pattern(self, pattern: list, mode: str) -> None:
         """Remove pattern from the matcher if it's present.
 
         Args:
             pattern (list): The pattern to remove from the matcher.
+            mode (str): The mode of the pattern, either "strict" or "non-strict".
         """
         try:
-            self.patterns.remove(pattern)
+            self.patterns[mode].remove(pattern)
         except ValueError:
             raise ValueError("Pattern is not present in the matcher.")
 
@@ -387,7 +413,8 @@ class TimeDetector:
         Returns:
             datetime: The datetime object of the time parsed.
         """
-        return dateparser.parse(text)
+        strict = False if self.strict_parsing == "non-strict" else True
+        return dateparser.parse(text, settings={"STRICT_PARSING": strict})
 
     def search_dates(self, text: str, langs=["es", "fr"]) -> list[(str, datetime)]:
         """Search for dates in a given text.
@@ -468,10 +495,14 @@ class TimeDetector:
             tuple[list, list]: A list of extracted dates and
                 marks of locations in the doc.
         """
+        # add the strict patterns if needed
+        if self.strict_parsing == "strict" and "strict" not in self.patterns:
+            self.init_strict_patterns()
+
         multi_word_date_time = []
         marked_locations = []
         matcher = Matcher(self.nlp_spacy.vocab)
-        matcher.add("DATE", self.patterns)
+        matcher.add("DATE", self.patterns[self.strict_parsing])
         matches = matcher(doc)
         for _, start, end in matches:
             span = doc[start:end]
@@ -537,9 +568,13 @@ class TimeDetector:
             list: A list of extracted dates.
         """
         multi_word_date_time, marked_locations = self.extract_date_time_multi_words(doc)
-        single_word_date_time = self.extract_date_time_single_word(
-            doc, marked_locations
-        )
+        if self.strict_parsing == "non-strict":
+            single_word_date_time = self.extract_date_time_single_word(
+                doc, marked_locations
+            )
+        else:
+            single_word_date_time = []
+
         extracted_date_time = multi_word_date_time + single_word_date_time
         # order the extracted dates
         extracted_date_time.sort(key=lambda x: self._get_start_end(x[0]))
@@ -757,7 +792,8 @@ if __name__ == "__main__":
     # this is generated if not present yet
     path_output = Path("./data/out/")
     lang_detect_lib = "langid"
-    output_filename = "{}_time_detection.csv".format(lang_detect_lib)
+    mode = "strict"
+    output_filename = "{}_time_detection{}.csv".format(lang_detect_lib, mode)
 
     # check that input dir is there
     if not check_dir(path_input):
@@ -792,7 +828,7 @@ if __name__ == "__main__":
         )
 
         # detect time based on the language
-        time_detector = TimeDetector(detected_lang[0][0])
+        time_detector = TimeDetector(detected_lang[0][0], strict_parsing=mode)
         detected_time = time_detector.get_date_time(text)
         detected_time_str = [det[0] for det in detected_time]
         file_results["time_text"] = detected_time_str
@@ -801,11 +837,14 @@ if __name__ == "__main__":
         lang_tree = lang_detector.detect_lang_sentences(
             sentences, lang_lib=lang_detect_lib
         )
+
+        # for testing only
+        # initializing a time detector instance for each sentence is inefficient
         time_sents = []
         for interval in sorted(lang_tree):
             portion_text = "\n".join(sentences[interval.begin : interval.end])
             lang_sent = interval.data
-            time_detector = TimeDetector(lang_sent)
+            time_detector = TimeDetector(lang_sent, strict_parsing=mode)
             detected_time_sent = time_detector.get_date_time(portion_text)
             detected_time_sent_str = [det[0] for det in detected_time_sent]
             time_sents.append(
