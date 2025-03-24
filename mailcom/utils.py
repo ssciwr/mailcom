@@ -12,7 +12,7 @@ from datetime import datetime
 import dateparser.search
 import spacy as sp
 from spacy.matcher import Matcher
-from spacy.tokens import Token
+from spacy.tokens import Token, Doc
 
 
 def check_dir(path: Path) -> bool:
@@ -456,7 +456,7 @@ class TimeDetector:
         return list(datefinder.find_dates(text))
 
     def unite_overlapping_words(
-        self, multi_word_date_time: list, marked_locations: list, doc: object
+        self, multi_word_date_time: list, marked_locations: list, doc: Doc
     ) -> tuple[list, list]:
         """Unite overlapping words between two items in the matched multi-word date time.
 
@@ -464,7 +464,7 @@ class TimeDetector:
             multi_word_date_time (list): A list of multi-word date time.
             marked_locations (list): A list of marked locations of dates
                 in multiple word format.
-            doc (object): The spacy doc object.
+            doc (Doc): The spacy doc object.
 
         Returns:
             tuple[list, list]: A list of updated multi-word date time and
@@ -503,12 +503,12 @@ class TimeDetector:
 
         return updated_multi_word_date_time, updated_marked_locations
 
-    def extract_date_time_multi_words(self, doc: object) -> tuple[list, list]:
+    def extract_date_time_multi_words(self, doc: Doc) -> tuple[list, list]:
         """Extract time from a given text when it is multiple words.
         E.g. 12 mars 2025, 17. April 2024
 
         Args:
-            doc (object): The spacy doc object.
+            doc (Doc): The spacy doc object.
 
         Returns:
             tuple[list, list]: A list of extracted dates and
@@ -536,14 +536,12 @@ class TimeDetector:
             )
         return multi_word_date_time, marked_locations
 
-    def extract_date_time_single_word(
-        self, doc: object, marked_locations: list
-    ) -> list:
+    def extract_date_time_single_word(self, doc: Doc, marked_locations: list) -> list:
         """Extract time from a given text when it is only one word.
         E.g. 2009/02/17, 17:23
 
         Args:
-            doc (object): The spacy doc object.
+            doc (Doc): The spacy doc object.
             marked_locations (list): A list of marked locations of dates
                 in multiple word format.
 
@@ -577,11 +575,11 @@ class TimeDetector:
             token_span.end - 1,
         )  # the last token also belongs to the span
 
-    def extract_date_time(self, doc: object) -> list:
+    def extract_date_time(self, doc: Doc) -> list:
         """Extract dates from a given text.
 
         Args:
-            doc (object): The spacy doc object.
+            doc (Doc): The spacy doc object.
 
         Returns:
             list: A list of extracted dates.
@@ -614,7 +612,7 @@ class TimeDetector:
         return None
 
     def is_time_mergeable(
-        self, first_token: object, second_token: object, doc: object
+        self, first_token: object, second_token: object, doc: Doc
     ) -> bool:
         """Check if the two time tokens can be merged.
         True: if they are next to each other in the token list,
@@ -627,7 +625,7 @@ class TimeDetector:
         Args:
             first_token (object): The first spaCy token or span.
             second_token (object): The second spaCy token or span.
-            doc (object): The spacy doc object.
+            doc (Doc): The spacy doc object.
 
         Returns:
             bool: True if the tokens can be merged, False otherwise.
@@ -684,13 +682,13 @@ class TimeDetector:
         return merged_datetime
 
     def merge_date_time(
-        self, extracted_datetime: list, doc: object
+        self, extracted_datetime: list, doc: Doc
     ) -> list[(str, datetime, int, int)]:
         """Merge the extracted date and time if they are mergeable.
 
         Args:
             extracted_datetime (list): The extracted date and time.
-            doc (object): The spacy doc object.
+            doc (Doc): The spacy doc object.
 
         Returns:
             list[(str, datetime, int, int)]: A list of tuples containing

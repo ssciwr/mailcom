@@ -674,54 +674,45 @@ def test_parse_time_strict(get_time_detector_strict):
 
 
 @pytest.mark.datelib
-def test_search_dates(get_time_detector):
+def test_search_dates_en(get_time_detector):
     extra_info_en = "The date in the email is: "
-    extra_info_fr = "La date dans l'e-mail est: "
-    for i, data in enumerate(sample_parsed_dates["absolute"].items()):
+    for data in list(sample_parsed_dates["absolute"].items())[:4]:
         date_str, date_obj = data
-        if i < 4:
-            results = get_time_detector.search_dates(
-                extra_info_en + date_str, langs=["en"]
-            )
-            if date_str not in ["15.03.2025"]:
-                assert results[0][0] == date_str
-                assert results[0][1] == date_obj
-        else:
-            results = get_time_detector.search_dates(
-                extra_info_fr + date_str, langs=["fr"]
-            )
+        results = get_time_detector.search_dates(extra_info_en + date_str, langs=["en"])
+        if date_str != "15.03.2025":
             assert results[0][0] == date_str
             assert results[0][1] == date_obj
-    for i, data in enumerate(sample_parsed_dates["relative"].items()):
+    for data in list(sample_parsed_dates["relative"].items())[:5]:
         date_str, date_obj = data
-        if i < 5:
-            results = get_time_detector.search_dates(
-                extra_info_en + date_str, langs=["en"]
-            )
-            assert results[0][0] == date_str
-            assert results[0][1].date() == date_obj
-        else:
-            results = get_time_detector.search_dates(
-                extra_info_fr + date_str, langs=["fr"]
-            )
-            if date_str not in ["il y a deux semaines", "il y a 2 semaines"]:
-                assert results[0][0] == date_str
-                assert results[0][1].date() == date_obj
+        results = get_time_detector.search_dates(extra_info_en + date_str, langs=["en"])
+        assert results[0][0] == date_str
+        assert results[0][1].date() == date_obj
     for date_str in sample_parsed_dates["invalid"]:
         assert (
             get_time_detector.search_dates(extra_info_en + date_str, langs=["en"])
             is None
         )
     for date_str, date_obj in sample_parsed_dates["confusing"].items():
-        if date_str == "10.03.2025":
-            with pytest.raises(AssertionError):
-                assert get_time_detector.search_dates(
-                    extra_info_en + date_str, langs=["en"]
-                ) == [(date_str, date_obj)]
-        else:
+        if date_str != "10.03.2025":
             assert get_time_detector.search_dates(
                 extra_info_en + date_str, langs=["en"]
             ) == [(date_str, date_obj)]
+
+
+@pytest.mark.datelib
+def test_search_dates_fr(get_time_detector):
+    extra_info_fr = "La date dans l'e-mail est: "
+    for data in list(sample_parsed_dates["absolute"].items())[4:]:
+        date_str, date_obj = data
+        results = get_time_detector.search_dates(extra_info_fr + date_str, langs=["fr"])
+        assert results[0][0] == date_str
+        assert results[0][1] == date_obj
+    for data in list(sample_parsed_dates["relative"].items())[5:]:
+        date_str, date_obj = data
+        results = get_time_detector.search_dates(extra_info_fr + date_str, langs=["fr"])
+        if date_str not in ["il y a deux semaines", "il y a 2 semaines"]:
+            assert results[0][0] == date_str
+            assert results[0][1].date() == date_obj
 
 
 @pytest.mark.datelib
