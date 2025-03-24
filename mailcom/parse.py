@@ -1,4 +1,3 @@
-import spacy as sp
 from transformers import pipeline
 from pathlib import Path
 from mailcom.inout import InoutHandler

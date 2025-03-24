@@ -710,7 +710,7 @@ def test_search_dates(get_time_detector):
     for date_str in sample_parsed_dates["invalid"]:
         assert (
             get_time_detector.search_dates(extra_info_en + date_str, langs=["en"])
-            == None
+            is None
         )
     for date_str, date_obj in sample_parsed_dates["confusing"].items():
         if date_str == "10.03.2025":
@@ -748,7 +748,7 @@ def test_init_strict_patterns(get_time_detector_strict):
     assert "strict" in get_time_detector_strict.patterns
     assert len(get_time_detector_strict.patterns["strict"]) == len(
         get_time_detector_strict.patterns["non-strict"]
-    )
+    ) + len(get_time_detector_strict.special_strict_patterns)
     for p_n, p_s in zip(
         get_time_detector_strict.patterns["non-strict"],
         get_time_detector_strict.patterns["strict"][
@@ -922,7 +922,7 @@ sample_dates_fr = {
             "total": ["14/03/2025", "10:30"],
             "detect": ["14/03/2025 10:30"],
             "merge": [(4, 5)],
-            "strict": [],  # 14/03/2025 is one word
+            "strict": ["14/03/2025 10:30"],  # 14/03/2025 is one word
         },
         "14/03/2025 à 10:30": {  # NOUN, 10:30 PROPN
             "multi": [],
@@ -930,7 +930,7 @@ sample_dates_fr = {
             "total": ["14/03/2025", "10:30"],
             "detect": ["14/03/2025 à 10:30"],
             "merge": [(4, 6)],
-            "strict": [],  # 14/03/2025 is one word
+            "strict": ["14/03/2025 à 10:30"],  # 14/03/2025 is one word
         },
         "2025-03-14 10:30": {  # NOUN -> NOUN -> NUM, 10:30 PROPN
             "multi": ["2025-03-14"],
@@ -978,7 +978,7 @@ sample_dates_fr = {
             "total": ["17/04/2024", "17:23"],
             "detect": ["17/04/2024 um 17:23"],
             "merge": [(4, 6)],
-            "strict": [],  # 17/04/2024 is one word
+            "strict": ["17/04/2024 um 17:23"],  # 17/04/2024 is one word
         },
         "Mittwoch, 17. April 2024 um 17:23 Uhr": {
             "multi": ["17. April 2024"],
@@ -1027,6 +1027,14 @@ sample_dates_fr = {
             "detect": ["Mittwoch, 17. April 2024 um 16:58:57"],
             "merge": [(5, 7), (10, 12)],
             "strict": ["17. April 2024 um 16:58:57"],
+        },
+        "17.04.2024 17:33:23": {
+            "multi": [],
+            "single": ["17.04.2024", "17:33:23"],
+            "total": ["17.04.2024", "17:33:23"],
+            "detect": ["17.04.2024 17:33:23"],
+            "merge": [(4, 5)],
+            "strict": ["17.04.2024 17:33:23"],
         },
     },
     "relative": {},
@@ -1156,7 +1164,7 @@ def test_get_next_sibling(get_time_detector, get_date_samples):
     doc = get_time_detector.nlp_spacy(sample_sentence)
     token = doc[0]
     assert get_time_detector._get_next_sibling(token) == doc[1]
-    assert get_time_detector._get_next_sibling(doc[len(doc) - 1]) == None
+    assert get_time_detector._get_next_sibling(doc[len(doc) - 1]) is None
 
 
 @pytest.mark.pattern
@@ -1164,8 +1172,8 @@ def test_is_time_mergeable(get_time_detector, get_date_samples):
     sample_sentence, date_info = get_date_samples
     doc = get_time_detector.nlp_spacy(sample_sentence)
     for s_id, e_id in date_info["merge"]:
-        assert get_time_detector.is_time_mergeable(doc[s_id], doc[e_id], doc) == True
-    assert get_time_detector.is_time_mergeable(doc[0], doc[7], doc) == False
+        assert get_time_detector.is_time_mergeable(doc[s_id], doc[e_id], doc) is True
+    assert get_time_detector.is_time_mergeable(doc[0], doc[7], doc) is False
 
 
 @pytest.mark.pattern

@@ -357,19 +357,35 @@ class TimeDetector:
         # when the language setting differs from the actual language
         self.time_single_word = ["NOUN", "NUM", "PROPN", "VERB", "PRON", "X", "ADV"]
 
+        # special cases for strict parsing
+        # 17.04.2024 or 17/04/2024
+        self.special_strict_patterns = [
+            [
+                {
+                    "POS": {"IN": self.time_single_word},
+                    "TEXT": {"REGEX": r"^\d{1,2}([./])\d{1,2}([./])\d{2,4}"},
+                },
+            ]
+        ]
+
     def init_strict_patterns(self) -> None:
         """Add strict patterns to the matcher for strict parsing cases."""
         # patterns for the strict parsing cases based on the non-strict ones
         # strict cases: date [] time, e.g. 09 février 2009 17:23
-        possible_time_word = {"POS": {"IN": []}}
-        possible_time_word["POS"]["IN"] = self.time_single_word
         hour_minutes_patterns = [
             {"OP": "?"},  # separator between date and time is optional
+            {
+                "POS": {"IN": self.time_single_word},
+                "TEXT": {"REGEX": r"^[\d:+.]+$"},  # only numbers, :, +, .
+            },
         ]
-        hour_minutes_patterns.append(possible_time_word)
         strict_patterns = [
             p + hour_minutes_patterns for p in self.patterns["non-strict"]
         ]
+
+        # add the special cases
+        for special_pattern in self.special_strict_patterns:
+            strict_patterns.append(special_pattern + hour_minutes_patterns)
 
         self.patterns["strict"] = strict_patterns
 
@@ -423,7 +439,8 @@ class TimeDetector:
             text (str): The text to search for dates in.
 
         Returns:
-            list[(str, datetime)]: A list of tuples containing the date string and the datetime object.
+            list[(str, datetime)]: A list of tuples containing the date string
+                and the datetime object.
         """
         return dateparser.search.search_dates(text, languages=langs)
 
@@ -793,7 +810,7 @@ if __name__ == "__main__":
     path_output = Path("./data/out/")
     lang_detect_lib = "langid"
     mode = "strict"
-    output_filename = "{}_time_detection{}.csv".format(lang_detect_lib, mode)
+    output_filename = "{}_time_detection_{}.csv".format(lang_detect_lib, mode)
 
     # check that input dir is there
     if not check_dir(path_input):
