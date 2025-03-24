@@ -743,17 +743,16 @@ def test_find_dates(get_time_detector):
 
 @pytest.mark.strict
 def test_init_strict_patterns(get_time_detector_strict):
+    num_non_strict_patterns = len(get_time_detector_strict.patterns["non-strict"])
     assert "strict" not in get_time_detector_strict.patterns
     get_time_detector_strict.init_strict_patterns()
     assert "strict" in get_time_detector_strict.patterns
-    assert len(get_time_detector_strict.patterns["strict"]) == len(
-        get_time_detector_strict.patterns["non-strict"]
-    ) + len(get_time_detector_strict.special_strict_patterns)
+    assert len(
+        get_time_detector_strict.patterns["strict"]
+    ) == num_non_strict_patterns + len(get_time_detector_strict.special_strict_patterns)
     for p_n, p_s in zip(
         get_time_detector_strict.patterns["non-strict"],
-        get_time_detector_strict.patterns["strict"][
-            0 : len(get_time_detector_strict.patterns["non-strict"])
-        ],
+        get_time_detector_strict.patterns["strict"][0:num_non_strict_patterns],
     ):
         assert len(p_s) == len(p_n) + 2
 
@@ -1243,6 +1242,19 @@ def test_merge_date_time_one_item(get_time_detector):
     assert merged_date_time[0][0] == "14 mars 2025"
     assert merged_date_time[0][2] == 0
     assert merged_date_time[0][3] == 12
+
+
+@pytest.mark.pattern
+def test_merge_date_time_non_mergeable(get_time_detector):
+    doc = get_time_detector.nlp_spacy(
+        "24.03.2025 then something in between 10:30 then another thing in between 12:30"
+    )
+    extracted_date_time = get_time_detector.extract_date_time(doc)
+    merged_date_time = get_time_detector.merge_date_time(extracted_date_time, doc)
+    assert len(merged_date_time) == 3
+    assert merged_date_time[0][0] == "24.03.2025"
+    assert merged_date_time[1][0] == "10:30"
+    assert merged_date_time[2][0] == "12:30"
 
 
 @pytest.mark.pattern

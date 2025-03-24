@@ -482,7 +482,9 @@ class TimeDetector:
             current_span, _ = multi_word_date_time[count]
             next_span, _ = multi_word_date_time[count + 1]
             if current_span.end >= next_span.start:
-                united_span = doc[current_span.start : next_span.end]
+                up_s_idx = current_span.start
+                up_e_idx = next_span.end
+                united_span = doc[up_s_idx:up_e_idx]
                 parsed_time = self.parse_time(united_span.text)
                 # assuming that the united span is a valid date
                 updated_multi_word_date_time.append((united_span, parsed_time))
@@ -641,8 +643,11 @@ class TimeDetector:
             and self._get_start_end(doc[e_first_id + 2])[0] == s_second_id
         )
 
+        special_time_seps_s_idx = e_first_id + 1
+        special_time_seps_e_idx = e_first_id + 3
         is_separated_by_special_time_seps = (  # e.g. mié., 17 abr. 2024
-            doc[e_first_id + 1 : e_first_id + 3].text in self.special_time_seps
+            doc[special_time_seps_s_idx:special_time_seps_e_idx].text
+            in self.special_time_seps
             and self._get_start_end(doc[e_first_id + 3])[0] == s_second_id
         )
 
@@ -681,7 +686,7 @@ class TimeDetector:
     def merge_date_time(
         self, extracted_datetime: list, doc: object
     ) -> list[(str, datetime, int, int)]:
-        """Merge the extracted date and time if they are next to each other in the sentence.
+        """Merge the extracted date and time if they are mergeable.
 
         Args:
             extracted_datetime (list): The extracted date and time.
@@ -714,6 +719,7 @@ class TimeDetector:
 
         count = 0
         current_pointer, current_parsed_time = extracted_datetime[count]
+        merged = False
 
         while count < len(extracted_datetime) - 1:
             next_pointer, next_parsed_time = extracted_datetime[count + 1]
@@ -721,7 +727,8 @@ class TimeDetector:
             e_word = self._get_start_end(next_pointer)[1]
             s_idx = doc[s_word].idx
             e_idx = doc[e_word].idx + len(doc[e_word])
-            new_text = doc[s_word : e_word + 1].text
+            e_new_word = e_word + 1
+            new_text = doc[s_word:e_new_word].text
             new_parsed_time = self.parse_time(new_text)
             if (
                 self.is_time_mergeable(current_pointer, next_pointer, doc)
@@ -738,8 +745,10 @@ class TimeDetector:
                 )
 
                 # prepare for the next step
-                current_pointer = doc[s_word : e_word + 1]  # a span
+                span_e = e_word + 1
+                current_pointer = doc[s_word:span_e]  # a span
                 current_parsed_time = new_parsed_time
+                merged = True
 
             else:
                 s_word = self._get_start_end(current_pointer)[0]
@@ -759,8 +768,26 @@ class TimeDetector:
                 # prepare for the next step
                 current_pointer = next_pointer
                 current_parsed_time = next_parsed_time
+                merged = False
 
             count += 1
+
+        if not merged:
+            # add the last item
+            last_item, last_parsed_time = extracted_datetime[count]
+            s_word = self._get_start_end(last_item)[0]
+            e_word = self._get_start_end(last_item)[1]
+            s_idx = doc[s_word].idx
+            e_idx = doc[e_word].idx + len(doc[e_word])
+            self.add_merged_datetime(
+                merged_datetime,
+                (
+                    last_item.text,
+                    last_parsed_time,
+                    s_idx,
+                    e_idx,
+                ),
+            )
 
         return merged_datetime
 
@@ -770,10 +797,10 @@ class TimeDetector:
         """Filter out the date time phrases that do not contain numbers.
 
         Args:
-            date_time (list[(str, datetime, int, int)]): The list of date and time and their positions.
+            date_time (list[(str, datetime, int, int)]): The original list.
 
         Returns:
-            list[(str, datetime, int, int)]: The filtered list of date and time and their positions.
+            list[(str, datetime, int, int)]: The filtered list.
         """
         updated_date_time = []
         for dt in date_time:
@@ -859,7 +886,9 @@ if __name__ == "__main__":
         # initializing a time detector instance for each sentence is inefficient
         time_sents = []
         for interval in sorted(lang_tree):
-            portion_text = "\n".join(sentences[interval.begin : interval.end])
+            s_idx = interval.begin
+            e_idx = interval.end
+            portion_text = "\n".join(sentences[s_idx:e_idx])
             lang_sent = interval.data
             time_detector = TimeDetector(lang_sent, strict_parsing=mode)
             detected_time_sent = time_detector.get_date_time(portion_text)
