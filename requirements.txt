@@ -7,3 +7,5 @@ jupyter
 langid
 langdetect
 intervaltree
+dateparser
+datefinder

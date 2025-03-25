@@ -31,7 +31,9 @@ dependencies = [
   "matplotlib",
   "langid",
   "langdetect",
-  "intervaltree"
+  "intervaltree",
+  "dateparser",
+  "datefinder",
 ]
 
 [project.optional-dependencies]
@@ -43,3 +45,11 @@ dev = [
 [project.urls]
 Homepage = "https://github.com/ssciwr/mailcom"
 Issues = "https://github.com/ssciwr/mailcom/issues"
+
+[tool.pytest.ini_options]
+markers = [
+    "pattern: marks using pattern method",
+    "strict: marks using pattern method with strict mode",
+    "langdet: marks tests related to language detection",
+    "datelib : marks tests related to date library",
+]
