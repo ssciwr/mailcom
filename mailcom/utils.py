@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import spacy as sp
+from transformers import pipeline
 
 
 def check_dir(path: Path) -> bool:
@@ -45,7 +46,7 @@ def clean_up_content(content: str) -> tuple[str, list]:
 
 class SpacyLoader:
     def __init__(self):
-        self.spacy_default_model_dict = {
+        self.spacy_default_model = {
             "es": "es_core_news_md",
             "fr": "fr_core_news_md",
             "de": "de_core_news_md",
@@ -55,8 +56,8 @@ class SpacyLoader:
     def init_spacy(self, language: str, model="default"):
         if model == "default":
             # use German as the default language
-            model = self.spacy_default_model_dict.get(
-                language, self.spacy_default_model_dict["de"]
+            model = self.spacy_default_model.get(
+                language, self.spacy_default_model["de"]
             )
         try:
             # disable not needed components
@@ -76,3 +77,28 @@ class SpacyLoader:
                 )
             except SystemExit:
                 raise SystemExit("Could not download {} from repo".format(model))
+
+
+class TransformerLoader:
+    def __init__(self):
+        self.trans_default_model = {
+            "ner": {
+                "task": "token-classification",
+                "model": "xlm-roberta-large-finetuned-conll03-english",
+                "revision": "18f95e9",
+                "aggregation_strategy": "simple",
+            },
+            "lang_detector": {
+                "task": "text-classification",
+                "model": "papluca/xlm-roberta-base-language-detection",
+            },
+        }
+
+        self.trans_instances = {}
+
+    def init_transformers(self, feature: str):
+        setting_info = self.trans_default_model.get(feature)
+        if not setting_info:
+            raise ValueError("Invalid feature: {}".format(feature))
+
+        self.trans_instances[feature] = pipeline(**setting_info)

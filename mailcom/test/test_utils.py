@@ -1,8 +1,5 @@
-import math
 from mailcom import utils
 import pytest
-from string import punctuation
-import datetime
 
 
 def test_check_dir(tmpdir):
@@ -50,3 +47,20 @@ def test_init_spacy(get_spacy_loader):
     assert get_spacy_loader.nlp_spacy is not None
     with pytest.raises(SystemExit):
         get_spacy_loader.init_spacy("fr", "not_an_existing_spacy_model")
+
+
+@pytest.fixture()
+def get_transformer_loader():
+    return utils.TransformerLoader()
+
+
+def test_init_transformers(get_transformer_loader):
+    # correct features
+    get_transformer_loader.init_transformers(feature="ner")
+    assert get_transformer_loader.trans_instances["ner"] is not None
+    get_transformer_loader.init_transformers(feature="lang_detector")
+    assert get_transformer_loader.trans_instances["lang_detector"] is not None
+
+    # invalid feature
+    with pytest.raises(ValueError):
+        get_transformer_loader.init_transformers(feature="invalid-feature")
