@@ -1,20 +1,4 @@
-from pathlib import Path
 from mailcom import utils
-
-# please modify this section depending on your setup
-# input language - either "es" or "fr"
-# will also need pt
-lang = "es"
-# lang = "fr"
-# path where the input files can be found
-path_input = Path("./data/in/")
-# path where the output files should be written to
-# this is generated if not present yet
-path_output = Path("./data/out/")
-output_filename = "dict"
-# the ner tool - currently only "transformers"
-tool = "transformers"
-# please do not modify below this section unless you know what you are doing
 
 
 class Pseudonymize:
@@ -190,21 +174,21 @@ class Pseudonymize:
         return " ".join(sentences)
 
     def pseudonymize(
-        self, email, language="de", model="default", pipeline_info: dict = None
+        self, text, language="de", model="default", pipeline_info: dict = None
     ):
         """Function that handles the pseudonymization of an email
         and all its steps
 
         Args:
-            email (dict): Dictionary containing email content and metadata.
+            text (str): Text to pseudonymize.
             language (str, optional): Language of the email. Defaults to "de".
             model (str, optional): Model to use for NER. Defaults to "default".
             pipeline_info (dict, optional): Pipeline information for NER.
                 Defaults to None.
 
         Returns:
-            str: Pseudonymized text"""
-        text = email["content"]
+            str: Pseudonymized text
+        """
         self.reset()
         sentences = self.get_sentences(text, language, model)
         pseudonymized_sentences = []
@@ -214,5 +198,4 @@ class Pseudonymize:
             ps_sent = " ".join(self.pseudonymize_ne(ner, sent)) if ner else sent
             ps_sent = self.pseudonymize_numbers(ps_sent)
             pseudonymized_sentences.append(ps_sent)
-        email["pseudo_content"] = self.concatenate(pseudonymized_sentences)
-        return email["pseudo_content"]
+        return self.concatenate(pseudonymized_sentences)

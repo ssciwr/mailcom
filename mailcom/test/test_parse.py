@@ -94,7 +94,7 @@ def test_reset(get_default_fr):
     sample_texts = [text1, text2]
     for text in sample_texts:
         # pseudonymize email
-        get_default_fr.pseudonymize(text, language="fr")
+        get_default_fr.pseudonymize(text["content"], language="fr")
         get_default_fr.reset()
         # Test that used names lists are empty now
         # They should be cleared after every email
@@ -181,7 +181,7 @@ def test_pseudonymize(get_default_fr):
         "content": "Francois et Agathe sont amis. "
         "Mon numéro de téléphone est 123-456-7890."  # noqa
     }
-    pseudonymized_text = get_default_fr.pseudonymize(text, language="fr")
+    pseudonymized_text = get_default_fr.pseudonymize(text["content"], language="fr")
 
     # Check that names are pseudonymized
     assert "Francois" not in pseudonymized_text
@@ -197,13 +197,13 @@ def test_pseudonymize(get_default_fr):
 
 def test_pseudonymize_empty_string(get_default_fr):
     text = {"content": ""}
-    pseudonymized_text = get_default_fr.pseudonymize(text, language="fr")
+    pseudonymized_text = get_default_fr.pseudonymize(text["content"], language="fr")
     assert pseudonymized_text == ""
 
 
 def test_pseudonymize_no_entities(get_default_fr):
     text = {"content": "Ceci est une phrase simple sans entités nommées ni chiffres."}
-    pseudonymized_text = get_default_fr.pseudonymize(text, language="fr")
+    pseudonymized_text = get_default_fr.pseudonymize(text["content"], language="fr")
     assert pseudonymized_text == text["content"]
 
 
