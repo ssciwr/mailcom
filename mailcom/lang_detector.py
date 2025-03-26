@@ -1,16 +1,21 @@
 from langid.langid import LanguageIdentifier, model
 from langdetect import detect_langs, DetectorFactory
 from intervaltree import IntervalTree
-from transformers import pipeline
+from mailcom.utils import TransformerLoader, get_trans_instance
 
 
 class LangDetector:
-    def __init__(self):
+    def __init__(self, trans_loader: TransformerLoader = None):
         self.lang_id = LanguageIdentifier.from_modelstring(model, norm_probs=True)
         self.detect_langs = detect_langs
+        self.trans_loader = trans_loader
+        self.feature = "lang_detector"
 
-    def init_transformers(self, model="papluca/xlm-roberta-base-language-detection"):
-        self.lang_detector_trans = pipeline("text-classification", model=model)
+    def init_transformers(self, pipeline_info: dict = None):
+        """Initialize transformers for language detection."""
+        self.lang_detector_trans = get_trans_instance(
+            self.trans_loader, self.feature, pipeline_info
+        )
 
     def contains_only_punctuations(self, text: str) -> bool:
         """Check if a given text contains only punctuations.
@@ -92,11 +97,14 @@ class LangDetector:
         """Enforce consistent results for langdetect."""
         DetectorFactory.seed = 0
 
-    def detect_with_transformers(self, sentence: str) -> list[tuple[str, float]]:
+    def detect_with_transformers(
+        self, sentence: str, pipeline_info: dict = None
+    ) -> list[tuple[str, float]]:
         """Dectect language of a given text using transformers library.
 
         Args:
-            text (str): The text to detect the language of.
+            sentence (str): The text to detect the language of.
+            pipeline_info (dict, optional): The pipeline information
 
         Returns:
             list(str, float): The possible language and their probabilities.
@@ -104,7 +112,7 @@ class LangDetector:
         # checking for attribute first instead of catching exception
         # to avoid repetition of code
         if not hasattr(self, "lang_detector_trans"):
-            self.init_transformers()
+            self.init_transformers(pipeline_info)
         detections = self.lang_detector_trans(sentence, top_k=2, truncation=True)
         results = []
         for detection in detections:
@@ -153,7 +161,9 @@ class LangDetector:
             )
         return results
 
-    def get_detections(self, text: str, lang_lib="langid") -> list[tuple[str, float]]:
+    def get_detections(
+        self, text: str, lang_lib="langid", pipeline_info: dict = None
+    ) -> list[tuple[str, float]]:
         """Get detections for a given text using a specified lang_lib or model.
 
         Args:
@@ -161,6 +171,8 @@ class LangDetector:
             lang_lib (str): The lang_lib to use for detection.
                 Options are "langid", "langdetect" and "trans".
                 The default is "langid".
+            pipeline_info (dict, optional): The pipeline information,
+                used for detecting with "trans" option.
 
         Returns:
             list(str, float): A list of detected languages and their probabilities.
@@ -181,7 +193,7 @@ class LangDetector:
                 self.determine_langdetect()
                 return self.detect_with_langdetect(text)
             elif lang_lib == "trans":
-                return self.detect_with_transformers(text)
+                return self.detect_with_transformers(text, pipeline_info)
             else:
                 raise ValueError(
                     "Language library must be either 'langid', 'langdetect' or 'trans'."
@@ -190,7 +202,7 @@ class LangDetector:
             return [(None, 0.0)]
 
     def detect_lang_sentences(
-        self, sentences: list[str], lang_lib="langid"
+        self, sentences: list[str], lang_lib="langid", pipeline_info: dict = None
     ) -> IntervalTree:
         """Detect languages of a list of sentences using a specified language library.
 
@@ -198,6 +210,8 @@ class LangDetector:
             sentences (str): The document to detect the languages of.
             lang_lib (str): The lang_lib to use for detection.
                 Options are "langid", "langdetect" and "trans".
+            pipeline_info (dict, optional): The pipeline information,
+                used for detecting with "trans" option.
 
         Returns:
             IntervalTree: An interval tree with the detected languages and their spans.
@@ -208,7 +222,7 @@ class LangDetector:
         current_lang = ""
         for sent in sentences:
             if sent:
-                detections = self.get_detections(sent, lang_lib)
+                detections = self.get_detections(sent, lang_lib, pipeline_info)
                 # only take the first detection
                 lang, _ = detections[0]
                 if lang != current_lang:

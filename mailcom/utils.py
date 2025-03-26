@@ -53,15 +53,23 @@ class SpacyLoader:
             "pt": "pt_core_news_md",
         }
 
+        self.spacy_instances = {}
+
+    def get_default_model(self, language: str):
+        # use German as the default language
+        if language not in self.spacy_default_model:
+            return "de", self.spacy_default_model["de"]
+        return language, self.spacy_default_model[language]
+
     def init_spacy(self, language: str, model="default"):
         if model == "default":
-            # use German as the default language
-            model = self.spacy_default_model.get(
-                language, self.spacy_default_model["de"]
-            )
+            language, model = self.get_default_model(language)
+        if language not in self.spacy_instances:
+            self.spacy_instances[language] = {}
+
         try:
             # disable not needed components
-            self.nlp_spacy = sp.load(
+            self.spacy_instances[language][model] = sp.load(
                 model, exclude=["attribute_ruler", "lemmatizer", "ner"]
             )
         except OSError:
@@ -71,12 +79,41 @@ class SpacyLoader:
                 )
                 # try downloading model
                 sp.cli.download(model)
-                self.nlp_spacy = sp.load(
+                self.spacy_instances[language][model] = sp.load(
                     model,
                     exclude=["attribute_ruler", "lemmatizer", "ner"],
                 )
             except SystemExit:
                 raise SystemExit("Could not download {} from repo".format(model))
+
+
+def get_spacy_instance(
+    spacy_loader: SpacyLoader, language: str, model: str = "default"
+):
+    """Get the spacy instance for a given language and model.
+
+    Args:
+        spacy_loader (SpacyLoader): The spacy loader.
+        language (str): The language of the spacy instance.
+        model (str): The model of the spacy instance, defaults to "default".
+
+    Returns:
+        spacy.Language: The spacy instance.
+    """
+    if spacy_loader is None:
+        raise ValueError("Spacy loader is not provided.")
+
+    if model == "default":
+        language, model = spacy_loader.get_default_model(language)
+
+    if (
+        language not in spacy_loader.spacy_instances
+        or model not in spacy_loader.spacy_instances[language]
+    ):
+        # init the spacy instance
+        spacy_loader.init_spacy(language, model)
+
+    return spacy_loader.spacy_instances[language][model]
 
 
 class TransformerLoader:
@@ -96,9 +133,42 @@ class TransformerLoader:
 
         self.trans_instances = {}
 
-    def init_transformers(self, feature: str):
-        setting_info = self.trans_default_model.get(feature)
-        if not setting_info:
+    def init_transformers(self, feature: str, pipeline_info: dict = None):
+        if not pipeline_info:
+            pipeline_info = self.trans_default_model.get(feature)
+        if not pipeline_info:
             raise ValueError("Invalid feature: {}".format(feature))
 
-        self.trans_instances[feature] = pipeline(**setting_info)
+        try:
+            self.trans_instances[feature] = pipeline(**pipeline_info)
+        except TypeError:
+            raise TypeError(
+                "Incorrect format of pipeline_info: {}".format(pipeline_info)
+            )
+        except RuntimeError as e:
+            raise RuntimeError("Could not load transformer: {}".format(e))
+        except KeyError as e:
+            raise KeyError("Invalid pipeline_info key: {}".format(e))
+
+
+def get_trans_instance(
+    trans_loader: TransformerLoader, feature: str, pipeline_info: dict = None
+):
+    """Get the transformer instance for a given feature.
+
+    Args:
+        trans_loader (TransformerLoader): The transformer loader.
+        feature (str): The feature to get the transformer instance.
+        pipeline_info (dict): The setting info for the transformer, defaults to None.
+
+    Returns:
+        pipeline: The transformer instance.
+    """
+    if trans_loader is None:
+        raise ValueError("Transformer loader is not provided.")
+
+    if feature not in trans_loader.trans_instances:
+        # init the transformer pipeline
+        trans_loader.init_transformers(feature, pipeline_info)
+
+    return trans_loader.trans_instances[feature]

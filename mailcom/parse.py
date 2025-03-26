@@ -1,7 +1,5 @@
-from transformers import pipeline
 from pathlib import Path
-from mailcom.inout import InoutHandler
-from mailcom.utils import check_dir, make_dir, SpacyLoader
+from mailcom import utils
 
 # please modify this section depending on your setup
 # input language - either "es" or "fr"
@@ -20,7 +18,11 @@ tool = "transformers"
 
 
 class Pseudonymize:
-    def __init__(self):
+    def __init__(
+        self,
+        trans_loader: utils.TransformerLoader = None,
+        spacy_loader: utils.SpacyLoader = None,
+    ):
 
         self.pseudo_first_names = {
             "es": [
@@ -52,37 +54,36 @@ class Pseudonymize:
         # records NEs in the last email
         self.ne_list = []
 
-    def init_spacy(self, language: str, model="default"):
-        spacy_loader = SpacyLoader()
-        spacy_loader.init_spacy(language, model)
-        self.nlp_spacy = spacy_loader.nlp_spacy
+        self.trans_loader = trans_loader
+        self.feature = "ner"
 
-    def init_transformers(
-        self,
-        model="xlm-roberta-large-finetuned-conll03-english",
-        model_revision_number="18f95e9",
-    ):
-        self.ner_recognizer = pipeline(
-            "token-classification",
-            model=model,
-            revision=model_revision_number,
-            aggregation_strategy="simple",
+        self.spacy_loader = spacy_loader
+
+    def init_spacy(self, language: str, model="default"):
+        self.nlp_spacy = utils.get_spacy_instance(self.spacy_loader, language, model)
+
+    def init_transformers(self, pipeline_info: dict = None):
+        self.ner_recognizer = utils.get_trans_instance(
+            self.trans_loader, self.feature, pipeline_info
         )
 
     def reset(self):
         # reset NEs
         self.ne_list.clear()
 
-    def get_sentences(self, input_text):
+    def get_sentences(self, input_text, language, model="default"):
+        if not hasattr(self, "nlp_spacy"):
+            self.init_spacy(language, model)
+
         doc = self.nlp_spacy(input_text)
         text_as_sents = []
         for sent in doc.sents:
             text_as_sents.append(str(sent))
         return text_as_sents
 
-    def get_ner(self, sentence):
+    def get_ner(self, sentence, pipeline_info: dict = None):
         if not hasattr(self, "ner_recognizer"):
-            self.init_transformers()
+            self.init_transformers(pipeline_info)
         ner = self.ner_recognizer(sentence)
         return ner
 
@@ -188,50 +189,30 @@ class Pseudonymize:
     def concatenate(self, sentences):
         return " ".join(sentences)
 
-    def pseudonymize(self, email):
+    def pseudonymize(
+        self, email, language="de", model="default", pipeline_info: dict = None
+    ):
         """Function that handles the pseudonymization of an email
         and all its steps
 
         Args:
             email (dict): Dictionary containing email content and metadata.
+            language (str, optional): Language of the email. Defaults to "de".
+            model (str, optional): Model to use for NER. Defaults to "default".
+            pipeline_info (dict, optional): Pipeline information for NER.
+                Defaults to None.
 
         Returns:
             str: Pseudonymized text"""
         text = email["content"]
         self.reset()
-        sentences = self.get_sentences(text)
+        sentences = self.get_sentences(text, language, model)
         pseudonymized_sentences = []
         for sent in sentences:
             sent = self.pseudonymize_email_addresses(sent)
-            ner = self.get_ner(sent)
+            ner = self.get_ner(sent, pipeline_info)
             ps_sent = " ".join(self.pseudonymize_ne(ner, sent)) if ner else sent
             ps_sent = self.pseudonymize_numbers(ps_sent)
             pseudonymized_sentences.append(ps_sent)
         email["pseudo_content"] = self.concatenate(pseudonymized_sentences)
         return email["pseudo_content"]
-
-
-if __name__ == "__main__":
-    # check that input dir is there
-    if not check_dir(path_input):
-        raise ValueError("Could not find input directory with eml files! Aborting ...")
-    # check that the output dir is there, if not generate
-    if not check_dir(path_output):
-        print("Generating output directory/ies.")
-        make_dir(path_output)
-    # process the text
-    io = InoutHandler(path_input)
-    io.list_of_files()
-    io.process_emails()
-    # html_files = list_of_files(path_input, "html")
-    pseudonymizer = Pseudonymize()
-    pseudonymizer.init_spacy("fr")
-    # the above init now needs to move to after detect language
-    for idx, email in enumerate(io.get_email_list()):
-        if not email["content"]:
-            continue
-        # Test functionality of Pseudonymize class
-        _ = pseudonymizer.pseudonymize(email)
-        print("New text:", email["pseudo_content"])
-        print("Old text:", email["content"])
-    io.write_csv("data/out/out.csv")

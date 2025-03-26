@@ -4,16 +4,13 @@ from datetime import datetime
 import dateparser.search
 from spacy.matcher import Matcher
 from spacy.tokens import Token, Doc
-from mailcom.utils import SpacyLoader
+from mailcom.utils import SpacyLoader, get_spacy_instance
 
 
 class TimeDetector:
 
-    def __init__(self, lang, strict_parsing="non-strict"):
-        self.lang = lang
-        self.spacy_loader = SpacyLoader()
-        self.spacy_loader.init_spacy(self.lang)
-        self.nlp_spacy = self.spacy_loader.nlp_spacy
+    def __init__(self, strict_parsing="non-strict", spacy_loader: SpacyLoader = None):
+        self.spacy_loader = spacy_loader
         # parse incomplete dates or not
         self.strict_parsing = strict_parsing
 
@@ -202,12 +199,17 @@ class TimeDetector:
 
         return updated_multi_word_date_time, updated_marked_locations
 
-    def extract_date_time_multi_words(self, doc: Doc) -> tuple[list, list]:
+    def extract_date_time_multi_words(
+        self, doc: Doc, language: str, model="default"
+    ) -> tuple[list, list]:
         """Extract time from a given text when it is multiple words.
         E.g. 12 mars 2025, 17. April 2024
 
         Args:
             doc (Doc): The spacy doc object.
+            language (str): The language of the text.
+            model (str, optional): The model to use for the spacy instance.
+                Defaults to "default".
 
         Returns:
             tuple[list, list]: A list of extracted dates and
@@ -216,6 +218,9 @@ class TimeDetector:
         # add the strict patterns if needed
         if self.strict_parsing == "strict" and "strict" not in self.patterns:
             self.init_strict_patterns()
+
+        if not hasattr(self, "nlp_spacy"):
+            self.nlp_spacy = get_spacy_instance(self.spacy_loader, language, model)
 
         multi_word_date_time = []
         marked_locations = []
@@ -274,16 +279,21 @@ class TimeDetector:
             token_span.end - 1,
         )  # the last token also belongs to the span
 
-    def extract_date_time(self, doc: Doc) -> list:
+    def extract_date_time(self, doc: Doc, language: str, model="default") -> list:
         """Extract dates from a given text.
 
         Args:
             doc (Doc): The spacy doc object.
+            language (str): The language of the text.
+            model (str, optional): The model to use for the spacy instance.
+                Defaults to "default".
 
         Returns:
             list: A list of extracted dates.
         """
-        multi_word_date_time, marked_locations = self.extract_date_time_multi_words(doc)
+        multi_word_date_time, marked_locations = self.extract_date_time_multi_words(
+            doc, language, model
+        )
         if self.strict_parsing == "non-strict":
             single_word_date_time = self.extract_date_time_single_word(
                 doc, marked_locations
@@ -506,19 +516,26 @@ class TimeDetector:
                 updated_date_time.append(dt)
         return updated_date_time
 
-    def get_date_time(self, text: str) -> list[(str, datetime, int, int)]:
+    def get_date_time(
+        self, text: str, language: str, model="default"
+    ) -> list[(str, datetime, int, int)]:
         """Get the date and time from a given text.
 
         Args:
             text (str): The text to get the date and time from.
             lang (str, optional): The language of the text. Defaults to "fr".
+            model (str, optional): The model to use for the spacy instance.
+                Defaults to "default
 
         Returns:
             list[(str, datetime, int, int)]: A list of tuples containing
                 the date string, the datetime object, the start index and the end index
         """
+        if not hasattr(self, "nlp_spacy"):
+            self.nlp_spacy = get_spacy_instance(self.spacy_loader, language, model)
+
         doc = self.nlp_spacy(text)
-        extracted_date_time = self.extract_date_time(doc)
+        extracted_date_time = self.extract_date_time(doc, language, model)
         merged_date_time = self.merge_date_time(extracted_date_time, doc)
 
         # only keep the date time phrases that contain numbers

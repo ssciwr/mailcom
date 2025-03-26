@@ -2,6 +2,7 @@ import pytest
 import math
 from mailcom.lang_detector import LangDetector
 from string import punctuation
+from mailcom.utils import TransformerLoader
 
 
 # test cases for email language detection
@@ -131,9 +132,9 @@ def get_lang_detector():
 
 
 @pytest.fixture()
-def get_lang_det_w_init():
-    lang_detector = LangDetector()
-    lang_detector.init_transformers()
+def get_lang_det_w_trans():
+    trans_loader = TransformerLoader()
+    lang_detector = LangDetector(trans_loader=trans_loader)
     return lang_detector
 
 
@@ -158,13 +159,42 @@ def get_mixed_lang_docs():
 
 
 @pytest.mark.langdet
-def test_init_transformers(get_lang_detector):
-    get_lang_detector.init_transformers()
-    assert get_lang_detector.lang_detector_trans is not None
+def test_init_transformers_none(get_lang_detector):
+    with pytest.raises(ValueError):
+        get_lang_detector.init_transformers()
 
-    # Test with an invalid model
-    with pytest.raises(OSError):
-        get_lang_detector.init_transformers(model="invalid-model")
+
+@pytest.mark.langdet
+def test_init_transformers_not_none(get_lang_det_w_trans):
+    get_lang_det_w_trans.init_transformers()
+    assert get_lang_det_w_trans.lang_detector_trans is not None
+
+
+@pytest.mark.langdet
+def test_init_transformers_invalid_key(get_lang_det_w_trans):
+    get_lang_det_w_trans.feature = "not_a_key"
+    with pytest.raises(ValueError):
+        get_lang_det_w_trans.init_transformers()
+
+
+@pytest.mark.langdet
+def test_init_transformer_new_settings(get_lang_det_w_trans):
+    # correct case
+    get_lang_det_w_trans.init_transformers(
+        pipeline_info={"task": "text-classification"}
+    )
+    assert get_lang_det_w_trans.lang_detector_trans is not None
+
+    # invalid case
+    get_lang_det_w_trans.feature = "keyerror"
+    with pytest.raises(KeyError):
+        get_lang_det_w_trans.init_transformers(pipeline_info={"task": "invalid-task"})
+    get_lang_det_w_trans.feature = "typeerror"
+    with pytest.raises(TypeError):
+        get_lang_det_w_trans.init_transformers(pipeline_info="test")
+    get_lang_det_w_trans.feature = "runtimeerror"
+    with pytest.raises(RuntimeError):
+        get_lang_det_w_trans.init_transformers(pipeline_info={"test": "test"})
 
 
 @pytest.mark.langdet
@@ -278,9 +308,9 @@ def test_determine_langdetect(get_lang_detector):
 
 
 @pytest.mark.langdet
-def test_detect_single_lang_with_transformers(get_lang_det_w_init):
+def test_detect_single_lang_with_transformers(get_lang_det_w_trans):
     for sent, lang in lang_samples.items():
-        detections = get_lang_det_w_init.detect_with_transformers(sent)
+        detections = get_lang_det_w_trans.detect_with_transformers(sent)
         det_lang, prob = detections[0]
         if lang == "ko":
             # this transformer model does not support detecting Korean
@@ -293,10 +323,10 @@ def test_detect_single_lang_with_transformers(get_lang_det_w_init):
 
 
 @pytest.mark.langdet
-def test_detect_single_lang_with_transformers_no_init(get_lang_detector):
+def test_detect_single_lang_with_transformers_no_init(get_lang_det_w_trans):
     # check that the transformers model is initialized if not explicitly done
-    get_lang_detector.detect_with_transformers("This is a test.")
-    assert get_lang_detector.lang_detector_trans
+    get_lang_det_w_trans.detect_with_transformers("This is a test.")
+    assert get_lang_det_w_trans.lang_detector_trans is not None
 
 
 @pytest.mark.langdet
@@ -344,9 +374,9 @@ def test_detect_single_lang_with_langdetect(get_lang_detector):
 
 
 @pytest.mark.langdet
-def test_detect_mixed_lang_with_transformers(get_lang_det_w_init, get_mixed_lang_docs):
+def test_detect_mixed_lang_with_transformers(get_lang_det_w_trans, get_mixed_lang_docs):
     for doc in get_mixed_lang_docs:
-        detections = get_lang_det_w_init.detect_with_transformers(doc)
+        detections = get_lang_det_w_trans.detect_with_transformers(doc)
         det_lang, prob = detections[0]
         exceptions_two_langs = (lang_num == 2) and get_mixed_lang_docs[doc][0] in [
             "en",
@@ -456,11 +486,11 @@ def test_detect_mixed_lang_with_langdetect(get_lang_detector, get_mixed_lang_doc
 
 
 @pytest.mark.langdet
-def test_get_detections(get_lang_det_w_init):
+def test_get_detections(get_lang_det_w_trans):
     sentence = list(lang_samples.keys())[0]
-    detection_langid = get_lang_det_w_init.get_detections(sentence, "langid")
-    detection_langdetect = get_lang_det_w_init.get_detections(sentence, "langdetect")
-    detection_trans = get_lang_det_w_init.get_detections(sentence, "trans")
+    detection_langid = get_lang_det_w_trans.get_detections(sentence, "langid")
+    detection_langdetect = get_lang_det_w_trans.get_detections(sentence, "langdetect")
+    detection_trans = get_lang_det_w_trans.get_detections(sentence, "trans")
     assert detection_langid[0][0] == detection_langdetect[0][0]
     assert detection_langid[0][0] == detection_trans[0][0]
     assert detection_langid[0][0] == lang_samples[sentence]
@@ -518,10 +548,10 @@ def test_get_detections_fail(get_lang_detector):
 
 
 @pytest.mark.langdet
-def test_detect_lang_sentences_langid(get_lang_det_w_init, get_mixed_lang_docs):
+def test_detect_lang_sentences_langid(get_lang_det_w_trans, get_mixed_lang_docs):
     for doc in get_mixed_lang_docs:
         sentences = doc.split("\n")
-        lang_tree = get_lang_det_w_init.detect_lang_sentences(sentences, "langid")
+        lang_tree = get_lang_det_w_trans.detect_lang_sentences(sentences, "langid")
         assert lang_tree.begin() == 0
         assert lang_tree.end() == len(doc.split("\n"))
         for i, interval in enumerate(sorted(lang_tree.items())):
@@ -530,10 +560,10 @@ def test_detect_lang_sentences_langid(get_lang_det_w_init, get_mixed_lang_docs):
 
 
 @pytest.mark.langdet
-def test_detect_lang_sentences_langdetect(get_lang_det_w_init, get_mixed_lang_docs):
+def test_detect_lang_sentences_langdetect(get_lang_det_w_trans, get_mixed_lang_docs):
     for doc in get_mixed_lang_docs:
         sentences = doc.split("\n")
-        lang_tree = get_lang_det_w_init.detect_lang_sentences(sentences, "langdetect")
+        lang_tree = get_lang_det_w_trans.detect_lang_sentences(sentences, "langdetect")
         assert lang_tree.begin() == 0
         assert lang_tree.end() == len(doc.split("\n"))
         for i, interval in enumerate(sorted(lang_tree.items())):
@@ -542,10 +572,10 @@ def test_detect_lang_sentences_langdetect(get_lang_det_w_init, get_mixed_lang_do
 
 
 @pytest.mark.langdet
-def test_detect_lang_sentences_trans(get_lang_det_w_init, get_mixed_lang_docs):
+def test_detect_lang_sentences_trans(get_lang_det_w_trans, get_mixed_lang_docs):
     for doc in get_mixed_lang_docs:
         sentences = doc.split("\n")
-        lang_tree = get_lang_det_w_init.detect_lang_sentences(sentences, "trans")
+        lang_tree = get_lang_det_w_trans.detect_lang_sentences(sentences, "trans")
         assert lang_tree.begin() == 0
         assert lang_tree.end() == len(doc.split("\n"))
         for i, interval in enumerate(sorted(lang_tree.items())):
