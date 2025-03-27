@@ -1,0 +1,9 @@
+{
+    "pseudonymize": {
+        "default_lang": "de",
+        "datetime_detection": true,
+        "time_parsing": "strict",
+        "pseudo_emailaddresses": true,
+        "pseudo_numbers": true
+    }
+}

@@ -207,6 +207,8 @@ class Pseudonymize:
         model="default",
         pipeline_info: dict = None,
         detected_dates: list[str] = None,
+        pseudo_emailaddresses=True,
+        pseudo_numbers=True,
     ):
         """Function that handles the pseudonymization of an email
         and all its steps
@@ -218,6 +220,11 @@ class Pseudonymize:
             pipeline_info (dict, optional): Pipeline information for NER.
                 Defaults to None.
             detected_dates (list[str], optional): Detected dates in the email.
+                Defaults to None.
+            pseudo_emailaddresses (bool, optional): Whether to pseudonymize
+                email addresses. Defaults to True.
+            pseudo_numbers (bool, optional): Whether to pseudonymize numbers.
+                Defaults to True.
 
         Returns:
             str: Pseudonymized text
@@ -226,9 +233,11 @@ class Pseudonymize:
         sentences = self.get_sentences(text, language, model)
         pseudonymized_sentences = []
         for sent in sentences:
-            sent = self.pseudonymize_email_addresses(sent)
+            if pseudo_emailaddresses:
+                sent = self.pseudonymize_email_addresses(sent)
             ner = self.get_ner(sent, pipeline_info)
             ps_sent = " ".join(self.pseudonymize_ne(ner, sent)) if ner else sent
-            ps_sent = self.pseudonymize_numbers(ps_sent, detected_dates)
+            if pseudo_numbers:
+                ps_sent = self.pseudonymize_numbers(ps_sent, detected_dates)
             pseudonymized_sentences.append(ps_sent)
         return self.concatenate(pseudonymized_sentences)
