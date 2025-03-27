@@ -4,6 +4,7 @@ import eml_parser
 from bs4 import BeautifulSoup
 from dicttoxml import dicttoxml
 import csv
+import pandas as pd
 
 
 class InoutHandler:
@@ -131,3 +132,22 @@ class InoutHandler:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()
             dict_writer.writerows(self.email_list)
+
+
+def load_csv(infile: str, col_name: str):
+    """Load the email list from a csv file.
+
+    Args:
+        infile (str): The path of the file to be read.
+        col_name (str): The name of the column containing the email content.
+    """
+    emails = []
+    try:
+        df = pd.read_csv(infile)
+        emails.extend({"content": row} for row in df[col_name])
+    except OSError as e:
+        raise OSError("File {} does not exist".format(infile))
+    except KeyError as e:
+        raise KeyError("Column {} does not exist in the file".format(col_name))
+
+    return emails

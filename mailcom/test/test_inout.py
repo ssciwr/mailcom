@@ -158,3 +158,37 @@ def test_get_email_list(get_instant):
     # Verify that the iterator is exhausted
     with pytest.raises(StopIteration):
         next(email_list_iter)
+
+
+def test_load_csv(tmp_path):
+    # Test with a valid CSV file
+    infile = tmp_path / "test.csv"
+    with open(infile, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["no", "content"])
+        writer.writerow(
+            [
+                "1",
+                "Content of test email 1",
+            ]
+        )
+        writer.writerow(
+            [
+                "2",
+                "Content of test email 2",
+            ]
+        )
+    emails = inout.load_csv(infile, "content")
+    assert len(emails) == 2
+    assert emails[0]["content"] == "Content of test email 1"
+    assert emails[1]["content"] == "Content of test email 2"
+
+    # Test with a non-existing column name
+    with pytest.raises(KeyError):
+        col_name = "nonexisting"
+        inout.load_csv(infile, col_name)
+
+    # Test with a non-existing file
+    with pytest.raises(OSError):
+        infile = "nonexisting.csv"
+        inout.load_csv(infile, col_name)
