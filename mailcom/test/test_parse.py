@@ -138,6 +138,36 @@ def test_get_sentences_with_punctuation(get_default_fr):
     assert sentences[2] == "Très bien, merci."
 
 
+def test_get_letter_indices_non_empty(get_default_fr):
+    sentence = (
+        "The test date is 27.03.2025 13:37 and the other date is 01.01.2022. "
+        "Repeating one more time 27.03.2025 13:37."
+    )
+    detected_dates = ["27.03.2025 13:37", "01.01.2022"]
+
+    date_indices = get_default_fr._get_letter_indices(sentence, detected_dates)
+    expected_indices = set()
+    expected_indices.update(range(17, 33))
+    expected_indices.update(range(92, 108))
+    expected_indices.update(range(56, 66))
+    assert date_indices == expected_indices
+
+
+def test_get_letter_indices_empty(get_default_fr):
+    sentence = "This is a test"
+    detected_dates = ["27.03.2025 13:37", "01.01.2022"]
+    assert get_default_fr._get_letter_indices(sentence, detected_dates) == set()
+
+
+def test_test_get_letter_indices_no_dates(get_default_fr):
+    sentence = "This is another test"
+    detected_dates = []
+    assert get_default_fr._get_letter_indices(sentence, detected_dates) == set()
+
+    detected_dates = None
+    assert get_default_fr._get_letter_indices(sentence, detected_dates) == set()
+
+
 def test_pseudonymize_numbers(get_default_fr):
     sentence = "My phone number is 123-456-7890."
     pseudonymized_sentence = get_default_fr.pseudonymize_numbers(sentence)
@@ -154,6 +184,34 @@ def test_pseudonymize_numbers(get_default_fr):
     sentence = ""
     pseudonymized_sentence = get_default_fr.pseudonymize_numbers(sentence)
     assert pseudonymized_sentence == ""
+
+
+def test_pseudonymize_numbers_with_dates(get_default_fr):
+    sentence = "The test date is 27.03.2025 13:37 with number 123-456-789."
+    detected_dates = ["27.03.2025 13:37"]
+    pseudonymized_sentence = get_default_fr.pseudonymize_numbers(
+        sentence, detected_dates
+    )
+    assert (
+        pseudonymized_sentence
+        == "The test date is 27.03.2025 13:37 with number [number]-[number]-[number]."
+    )
+
+    pseudonymized_sentence = get_default_fr.pseudonymize_numbers(
+        sentence, detected_dates=None
+    )
+    assert (
+        pseudonymized_sentence
+        == "The test date is [number].[number].[number] [number]:[number] "
+        "with number [number]-[number]-[number]."
+    )
+
+    sentence = "No number"
+    detected_dates = ["27.03.2025 13:37"]
+    pseudonymized_sentence = get_default_fr.pseudonymize_numbers(
+        sentence, detected_dates
+    )
+    assert pseudonymized_sentence == "No number"
 
 
 def test_concatenate_empty_list(get_default_fr):

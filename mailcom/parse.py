@@ -148,11 +148,38 @@ class Pseudonymize:
         newlist = [new_sentence]
         return newlist
 
-    def pseudonymize_numbers(self, sentence):
+    def _get_letter_indices(self, sentence: str, detected_dates: list[str]):
+        """Get letter indices of detected dates in the sentence.
+
+        Args:
+            sentence (str): Sentence to search for dates.
+            detected_dates (list[str]): List of detected dates.
+
+        Returns:
+            set: Set of letter indices of detected dates in the sentence.
+        """
+        if detected_dates is None:
+            return set()
+
+        # indices of detected dates
+        date_indices = set()
+        for date in detected_dates:
+            start_pos = 0
+            while (start := sentence.find(date, start_pos)) != -1:
+                date_indices.update(range(start, start + len(date)))
+                start_pos = start_pos + len(date)  # assum no overlapping
+
+        return date_indices
+
+    def pseudonymize_numbers(self, sentence, detected_dates: list[str] = None):
+        # indices of detected dates
+        date_indices = self._get_letter_indices(sentence, detected_dates)
+
         sent_as_list = list(sentence)
         new_list = []
         for i in range(len(sent_as_list)):
-            if sent_as_list[i].isdigit():
+            potential_num = sent_as_list[i].isdigit() and i not in date_indices
+            if potential_num:
                 if i == 0 or not sent_as_list[i - 1].isdigit():
                     new_list.append("[number]")
             else:
@@ -174,7 +201,12 @@ class Pseudonymize:
         return " ".join(sentences)
 
     def pseudonymize(
-        self, text, language="de", model="default", pipeline_info: dict = None
+        self,
+        text,
+        language="de",
+        model="default",
+        pipeline_info: dict = None,
+        detected_dates: list[str] = None,
     ):
         """Function that handles the pseudonymization of an email
         and all its steps
@@ -185,6 +217,7 @@ class Pseudonymize:
             model (str, optional): Model to use for NER. Defaults to "default".
             pipeline_info (dict, optional): Pipeline information for NER.
                 Defaults to None.
+            detected_dates (list[str], optional): Detected dates in the email.
 
         Returns:
             str: Pseudonymized text
@@ -196,6 +229,6 @@ class Pseudonymize:
             sent = self.pseudonymize_email_addresses(sent)
             ner = self.get_ner(sent, pipeline_info)
             ps_sent = " ".join(self.pseudonymize_ne(ner, sent)) if ner else sent
-            ps_sent = self.pseudonymize_numbers(ps_sent)
+            ps_sent = self.pseudonymize_numbers(ps_sent, detected_dates)
             pseudonymized_sentences.append(ps_sent)
         return self.concatenate(pseudonymized_sentences)
