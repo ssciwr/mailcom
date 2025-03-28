@@ -4,22 +4,54 @@ from mailcom.utils import TransformerLoader, SpacyLoader
 
 
 @pytest.fixture()
-def get_instant():
-    return parse.Pseudonymize()
+def get_pseudo_first_names():
+    return {
+        "es": [
+            "José",
+            "Angel",
+            "Alex",
+            "Ariel",
+            "Cruz",
+            "Fran",
+            "Arlo",
+            "Adri",
+            "Marce",
+            "Mati",
+        ],
+        "fr": [
+            "Claude",
+            "Dominique",
+            "Claude",
+            "Camille",
+            "Charlie",
+            "Florence",
+            "Francis",
+            "Maxime",
+            "Remy",
+            "Cécile",
+        ],
+    }
 
 
 @pytest.fixture()
-def get_default_w_spacy():
+def get_instant(get_pseudo_first_names):
+    return parse.Pseudonymize(get_pseudo_first_names)
+
+
+@pytest.fixture()
+def get_default_w_spacy(get_pseudo_first_names):
     spacy_loader = SpacyLoader()
-    inst = parse.Pseudonymize(spacy_loader=spacy_loader)
+    inst = parse.Pseudonymize(get_pseudo_first_names, spacy_loader=spacy_loader)
     return inst
 
 
 @pytest.fixture()
-def get_default_fr():
+def get_default_fr(get_pseudo_first_names):
     trans_loader = TransformerLoader()
     spacy_loader = SpacyLoader()
-    inst = parse.Pseudonymize(trans_loader=trans_loader, spacy_loader=spacy_loader)
+    inst = parse.Pseudonymize(
+        get_pseudo_first_names, trans_loader=trans_loader, spacy_loader=spacy_loader
+    )
     inst.init_spacy("fr")
     return inst
 

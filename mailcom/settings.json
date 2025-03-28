@@ -1,10 +1,37 @@
 {
     "pseudonymize": {
-        "default_lang": "de",
+        "default_lang": "",
         "datetime_detection": true,
         "time_parsing": "strict",
         "pseudo_emailaddresses": true,
         "pseudo_ne": true,
-        "pseudo_numbers": true
+        "pseudo_numbers": true,
+        "pseudo_first_names": {
+            "es": [
+                "José",
+                "Angel",
+                "Alex",
+                "Ariel",
+                "Cruz",
+                "Fran",
+                "Arlo",
+                "Adri",
+                "Marce",
+                "Mati"
+            ],
+            "fr": [
+                "Claude",
+                "Dominique",
+                "Claude",
+                "Camille",
+                "Charlie",
+                "Florence",
+                "Francis",
+                "Maxime",
+                "Remy",
+                "Cécile"
+            ],
+            "de": ["Mika"]
+        }
     }
 }

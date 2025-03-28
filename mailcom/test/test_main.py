@@ -2,6 +2,8 @@ import pytest
 from mailcom import main
 from mailcom import utils
 import json
+from pathlib import Path
+from importlib import resources
 
 
 def test_get_input_data_csv(tmp_path):
@@ -48,7 +50,7 @@ def get_data():
             "Nous nous rendrons ensuite au MeetingPoint"
         },
         {
-            "content": "Esta foto fue tomada el 28.03.2025 a las 10:30. "
+            "content": "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30. "
             "Compruébelo en el archivo adjunto",
             "attachment": 1,
             "attachement type": ["jpg"],
@@ -58,16 +60,9 @@ def get_data():
 
 @pytest.fixture()
 def get_settings():
-    return {
-        "pseudonymize": {
-            "default_lang": "",
-            "datetime_detection": True,
-            "time_parsing": "strict",
-            "pseudo_emailaddresses": True,
-            "pseudo_ne": True,
-            "pseudo_numbers": True,
-        }
-    }
+    pkg = resources.files("mailcom")
+    setting_path = Path(pkg / "settings.json")
+    return json.load(open(setting_path, "r", encoding="utf-8"))
 
 
 def test_process_data_default(get_data, get_settings):
@@ -87,7 +82,7 @@ def test_process_data_default(get_data, get_settings):
     assert pseudo_emails[1].get("datetime") == ["28.03.2025 a las 10:30"]
     assert (
         pseudo_emails[1].get("pseudo_content")
-        == "Esta foto fue tomada el 28.03.2025 a las 10:30. "
+        == "Esta foto fue tomada por José el 28.03.2025 a las 10:30. "
         "Compruébelo en el archivo adjunto"
     )
 
@@ -99,14 +94,14 @@ def test_process_data_no_lang(get_data, get_settings):
     assert pseudo_emails[0].get("lang") == "de"
     assert (
         pseudo_emails[0].get("pseudo_content")
-        == "Claude [email] viendra au bâtiment à [number]h[number]. "
+        == "Mika [email] viendra au bâtiment à [number]h[number]. "
         "Nous nous rendrons ensuite au [location]"
     )
 
     assert pseudo_emails[1].get("lang") == "de"
     assert (
         pseudo_emails[1].get("pseudo_content")
-        == "Esta foto fue tomada el 28.03.2025 a las 10:30. "
+        == "Esta foto fue tomada por Mika el 28.03.2025 a las 10:30. "
         "Compruébelo en el archivo adjunto"
     )
 
@@ -118,7 +113,7 @@ def test_process_data_no_datetime(get_data, get_settings):
     assert pseudo_emails[1].get("datetime") == None
     assert (
         pseudo_emails[1].get("pseudo_content")
-        == "Esta foto fue tomada el [number].[number].[number] a las [number]:[number]. "
+        == "Esta foto fue tomada por José el [number].[number].[number] a las [number]:[number]. "
         "Compruébelo en el archivo adjunto"
     )
 
@@ -144,6 +139,12 @@ def test_process_data_no_ne(get_data, get_settings):
         "Nous nous rendrons ensuite au MeetingPoint"
     )
 
+    assert (
+        pseudo_emails[1].get("pseudo_content")
+        == "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30. "
+        "Compruébelo en el archivo adjunto"
+    )
+
 
 def test_process_data_no_numbers(get_data, get_settings):
     get_settings["pseudonymize"]["pseudo_numbers"] = False
@@ -157,7 +158,7 @@ def test_process_data_no_numbers(get_data, get_settings):
 
     assert (
         pseudo_emails[1].get("pseudo_content")
-        == "Esta foto fue tomada el 28.03.2025 a las 10:30. "
+        == "Esta foto fue tomada por José el 28.03.2025 a las 10:30. "
         "Compruébelo en el archivo adjunto"
     )
 
@@ -174,9 +175,8 @@ def test_write_output_data_csv(get_data, tmp_path):
             "Nous nous rendrons ensuite au MeetingPoint,,\n"
         )
         assert (
-            lines[2]
-            == "Esta foto fue tomada el 28.03.2025 a las 10:30. Compruébelo en el "
-            "archivo adjunto,1.0,['jpg']\n"
+            lines[2] == "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30. "
+            "Compruébelo en el archivo adjunto,1.0,['jpg']\n"
         )
 
 

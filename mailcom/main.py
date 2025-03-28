@@ -87,11 +87,12 @@ def process_data(email_list: list[dict], workflow_settings: dict) -> list[dict]:
     pseudo_emailaddresses = settings.get("pseudo_emailaddresses", True)
     pseudo_ne = settings.get("pseudo_ne", True)
     pseudo_numbers = settings.get("pseudo_numbers", True)
+    pseudo_first_names = settings.get("pseudo_first_names", {})
 
     # init necessary objects
     spacy_loader = utils.SpacyLoader()
     trans_loader = utils.TransformerLoader()
-    pseudonymizer = Pseudonymize(trans_loader, spacy_loader)
+    pseudonymizer = Pseudonymize(pseudo_first_names, trans_loader, spacy_loader)
     if detect_lang:
         lang_detector = LangDetector(trans_loader)
     if detect_datetime:
