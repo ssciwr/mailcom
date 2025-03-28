@@ -108,32 +108,37 @@ class InoutHandler:
     def validate_data(self):
         pass
 
-    def data_to_xml(self, text):
-        def my_item_func(x):
-            return "content"
 
-        xml = dicttoxml(text, custom_root="email", item_func=my_item_func)
-        return xml.decode()
+def data_to_xml(email_list: list):
+    def my_item_func(x):
+        return "email" if x == "email_list" else "item"
 
-    def write_file(self, text: str, name: str) -> None:
-        """Write the extracted string to a text file.
+    xml = dicttoxml(email_list, custom_root="email_list", item_func=my_item_func)
+    return xml.decode()
 
-        Args:
-            text (str): The string to be written to the file.
-            name (str): The name of the file to be written."""
-        with open("{}.out".format(name), "w") as file:
-            file.write(text)
 
-    def write_csv(self, outfile: str):
-        """Write the email list containing all dictionaries to csv.
+def write_file(text: str, outfile: str) -> None:
+    """Write the extracted string to a text file.
 
-        Args:
-            outfile (str): The path of the file to be written."""
-        keys = self.email_list[0].keys()
-        with open(outfile, "w", newline="", encoding="utf-8") as output_file:
-            dict_writer = csv.DictWriter(output_file, fieldnames=keys)
-            dict_writer.writeheader()
-            dict_writer.writerows(self.email_list)
+    Args:
+        text (str): The string to be written to the file.
+        outfile (str): The file to be written."""
+    with open(outfile, "w") as file:
+        file.write(text)
+
+
+def write_csv(email_list: list, outfile: str):
+    """Write the email list containing all dictionaries to csv.
+
+    Args:
+        email_list (list): The list of dictionaries containing the email data.
+        outfile (str): The path of the file to be written."""
+    if not email_list:
+        raise ValueError("The data list is empty")
+
+    # use pandas to handle missing keys automatically
+    df = pd.DataFrame(email_list)
+    df.to_csv(outfile, index=False)
 
 
 def load_csv(infile: str, col_name: str = "message"):

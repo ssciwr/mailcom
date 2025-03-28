@@ -160,3 +160,45 @@ def test_process_data_no_numbers(get_data, get_settings):
         == "Esta foto fue tomada el 28.03.2025 a las 10:30. "
         "Compruébelo en el archivo adjunto"
     )
+
+
+def test_write_output_data_csv(get_data, tmp_path):
+    outpath = tmp_path / "test_output.csv"
+    main.write_output_data(get_data, outpath, file_type="csv")
+
+    with open(outpath, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+        assert len(lines) == 3  # header + 2 emails
+        assert (
+            lines[1] == "Alice (alice@gmail.com) viendra au bâtiment à 10h00. "
+            "Nous nous rendrons ensuite au MeetingPoint,,\n"
+        )
+        assert (
+            lines[2]
+            == "Esta foto fue tomada el 28.03.2025 a las 10:30. Compruébelo en el "
+            "archivo adjunto,1.0,['jpg']\n"
+        )
+
+
+def test_write_output_data_xml(get_data, tmp_path):
+    outpath = tmp_path / "test_output.xml"
+    main.write_output_data(get_data, outpath, file_type="xml")
+
+    with open(outpath, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+        assert len(lines) == 1
+        assert lines[0].startswith('<?xml version="1.0" encoding="UTF-8" ?>')
+        assert lines[0].endswith("</email_list>")
+        assert lines[0].count('<email type="dict">') == 2
+
+
+def test_write_output_data_invalid(get_data, tmp_path):
+    outpath = tmp_path / "test_output.txt"
+    with pytest.raises(ValueError):
+        main.write_output_data(get_data, outpath, file_type="txt")
+
+    with pytest.raises(ValueError):
+        main.write_output_data([], outpath, file_type="csv")
+
+    with pytest.raises(ValueError):
+        main.write_output_data(get_data, "", file_type="xml")

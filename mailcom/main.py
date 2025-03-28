@@ -1,5 +1,5 @@
 from pathlib import Path
-from mailcom.inout import InoutHandler, load_csv
+from mailcom import inout
 from mailcom import utils
 from mailcom.lang_detector import LangDetector
 from mailcom.time_detector import TimeDetector
@@ -31,12 +31,12 @@ def get_input_data(
             "content" field in each dictionary contains the main content.
     """
     if in_type == "csv":
-        return load_csv(in_path, col_name)
+        return inout.load_csv(in_path, col_name)
     else:
-        inout = InoutHandler(in_path, file_types)
-        inout.list_of_files()
-        inout.process_emails()
-        return inout.get_email_list()
+        inout_hl = inout.InoutHandler(in_path, file_types)
+        inout_hl.list_of_files()
+        inout_hl.process_emails()
+        return inout_hl.get_email_list()
 
 
 def get_workflow_settings(workflow_settings: str) -> dict:
@@ -132,11 +132,25 @@ def process_data(email_list: list[dict], workflow_settings: dict) -> list[dict]:
     return email_list
 
 
-def write_output_data(email_list: list[dict], out_path: str):
+def write_output_data(email_list: list[dict], out_path: str, file_type: str = "csv"):
     """Write the output data to a file.
 
     Args:
         email_list (list[dict]): The list of dictionaries containing the processed data.
         out_path (str): The path to the output file.
+        file_type (str, optional): The type of the output file.
+            Defaults to "csv".
+            Possible values are ["csv", "xml"].
     """
-    pass
+    if not email_list:
+        raise ValueError("No data to write")
+    if not out_path:
+        raise ValueError("No output path specified")
+
+    if file_type == "csv":
+        inout.write_csv(email_list, out_path)
+    elif file_type == "xml":
+        xml = inout.data_to_xml(email_list)
+        inout.write_file(xml, out_path)
+    else:
+        raise ValueError("Invalid file type: {}".format(file_type))
