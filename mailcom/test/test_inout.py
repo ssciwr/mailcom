@@ -163,6 +163,13 @@ def test_get_email_list(get_instant):
 def test_load_csv(tmp_path):
     # Test with a valid CSV file
     infile = tmp_path / "test.csv"
+
+    with open(infile, "w", newline="", encoding="utf-8") as f:
+        pass  # empty file
+
+    emails = inout.load_csv(infile, "content")
+    assert emails == []
+
     with open(infile, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["no", "content"])

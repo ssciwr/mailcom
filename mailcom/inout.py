@@ -8,15 +8,17 @@ import pandas as pd
 
 
 class InoutHandler:
-    def __init__(self, directory_name: str):
+    def __init__(self, directory_name: str, file_types: list = [".eml", ".html"]):
         """Constructor for the InoutHandler class.
 
         Args:
             directory_name (str): The directory where the files are located.
+            file_types (list, optional): The list of file types to be processed.
+                Defaults to [".eml", ".html"].
         """
         self.directory_name = directory_name
         # presets
-        self.pattern = [".eml", ".html"]
+        self.pattern = file_types
 
         # list containing all emails
         self.email_list = []
@@ -134,20 +136,19 @@ class InoutHandler:
             dict_writer.writerows(self.email_list)
 
 
-def load_csv(infile: str, col_name: str):
+def load_csv(infile: str, col_name: str = "message"):
     """Load the email list from a csv file.
 
     Args:
         infile (str): The path of the file to be read.
         col_name (str): The name of the column containing the email content.
     """
-    emails = []
     try:
         df = pd.read_csv(infile)
-        emails.extend({"content": row} for row in df[col_name])
+        return [{"content": row} for row in df[col_name]]
     except OSError as e:
         raise OSError("File {} does not exist".format(infile))
     except KeyError as e:
         raise KeyError("Column {} does not exist in the file".format(col_name))
-
-    return emails
+    except pd.errors.EmptyDataError:
+        return []

@@ -70,6 +70,7 @@ class TimeDetector:
         # strict cases: date [] time, e.g. 09 février 2009 17:23
         hour_minutes_patterns = [
             {"OP": "?"},  # separator between date and time is optional
+            {"OP": "?"},  # second separator is optional, e.g. "a las"
             {
                 "POS": {"IN": self.time_single_word},
                 "TEXT": {"REGEX": r"^[\d:+.]+$"},  # only numbers, :, +, .

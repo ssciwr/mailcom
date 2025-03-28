@@ -4,6 +4,7 @@
         "datetime_detection": true,
         "time_parsing": "strict",
         "pseudo_emailaddresses": true,
+        "pseudo_ne": true,
         "pseudo_numbers": true
     }
 }

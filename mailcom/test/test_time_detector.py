@@ -153,7 +153,7 @@ def test_init_strict_patterns(get_time_detector_strict):
         get_time_detector_strict.patterns["non-strict"],
         get_time_detector_strict.patterns["strict"][0:num_non_strict_patterns],
     ):
-        assert len(p_s) == len(p_n) + 2
+        assert len(p_s) == len(p_n) + 3  # 3 pos for separators (2) and time (1)
 
 
 @pytest.mark.pattern
