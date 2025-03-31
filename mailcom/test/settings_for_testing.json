@@ -1,6 +1,6 @@
 {
     "pseudonymize": {
-        "default_lang": "fr",
+        "default_lang": "",
         "datetime_detection": true,
         "time_parsing": "strict",
         "pseudo_emailaddresses": true,

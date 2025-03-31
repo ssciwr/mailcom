@@ -8,31 +8,25 @@ import pandas as pd
 
 
 class InoutHandler:
-    def __init__(self, directory_name: str, file_types: list = [".eml", ".html"]):
-        """Constructor for the InoutHandler class.
+    def __init__(self):
+        self.email_list = []
+
+    def list_of_files(self, directory_name: str, file_types: list = [".eml", ".html"]):
+        """Method to create a list of Path objects (files) that are present
+        in a directory.
 
         Args:
             directory_name (str): The directory where the files are located.
             file_types (list, optional): The list of file types to be processed.
                 Defaults to [".eml", ".html"].
         """
-        self.directory_name = directory_name
-        # presets
-        self.pattern = file_types
-
-        # list containing all emails
-        self.email_list = []
-
-    def list_of_files(self):
-        """Method to create a list of Path objects (files) that are present
-        in a directory."""
         if not os.path.exists(
-            self.directory_name
+            directory_name
         ):  # check if given dir exists raises error otherwise
-            raise OSError("Path {} does not exist".format(self.directory_name))
-        mypath = Path(self.directory_name)
+            raise OSError("Path {} does not exist".format(directory_name))
+        mypath = Path(directory_name)
         self.email_path_list = [
-            mp.resolve() for mp in mypath.glob("**/*") if mp.suffix in self.pattern
+            mp.resolve() for mp in mypath.glob("**/*") if mp.suffix in file_types
         ]
         if len(self.email_path_list) == 0:
             raise ValueError(
@@ -108,52 +102,52 @@ class InoutHandler:
     def validate_data(self):
         pass
 
+    def data_to_xml(self):
+        def my_item_func(x):
+            return "email" if x == "email_list" else "item"
 
-def data_to_xml(email_list: list):
-    def my_item_func(x):
-        return "email" if x == "email_list" else "item"
+        xml = dicttoxml(
+            self.email_list, custom_root="email_list", item_func=my_item_func
+        )
+        return xml.decode()
 
-    xml = dicttoxml(email_list, custom_root="email_list", item_func=my_item_func)
-    return xml.decode()
+    def write_file(self, text: str, outfile: str) -> None:
+        """Write the extracted string to a text file.
 
+        Args:
+            text (str): The string to be written to the file.
+            outfile (str): The file to be written."""
+        if not text:
+            raise ValueError("The text to be written is empty")
 
-def write_file(text: str, outfile: str) -> None:
-    """Write the extracted string to a text file.
+        with open(outfile, "w") as file:
+            file.write(text)
 
-    Args:
-        text (str): The string to be written to the file.
-        outfile (str): The file to be written."""
-    with open(outfile, "w") as file:
-        file.write(text)
+    def write_csv(self, outfile: str):
+        """Write the email list containing all dictionaries to csv.
 
+        Args:
+            outfile (str): The path of the file to be written."""
+        if not self.email_list:
+            raise ValueError("The data list is empty")
 
-def write_csv(email_list: list, outfile: str):
-    """Write the email list containing all dictionaries to csv.
+        # use pandas to handle missing keys automatically
+        df = pd.DataFrame(self.email_list)
+        df.to_csv(outfile, index=False)
 
-    Args:
-        email_list (list): The list of dictionaries containing the email data.
-        outfile (str): The path of the file to be written."""
-    if not email_list:
-        raise ValueError("The data list is empty")
+    def load_csv(self, infile: str, col_name: str = "message"):
+        """Load the email list from a csv file.
 
-    # use pandas to handle missing keys automatically
-    df = pd.DataFrame(email_list)
-    df.to_csv(outfile, index=False)
-
-
-def load_csv(infile: str, col_name: str = "message"):
-    """Load the email list from a csv file.
-
-    Args:
-        infile (str): The path of the file to be read.
-        col_name (str): The name of the column containing the email content.
-    """
-    try:
-        df = pd.read_csv(infile)
-        return [{"content": row} for row in df[col_name]]
-    except OSError as e:
-        raise OSError("File {} does not exist".format(infile))
-    except KeyError as e:
-        raise KeyError("Column {} does not exist in the file".format(col_name))
-    except pd.errors.EmptyDataError:
-        return []
+        Args:
+            infile (str): The path of the file to be read.
+            col_name (str): The name of the column containing the email content.
+        """
+        try:
+            df = pd.read_csv(infile)
+            self.email_list = iter([{"content": row} for row in df[col_name]])
+        except OSError as e:
+            raise OSError("File {} does not exist".format(infile))
+        except KeyError as e:
+            raise KeyError("Column {} does not exist in the file".format(col_name))
+        except pd.errors.EmptyDataError:
+            self.email_list = []
