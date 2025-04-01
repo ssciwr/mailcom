@@ -9,7 +9,7 @@ from importlib import resources
 
 def test_get_input_handler_csv(tmp_path):
     inpath = tmp_path / "test.csv"
-    with open(inpath, "w", newline="", encoding="utf-8") as f:
+    with open(inpath, "w", newline="", encoding="utf-8"):
         pass  # empty file
 
     inout_hl = main.get_input_handler(inpath, in_type="csv")
@@ -125,16 +125,16 @@ def test_process_data_no_lang(get_data, get_settings, get_inout_hl):
 def test_process_data_no_datetime(get_data, get_settings, get_inout_hl):
     get_settings["pseudonymize"]["datetime_detection"] = False
     get_inout_hl.email_list = get_data
-    pseudo_emails = main.process_data(get_inout_hl.get_email_list(), get_settings)
+    main.process_data(get_inout_hl.get_email_list(), get_settings)
 
     emails = get_inout_hl.get_email_list()
-    email_1 = next(emails)
+    next(emails)
     email_2 = next(emails)
 
-    assert email_2.get("detected_datetime") == None
+    assert email_2.get("detected_datetime") is None
     assert (
-        email_2.get("pseudo_content")
-        == "Esta foto fue tomada por José el [number].[number].[number] a las [number]:[number]. "
+        email_2.get("pseudo_content") == "Esta foto fue tomada por José el "
+        "[number].[number].[number] a las [number]:[number]. "
         "Compruébelo en el archivo adjunto"
     )
 
@@ -142,7 +142,7 @@ def test_process_data_no_datetime(get_data, get_settings, get_inout_hl):
 def test_process_data_no_email(get_data, get_settings, get_inout_hl):
     get_settings["pseudonymize"]["pseudo_emailaddresses"] = False
     get_inout_hl.email_list = get_data
-    pseudo_emails = main.process_data(get_inout_hl.get_email_list(), get_settings)
+    main.process_data(get_inout_hl.get_email_list(), get_settings)
 
     email_1 = next(get_inout_hl.get_email_list())
 
@@ -156,7 +156,7 @@ def test_process_data_no_email(get_data, get_settings, get_inout_hl):
 def test_process_data_no_ne(get_data, get_settings, get_inout_hl):
     get_settings["pseudonymize"]["pseudo_ne"] = False
     get_inout_hl.email_list = get_data
-    pseudo_emails = main.process_data(get_inout_hl.get_email_list(), get_settings)
+    main.process_data(get_inout_hl.get_email_list(), get_settings)
 
     emails = get_inout_hl.get_email_list()
     email_1 = next(emails)
@@ -178,7 +178,7 @@ def test_process_data_no_ne(get_data, get_settings, get_inout_hl):
 def test_process_data_no_numbers(get_data, get_settings, get_inout_hl):
     get_settings["pseudonymize"]["pseudo_numbers"] = False
     get_inout_hl.email_list = get_data
-    pseudo_emails = main.process_data(get_inout_hl.get_email_list(), get_settings)
+    main.process_data(get_inout_hl.get_email_list(), get_settings)
 
     emails = get_inout_hl.get_email_list()
     email_1 = next(emails)

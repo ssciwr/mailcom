@@ -253,11 +253,11 @@ def test_contains_only_emails(get_lang_detector):
 
 @pytest.mark.langdet
 def test_contains_only_links(get_lang_detector):
-    assert get_lang_detector.contains_only_links("http://www.google.com") is True
+    assert get_lang_detector.contains_only_links("ftp://www.directory.de") is True
     assert get_lang_detector.contains_only_links("https://some.link") is True
-    assert get_lang_detector.contains_only_links("http://a.b https://a") is True
+    assert get_lang_detector.contains_only_links("https://a.de http://a.en") is True
     assert (
-        get_lang_detector.contains_only_links("Sent from http://www.google.com")
+        get_lang_detector.contains_only_links("Sent from https://www.google.com")
         is False
     )
 

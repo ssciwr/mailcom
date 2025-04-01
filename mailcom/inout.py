@@ -3,7 +3,6 @@ import os
 import eml_parser
 from bs4 import BeautifulSoup
 from dicttoxml import dicttoxml
-import csv
 import pandas as pd
 
 
@@ -145,9 +144,9 @@ class InoutHandler:
         try:
             df = pd.read_csv(infile)
             self.email_list = iter([{"content": row} for row in df[col_name]])
-        except OSError as e:
+        except OSError:
             raise OSError("File {} does not exist".format(infile))
-        except KeyError as e:
+        except KeyError:
             raise KeyError("Column {} does not exist in the file".format(col_name))
         except pd.errors.EmptyDataError:
             self.email_list = []

@@ -2,6 +2,7 @@ from langid.langid import LanguageIdentifier, model
 from langdetect import detect_langs, DetectorFactory
 from intervaltree import IntervalTree
 from mailcom.utils import TransformerLoader, get_trans_instance
+import re
 
 
 class LangDetector:
@@ -78,7 +79,15 @@ class LangDetector:
         """
         processed_text = text.strip().strip("\n")
         text_as_list = [word for word in processed_text.split(" ") if word.strip()]
-        return all(("http://" in word or ("https://" in word)) for word in text_as_list)
+
+        url_regex = re.compile(
+            r"^(https?|ftp)://"  # Match http, https, or ftp
+            r"(([A-Za-z0-9-]+\.)+[A-Za-z]{2,})"  # Match domain name
+            r"(:\d+)?"  # Optional port number
+            r"(/.*)?$"  # Optional path
+        )
+
+        return all(url_regex.match(word) for word in text_as_list)
 
     def constrain_langid(self, lang_set=[]):
         """Set constraint for language set of langid.
