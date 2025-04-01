@@ -81,7 +81,7 @@ class LangDetector:
         text_as_list = [word for word in processed_text.split(" ") if word.strip()]
 
         url_regex = re.compile(
-            r"^(https?|ftp)://"  # Match http, https, or ftp
+            r"^(https?|s?ftps?|scp)://"  # Match http, https, sftp, ftps, ftp, or scp
             r"(([A-Za-z0-9-]+\.)+[A-Za-z]{2,})"  # Match domain name
             r"(:\d+)?"  # Optional port number
             r"(/.*)?$"  # Optional path

@@ -253,7 +253,7 @@ def test_contains_only_emails(get_lang_detector):
 
 @pytest.mark.langdet
 def test_contains_only_links(get_lang_detector):
-    assert get_lang_detector.contains_only_links("ftp://www.directory.de") is True
+    assert get_lang_detector.contains_only_links("sftp://www.directory.de") is True
     assert get_lang_detector.contains_only_links("https://some.link") is True
     assert get_lang_detector.contains_only_links("https://a.de http://a.en") is True
     assert (
@@ -316,7 +316,6 @@ def test_detect_single_lang_with_transformers(get_lang_det_w_trans):
             # this transformer model does not support detecting Korean
             with pytest.raises(AssertionError):
                 assert det_lang == lang
-                assert prob > SINGLE_DETECT_THRESHOLD
         else:
             assert det_lang == lang
             assert prob > SINGLE_DETECT_THRESHOLD
@@ -404,11 +403,9 @@ def test_detect_mixed_lang_with_transformers(get_lang_det_w_trans, get_mixed_lan
 
 
 @pytest.mark.langdet
+@pytest.mark.skipif(lang_num > 3, reason="lang_num > 3")
 def test_detect_mixed_lang_with_langid(get_lang_detector, get_mixed_lang_docs):
     for doc in get_mixed_lang_docs:
-        if lang_num > 3:
-            continue
-
         detection = get_lang_detector.detect_with_langid(doc)
         det_lang, prob = detection[0]
         exceptions_two_langs = (lang_num == 2) and get_mixed_lang_docs[doc][0] in [
@@ -437,20 +434,17 @@ def test_detect_mixed_lang_with_langid(get_lang_detector, get_mixed_lang_docs):
             # detected lang is completely wrong
             with pytest.raises(AssertionError):
                 assert det_lang == get_mixed_lang_docs[doc][0]
-                assert prob > MULTI_DETECT_THRESHOLD
         else:
             assert det_lang == get_mixed_lang_docs[doc][0]
             assert prob > MULTI_DETECT_THRESHOLD
 
 
 @pytest.mark.langdet
+@pytest.mark.skipif(lang_num > 2, reason="lang_num > 2")
 def test_detect_mixed_lang_with_langdetect(get_lang_detector, get_mixed_lang_docs):
     get_lang_detector.determine_langdetect()
     incomplete_detec = []
     for doc in get_mixed_lang_docs:
-        if lang_num > 2:
-            continue
-
         detections = get_lang_detector.detect_with_langdetect(doc)
         det_lang1, prob1 = detections[0]
         wrong_detect_first_lang = get_mixed_lang_docs[doc][0] in [
@@ -464,7 +458,6 @@ def test_detect_mixed_lang_with_langdetect(get_lang_detector, get_mixed_lang_doc
         if wrong_detect_first_lang:
             with pytest.raises(AssertionError):
                 assert det_lang1 == get_mixed_lang_docs[doc][0]
-                assert prob1 > MULTI_DETECT_THRESHOLD
         else:
             assert det_lang1 == get_mixed_lang_docs[doc][0]
             assert prob1 > MULTI_DETECT_THRESHOLD
@@ -475,7 +468,6 @@ def test_detect_mixed_lang_with_langdetect(get_lang_detector, get_mixed_lang_doc
         if wrong_detect_second_lang:
             with pytest.raises(AssertionError):
                 assert detections[1][0] == get_mixed_lang_docs[doc][1]
-                assert detections[1][1] > MULTI_DETECT_THRESHOLD
         elif len(detections) <= 1:
             incomplete_detec.append(doc)
             incomplete_detec.append("\n")
