@@ -396,7 +396,6 @@ def test_detect_mixed_lang_with_transformers(get_lang_det_w_trans, get_mixed_lan
             # detected lang is incorrect
             with pytest.raises(AssertionError):
                 assert det_lang == get_mixed_lang_docs[doc][0]
-                assert prob > MULTI_DETECT_THRESHOLD
         else:
             assert det_lang == get_mixed_lang_docs[doc][0]
             assert prob > MULTI_DETECT_THRESHOLD
@@ -430,11 +429,11 @@ def test_detect_mixed_lang_with_langid(get_lang_detector, get_mixed_lang_docs):
             # detected lang is the second one in the doc
             assert det_lang == get_mixed_lang_docs[doc][1]
             assert prob > MULTI_DETECT_THRESHOLD
-        elif failed_three_langs:
+        if failed_three_langs:
             # detected lang is completely wrong
             with pytest.raises(AssertionError):
                 assert det_lang == get_mixed_lang_docs[doc][0]
-        else:
+        if not (exceptions_two_langs or exceptions_three_langs or failed_three_langs):
             assert det_lang == get_mixed_lang_docs[doc][0]
             assert prob > MULTI_DETECT_THRESHOLD
 
@@ -468,10 +467,10 @@ def test_detect_mixed_lang_with_langdetect(get_lang_detector, get_mixed_lang_doc
         if wrong_detect_second_lang:
             with pytest.raises(AssertionError):
                 assert detections[1][0] == get_mixed_lang_docs[doc][1]
-        elif len(detections) <= 1:
+        if len(detections) <= 1:
             incomplete_detec.append(doc)
             incomplete_detec.append("\n")
-        else:
+        if not wrong_detect_second_lang and len(detections) > 1:
             assert detections[1][0] == get_mixed_lang_docs[doc][1]
             assert detections[1][1] > MULTI_DETECT_THRESHOLD
     print(" ".join(incomplete_detec))
