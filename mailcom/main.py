@@ -1,4 +1,5 @@
 from pathlib import Path
+from importlib import resources
 from mailcom.inout import InoutHandler
 from mailcom import utils
 from mailcom.lang_detector import LangDetector
@@ -8,6 +9,7 @@ import json
 from collections.abc import Iterator
 from importlib import resources
 import jsonschema
+import warnings
 
 
 def get_input_handler(
@@ -66,28 +68,55 @@ def is_valid_settings(workflow_setting: dict) -> bool:
         return False
 
 
-def get_workflow_settings(workflow_settings: str) -> dict:
-    """Get the workflow settings from a file.
+def get_workflow_settings(
+    setting_path: str = "default", new_settings: dict = {}
+) -> dict:
+    """Get the workflow settings.
+    If the setting path is default, return the default settings.
+    If the setting path is not default, read the settings from the file.
+    If the new settings are provided, overwrite the default/loaded settings.
 
     Args:
-        workflow_settings (str): Path to the workflow settings file.
+        setting_path (str): Path to the workflow settings file.
+            Defaults to "default".
+        new_settings (dict): New settings to overwrite the existing settings.
+            Defaults to {}.
 
     Returns:
         dict: The workflow settings.
     """
-    try:
-        with open(workflow_settings, "r") as file:
-            return json.load(file)
-    except FileNotFoundError:
-        raise FileNotFoundError(
-            "Workflow settings file not found: {}".format(workflow_settings)
-        )
-    except json.JSONDecodeError:
-        raise json.JSONDecodeError(
-            "Error reading workflow settings file: {}".format(workflow_settings),
-            doc="",
-            pos=0,
-        )
+    workflow_settings = {}
+    pkg = resources.files("mailcom")
+    default_setting_path = Path(pkg / "default_settings.json")
+
+    if setting_path == "default":
+        workflow_settings = json.load(open(default_setting_path, "r", encoding="utf-8"))
+    else:
+        try:
+            with open(setting_path, "r") as file:
+                # TODO: validate the JSON schema
+                workflow_settings = json.load(file)
+        except Exception:
+            warnings.warn(
+                "Error in loading the workflow settings file. "
+                "Using default settings instead.",
+                UserWarning,
+            )
+            workflow_settings = json.load(
+                open(default_setting_path, "r", encoding="utf-8")
+            )
+
+    for key, value in new_settings.items():
+        if key in workflow_settings:
+            workflow_settings[key] = value
+        else:
+            warnings.warn(
+                "Key {} not found in the workflow settings "
+                "and will be skipped.".format(key),
+                UserWarning,
+            )
+
+    return workflow_settings
 
 
 def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
