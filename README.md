@@ -5,10 +5,6 @@ Tool to parse email body from email text (eml file), and retains only the text, 
 Install using  
 `python -m pip install mailcom`
 
-You will also need to download the French and Spanish models for spaCy and Stanza using the provided script - run this in the terminal:
-
-`./get-models.sh`
-
 For an overview over the available languages and models, check the [spaCy](https://spacy.io/usage/models) website.
 
 # Usage
