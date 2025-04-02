@@ -9,33 +9,32 @@ import csv
 pkg = resources.files("mailcom")
 
 FILE_PATH = Path(pkg / "test" / "data" / "Bonjour Agathe.eml")
-XML_PATH = Path(pkg / "test" / "data" / "test.out")
+XML_PATH = Path(pkg / "test" / "data" / "test.xml")
 
 TEXT_REF = "J'espère que tu vas bien!"
-XML_REF = '<?xml version="1.0" encoding="UTF-8" ?><email><content type="str">'
+XML_REF = '<?xml version="1.0" encoding="UTF-8" ?><email_list><email type="dict">'
 
 
 @pytest.fixture()
-def get_instant(tmp_path):
-    return inout.InoutHandler(tmp_path)
+def get_instant():
+    return inout.InoutHandler()
 
 
-def test_list_of_files(get_instant):
+def test_list_of_files(get_instant, tmp_path):
     with pytest.raises(ValueError):
-        get_instant.list_of_files()
-    p = get_instant.directory_name / "test.eml"
+        get_instant.list_of_files(tmp_path)
+    p = tmp_path / "test.eml"
     p.write_text("test")
-    get_instant.list_of_files()
+    get_instant.list_of_files(tmp_path)
     assert len(get_instant.email_path_list) != 0
-    get_instant2 = inout.InoutHandler("nonexistingDir")
     with pytest.raises(OSError):
-        get_instant2.list_of_files()
-    p = get_instant.directory_name / "test2.html"
+        get_instant.list_of_files("nonexistingDir")
+    p = tmp_path / "test2.html"
     p.write_text("test2")
-    p = get_instant.directory_name / "test3.xml"
+    p = tmp_path / "test3.xml"
     p.write_text("test3")
-    get_instant.list_of_files()
-    assert get_instant.directory_name / "test3.xml" not in get_instant.email_path_list
+    get_instant.list_of_files(tmp_path)
+    assert tmp_path / "test3.xml" not in get_instant.email_path_list
 
 
 def test_get_html_text(get_instant):
@@ -45,19 +44,35 @@ def test_get_html_text(get_instant):
     assert get_instant.get_html_text(noHtml) == "Test"
 
 
-def test_data_to_xml(get_instant, tmp_path):
-    xml_content = {
-        "content": "This is nothing more than a test",
-        "date": "2024-04-17T15:13:56+00:00",
-        "attachment": 2,
-        "attachement type": {"jpg", "jpg"},
-    }
-    xml = get_instant.data_to_xml(xml_content)
-    get_instant.write_file(xml, tmp_path / "test")
-    assert filecmp.cmp(XML_PATH, tmp_path / "test.out")
+@pytest.fixture()
+def get_xml_content():
+    return [
+        {
+            "content": "This is nothing more than a test",
+            "date": "2024-04-17T15:13:56+00:00",
+            "attachment": 2,
+            "attachement type": {"jpg", "jpg"},
+        }
+    ]
 
 
-def test_extract_email_info(get_instant):
+def test_data_to_xml(get_instant, get_xml_content):
+    get_instant.email_list = get_xml_content
+    xml = get_instant.data_to_xml()
+    assert xml.startswith(XML_REF)
+
+
+def test_write_file(get_instant, tmp_path, get_xml_content):
+    get_instant.email_list = get_xml_content
+    xml = get_instant.data_to_xml()
+    get_instant.write_file(xml, tmp_path / "test.xml")
+    assert filecmp.cmp(XML_PATH, tmp_path / "test.xml")
+
+    with pytest.raises(ValueError):
+        get_instant.write_file("", tmp_path / "test.txt")
+
+
+def test_extract_email_info(get_instant, tmp_path):
     # Test with a valid email file
     email_info = get_instant.extract_email_info(FILE_PATH)
     assert email_info["content"].startswith(TEXT_REF)
@@ -69,18 +84,18 @@ def test_extract_email_info(get_instant):
 
     # Test with a non-existing file
     with pytest.raises(OSError):
-        get_instant.extract_email_info(get_instant.directory_name / "nonexisting.eml")
+        get_instant.extract_email_info(tmp_path / "nonexisting.eml")
 
 
-def test_process_emails(get_instant):
+def test_process_emails(get_instant, tmp_path):
     # Create some test email files
-    email_file_1 = get_instant.directory_name / "test1.eml"
+    email_file_1 = tmp_path / "test1.eml"
     email_file_1.write_text("Content of test email 1")
-    email_file_2 = get_instant.directory_name / "test2.eml"
+    email_file_2 = tmp_path / "test2.eml"
     email_file_2.write_text("Content of test email 2")
 
     # Update the directory name and list of files
-    get_instant.list_of_files()
+    get_instant.list_of_files(tmp_path)
 
     # Process the emails
     get_instant.process_emails()
@@ -107,12 +122,12 @@ def test_write_csv(get_instant, tmp_path):
             "attachement type": [],
         },
     ]
-    get_instant.email_list = email_data
 
     # Define the output CSV file path
     csv_file = tmp_path / "test_emails.csv"
 
     # Write the email data to CSV
+    get_instant.email_list = email_data
     get_instant.write_csv(csv_file)
 
     # Read the CSV file and verify its contents
@@ -128,6 +143,16 @@ def test_write_csv(get_instant, tmp_path):
         assert rows[1]["date"] == "2024-04-18T15:13:56+00:00"
         assert rows[1]["attachment"] == "0"
         assert rows[1]["attachement type"] == "[]"
+
+
+def test_write_csv_empty(get_instant, tmp_path):
+    # Define the output CSV file path
+    csv_file = tmp_path / "test_emails.csv"
+
+    # Write an empty list to CSV
+    get_instant.email_list = []
+    with pytest.raises(ValueError):
+        get_instant.write_csv(csv_file)
 
 
 def test_get_email_list(get_instant):
@@ -158,3 +183,44 @@ def test_get_email_list(get_instant):
     # Verify that the iterator is exhausted
     with pytest.raises(StopIteration):
         next(email_list_iter)
+
+
+def test_load_csv(get_instant, tmp_path):
+    # Test with a valid CSV file
+    infile = tmp_path / "test.csv"
+
+    with open(infile, "w", newline="", encoding="utf-8") as f:
+        pass  # empty file
+
+    get_instant.load_csv(infile, "content")
+    assert get_instant.email_list == []
+
+    with open(infile, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["no", "content"])
+        writer.writerow(
+            [
+                "1",
+                "Content of test email 1",
+            ]
+        )
+        writer.writerow(
+            [
+                "2",
+                "Content of test email 2",
+            ]
+        )
+    get_instant.load_csv(infile, "content")
+    emails = get_instant.get_email_list()
+    assert next(emails)["content"] == "Content of test email 1"
+    assert next(emails)["content"] == "Content of test email 2"
+
+    # Test with a non-existing column name
+    with pytest.raises(KeyError):
+        col_name = "nonexisting"
+        get_instant.load_csv(infile, col_name)
+
+    # Test with a non-existing file
+    with pytest.raises(OSError):
+        infile = "nonexisting.csv"
+        get_instant.load_csv(infile, col_name)
