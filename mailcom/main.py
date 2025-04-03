@@ -34,9 +34,7 @@ def get_input_handler(
             marking unmatch columns in csv files.
             Defaults to "unmatched".
         file_types (list, optional): The list of file types
-            to be processed in the directory.
-            Defaults to [".eml", ".html"].
-
+            to be processed in the dirdef test_get_workflow_settings(tmp_path):
     Returns:
         InoutHandler: The input handler object.
     """
@@ -89,22 +87,31 @@ def get_workflow_settings(
     pkg = resources.files("mailcom")
     default_setting_path = Path(pkg / "default_settings.json")
 
+    def load_json(file_path: str) -> dict:
+        with open(file_path, "r", encoding="utf-8") as file:
+            return json.load(file)
+
     if setting_path == "default":
-        workflow_settings = json.load(open(default_setting_path, "r", encoding="utf-8"))
+        workflow_settings = load_json(default_setting_path)
     else:
         try:
-            with open(setting_path, "r") as file:
-                # TODO: validate the JSON schema
-                workflow_settings = json.load(file)
+            file_settings = load_json(setting_path)
+            if is_valid_settings(file_settings):
+                workflow_settings = file_settings
+            else:
+                warnings.warn(
+                    "Invalid workflow settings file. "
+                    "Using default settings instead.",
+                    UserWarning,
+                )
+                workflow_settings = load_json(default_setting_path)
         except Exception:
             warnings.warn(
                 "Error in loading the workflow settings file. "
                 "Using default settings instead.",
                 UserWarning,
             )
-            workflow_settings = json.load(
-                open(default_setting_path, "r", encoding="utf-8")
-            )
+            workflow_settings = load_json(default_setting_path)
 
     for key, value in new_settings.items():
         if key in workflow_settings:

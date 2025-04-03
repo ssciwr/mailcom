@@ -145,19 +145,19 @@ def test_get_workflow_settings_file(tmp_path):
 
     # invalid cases
     with pytest.warns(UserWarning):
-        main.get_workflow_settings(setting_path)
+        settings = main.get_workflow_settings(setting_path)
+    assert settings.get("default_lang") == "fr"
 
     with open(setting_path, "w", newline="", encoding="utf-8") as f:
         pass  # empty file
     with pytest.warns(UserWarning):
-        main.get_workflow_settings(setting_path)
+        settings = main.get_workflow_settings(setting_path)
+    assert settings.get("default_lang") == "fr"
 
     with open(setting_path, "w", newline="", encoding="utf-8") as f:
         f.write("test")
     with pytest.warns(UserWarning):
-        main.get_workflow_settings(setting_path)
-
-    settings = main.get_workflow_settings(setting_path)
+        settings = main.get_workflow_settings(setting_path)
     assert settings.get("default_lang") == "fr"
 
     # valid cases
@@ -168,7 +168,6 @@ def test_get_workflow_settings_file(tmp_path):
 
 
 def test_get_workflow_settings_new_settings(tmp_path):
-    # TODO modify after adding the schema validation
     new_settings = {"default_lang": "es"}
 
     settings = main.get_workflow_settings(new_settings=new_settings)
@@ -177,12 +176,15 @@ def test_get_workflow_settings_new_settings(tmp_path):
     setting_path = tmp_path / "settings.json"
     with open(setting_path, "w", newline="", encoding="utf-8") as f:
         json.dump({"default_lang": "fr"}, f)
+    settings = main.get_workflow_settings(setting_path)
+    assert settings.get("default_lang") == "fr"
     settings = main.get_workflow_settings(setting_path, new_settings=new_settings)
     assert settings.get("default_lang") == "es"
 
     new_settings = {"test": "test"}
     with pytest.warns(UserWarning):
-        main.get_workflow_settings(setting_path, new_settings=new_settings)
+        settings = main.get_workflow_settings(setting_path, new_settings=new_settings)
+    assert settings.get("default_lang") == "fr"
 
 
 @pytest.fixture()
