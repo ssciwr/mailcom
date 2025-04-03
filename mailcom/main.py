@@ -123,6 +123,10 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
         time_detector = TimeDetector(parsing_type, spacy_loader)
 
     for email in email_list:
+        # skip if email content is empty or not present
+        if not email.get("content"):
+            continue
+
         email_content, _ = utils.clean_up_content(email["content"])
         email["cleaned_content"] = email_content
 

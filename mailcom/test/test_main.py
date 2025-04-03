@@ -276,6 +276,17 @@ def test_process_data_no_numbers(get_data, get_settings, get_inout_hl):
     )
 
 
+def test_process_data_empty_email(get_data, get_settings, get_inout_hl):
+    get_inout_hl.email_list = get_data
+    get_inout_hl.email_list.append({"no-content": "test"})
+    main.process_data(get_inout_hl.get_email_list(), get_settings)
+    emails = get_inout_hl.get_email_list()
+    next(emails)
+    next(emails)
+    email_3 = next(emails)
+    assert "pseudo_content" not in email_3
+
+
 def test_write_output_data_csv(get_data, tmp_path, get_inout_hl):
     outpath = tmp_path / "test_output.csv"
     get_inout_hl.email_list = get_data

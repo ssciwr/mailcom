@@ -187,8 +187,6 @@ class InoutHandler:
         except OSError:
             raise OSError("File {} does not exist".format(infile))
         except KeyError:
-            raise KeyError(
-                "Error while getting columns from the file".format(col_names)
-            )
+            raise KeyError("Column {} does not exist in the file".format(col))
         except pd.errors.EmptyDataError:
             self.email_list = []

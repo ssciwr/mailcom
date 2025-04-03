@@ -272,7 +272,7 @@ def test_load_csv_invalid_col(get_instant, tmp_path):
         )
 
     # Test with a non-existing column name
-    with pytest.raises(KeyError):
+    with pytest.raises(KeyError, match="Column nonexisting does not exist in the file"):
         col_name = "nonexisting"
         get_instant.load_csv(infile, [col_name])
 
