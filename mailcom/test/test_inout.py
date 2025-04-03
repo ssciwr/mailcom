@@ -87,6 +87,12 @@ def test_extract_email_info(get_instant, tmp_path):
         get_instant.extract_email_info(tmp_path / "nonexisting.eml")
 
 
+def test_extract_email_extra_fields(get_instant):
+    get_instant.init_data_fields.append("extra_field")
+    email_info = get_instant.extract_email_info(FILE_PATH)
+    assert email_info["extra_field"] is None
+
+
 def test_process_emails(get_instant, tmp_path):
     # Create some test email files
     email_file_1 = tmp_path / "test1.eml"
@@ -185,16 +191,45 @@ def test_get_email_list(get_instant):
         next(email_list_iter)
 
 
-def test_load_csv(get_instant, tmp_path):
+def test_validate_data(get_instant):
+    email_dict = {}
+    get_instant.validate_data(email_dict)
+    assert email_dict["content"] is None
+
+    email_dict = {
+        "content": "This is a test email",
+    }
+    get_instant.validate_data(email_dict)
+    assert email_dict["content"] == "This is a test email"
+    assert email_dict["date"] is None
+
+
+def test_load_csv_empty(get_instant, tmp_path):
     # Test with a valid CSV file
     infile = tmp_path / "test.csv"
 
     with open(infile, "w", newline="", encoding="utf-8") as f:
         pass  # empty file
 
-    get_instant.load_csv(infile, "content")
+    get_instant.load_csv(infile, ["content"])
     assert get_instant.email_list == []
 
+    with open(infile, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["no", "content"])
+        writer.writerow(
+            [
+                "1",
+                "Content of test email 1",
+            ]
+        )
+
+    with pytest.raises(ValueError):
+        get_instant.load_csv(infile, [])
+
+
+def test_load_csv_less_data(get_instant, tmp_path):
+    infile = tmp_path / "test.csv"
     with open(infile, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["no", "content"])
@@ -210,17 +245,57 @@ def test_load_csv(get_instant, tmp_path):
                 "Content of test email 2",
             ]
         )
-    get_instant.load_csv(infile, "content")
+    get_instant.load_csv(infile, ["content"])
     emails = get_instant.get_email_list()
-    assert next(emails)["content"] == "Content of test email 1"
-    assert next(emails)["content"] == "Content of test email 2"
+    email_1 = next(emails)
+    email_2 = next(emails)
+    assert email_1["content"] == "Content of test email 1"
+    assert email_1["date"] is None
+    assert email_1["attachment"] is None
+    assert email_1["attachement type"] is None
+    assert email_2["content"] == "Content of test email 2"
+    assert email_2["date"] is None
+    assert email_2["attachment"] is None
+    assert email_2["attachement type"] is None
+
+
+def test_load_csv_invalid_col(get_instant, tmp_path):
+    infile = tmp_path / "test.csv"
+    with open(infile, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["no", "content"])
+        writer.writerow(
+            [
+                "1",
+                "Content of test email 1",
+            ]
+        )
 
     # Test with a non-existing column name
     with pytest.raises(KeyError):
         col_name = "nonexisting"
-        get_instant.load_csv(infile, col_name)
+        get_instant.load_csv(infile, [col_name])
 
+
+def test_load_csv_invalid_file(get_instant):
     # Test with a non-existing file
+    infile = "nonexisting.csv"
     with pytest.raises(OSError):
-        infile = "nonexisting.csv"
-        get_instant.load_csv(infile, col_name)
+        get_instant.load_csv(infile, ["content"])
+
+
+def test_load_csv_extra_data(get_instant, tmp_path):
+    infile = tmp_path / "test.csv"
+    # more columns than init_data_fields
+    with open(infile, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["no", "content", "note"])
+        writer.writerow(["1", "Content of test email 1", "note 1"])
+
+    get_instant.init_data_fields = ["content"]
+    get_instant.load_csv(infile, ["content", "note"])
+    emails = get_instant.get_email_list()
+    email_1 = next(emails)
+    assert email_1["content"] == "Content of test email 1"
+    assert email_1["note"] == "note 1"
+    assert "date" not in email_1

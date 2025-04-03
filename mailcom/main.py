@@ -13,7 +13,8 @@ import jsonschema
 def get_input_handler(
     in_path: str,
     in_type: str = "dir",
-    col_name: str = "message",
+    col_names: list = ["message"],
+    init_data_fields: list = ["content", "date", "attachment", "attachement type"],
     file_types: list = [".eml", ".html"],
 ) -> InoutHandler:
     """Get input handler for a file or directory.
@@ -22,19 +23,20 @@ def get_input_handler(
         in_path (str): The path to the input data.
         in_type (str, optional): The type of input data. Defaults to "dir".
             Possible values are ["dir", "csv"].
-        col_name (str, optional): The name of the column containing
-            the main content in csv file.
-            Defaults to "message".
+        col_names (list, optional): The list of column names that
+            map the init_data_fields.
         file_types (list, optional): The list of file types
             to be processed in the directory.
             Defaults to [".eml", ".html"].
+        init_data_fields (list, optional): The list of fields
+            should be present in the data dict.
 
     Returns:
         InoutHandler: The input handler object.
     """
-    inout_handler = InoutHandler()
+    inout_handler = InoutHandler(init_data_fields)
     if in_type == "csv":
-        inout_handler.load_csv(in_path, col_name)
+        inout_handler.load_csv(in_path, col_names)
     else:
         inout_handler.list_of_files(in_path, file_types)
         inout_handler.process_emails()
@@ -162,6 +164,10 @@ def write_output_data(inout_hl: InoutHandler, out_path: str):
     """
     if not out_path:
         raise ValueError("No output path specified")
+
+    # check if the output file is not empty
+    if Path(out_path).is_file() and Path(out_path).stat().st_size > 0:
+        raise ValueError("Output file is not empty")
 
     file_type = Path(out_path).suffix[1:]
 

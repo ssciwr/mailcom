@@ -7,8 +7,12 @@ import pandas as pd
 
 
 class InoutHandler:
-    def __init__(self):
+    def __init__(
+        self,
+        init_data_fields: list = ["content", "date", "attachment", "attachement type"],
+    ):
         self.email_list = []
+        self.init_data_fields = init_data_fields
 
     def list_of_files(self, directory_name: str, file_types: list = [".eml", ".html"]):
         """Method to create a list of Path objects (files) that are present
@@ -54,7 +58,6 @@ class InoutHandler:
 
         Args:
             file (Path): The path to the email file.
-
         Returns:
             dict: Dictionary containing email text and metadata."""
         if not file.is_file():  # check if given file exists raises error otherwise
@@ -80,6 +83,9 @@ class InoutHandler:
         # clean up html content
         email_content["content"] = self.get_html_text(email_content["content"])
 
+        # check if all fields are present in the email dict
+        self.validate_data(email_content)
+
         return email_content
 
     def process_emails(self):
@@ -98,8 +104,12 @@ class InoutHandler:
             iter: Iterator of self.email_list."""
         return iter(self.email_list)
 
-    def validate_data(self):
-        pass
+    def validate_data(self, email_dict: dict):
+        """Check if all fields in init_data_fields are present.
+        If not, set them to None."""
+        for field in self.init_data_fields:
+            if field not in email_dict:
+                email_dict[field] = None
 
     def data_to_xml(self):
         def my_item_func(x):
@@ -134,19 +144,51 @@ class InoutHandler:
         df = pd.DataFrame(self.email_list)
         df.to_csv(outfile, index=False)
 
-    def load_csv(self, infile: str, col_name: str = "message"):
+    def load_csv(
+        self,
+        infile: str,
+        col_names: list = ["message"],
+    ):
         """Load the email list from a csv file.
+        The col_names should map the init_data_fields by order.
+        + If col_names is empty, the email dict will be created with
+        the init_data_fields as keys.
+        + If number of col_names is less than the number of init_data_fields,
+        the rest of the fields in email dict will be set to None.
+        + If number of col_names is greater than the number of init_data_fields,
+        the rest of the col_names will be used as keys in the email dict.
 
         Args:
             infile (str): The path of the file to be read.
-            col_name (str): The name of the column containing the email content.
+            col_names (list): The list of column names that map the init_data_fields.
+                Defaults to ["message"].
         """
+        if not col_names:
+            raise ValueError("The column names should not be empty.")
         try:
             df = pd.read_csv(infile)
-            self.email_list = iter([{"content": row} for row in df[col_name]])
+
+            common_num = min(len(col_names), len(self.init_data_fields))
+            common_cols = col_names[:common_num]
+            remaining_cols = col_names[common_num:]
+            common_fields = self.init_data_fields[:common_num]
+            remaining_fields = self.init_data_fields[common_num:]
+
+            for _, row in df.iterrows():
+                email_dict = {}
+                for col, field in zip(common_cols, common_fields):
+                    email_dict[field] = row[col]
+                for col in remaining_cols:
+                    email_dict[col] = row[col]
+                for field in remaining_fields:
+                    email_dict[field] = None
+                self.email_list.append(email_dict)
+
         except OSError:
             raise OSError("File {} does not exist".format(infile))
         except KeyError:
-            raise KeyError("Column {} does not exist in the file".format(col_name))
+            raise KeyError(
+                "Error while getting columns from the file".format(col_names)
+            )
         except pd.errors.EmptyDataError:
             self.email_list = []

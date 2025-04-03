@@ -307,15 +307,30 @@ def test_write_output_data_xml(get_data, tmp_path, get_inout_hl):
         assert lines[0].count('<email type="dict">') == 2
 
 
-def test_write_output_data_invalid(get_data, tmp_path, get_inout_hl):
+def test_write_output_data_invalid(get_data, tmp_path, get_inout_hl, tmpdir):
+    # invalid file type
     outpath = tmp_path / "test_output.txt"
     with pytest.raises(ValueError):
         main.write_output_data(get_inout_hl, outpath)
 
+    # empty data to write
     outpath = tmp_path / "test_output.csv"
     with pytest.raises(ValueError):
         main.write_output_data(get_inout_hl, outpath)
 
+    # empty path
     get_inout_hl.email_list = get_data
     with pytest.raises(ValueError):
         main.write_output_data(get_inout_hl, "")
+
+    # invalid file path
+    get_inout_hl.email_list = get_data
+    with pytest.raises(ValueError):
+        main.write_output_data(get_inout_hl, tmpdir)
+
+    # non-empty file
+    outpath = tmp_path / "test_output.csv"
+    with open(outpath, "w", encoding="utf-8") as f:
+        f.write("test")
+    with pytest.raises(ValueError):
+        main.write_output_data(get_inout_hl, outpath)
