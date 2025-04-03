@@ -6,6 +6,8 @@ from mailcom.time_detector import TimeDetector
 from mailcom.parse import Pseudonymize
 import json
 from collections.abc import Iterator
+from importlib import resources
+import jsonschema
 
 
 def get_input_handler(
@@ -37,6 +39,25 @@ def get_input_handler(
         inout_handler.list_of_files(in_path, file_types)
         inout_handler.process_emails()
     return inout_handler
+
+
+def is_valid_settings(workflow_setting: dict) -> bool:
+    """Check if the workflow settings are valid.
+    Args:
+        workflow_setting (dict): The workflow settings.
+
+    Returns:
+        bool: True if the settings are valid, False otherwise.
+    """
+    pkg = resources.files("mailcom")
+    setting_schema_path = Path(pkg / "setting_schema.json")
+    setting_schema = json.load(open(setting_schema_path, "r", encoding="utf-8"))
+
+    try:
+        jsonschema.validate(instance=workflow_setting, schema=setting_schema)
+        return True
+    except jsonschema.ValidationError:
+        return False
 
 
 def get_workflow_settings(workflow_settings: str) -> dict:

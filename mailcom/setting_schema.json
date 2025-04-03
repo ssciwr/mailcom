@@ -1,34 +1,36 @@
 {
     "$defs": {
         "pipelineStructure": {
-            "type": ["null", "object"],
-            "properties": {
-                "task": {
-                    "type": "string",
-                    "title": "Pipneline Task",
-                    "description": "The task to perform the pipeline."
-                },
-                "model": {
-                    "type": "string",
-                    "title": "Pipeline Model",
-                    "description": "The model to use for the pipeline."
-                },
-                "revision": {
-                    "type": "string",
-                    "title": "Pipeline Model Revision",
-                    "description": "The revision of the pipeline model."
-                },
-                "aggregation_strategy": {
-                    "type": "string",
-                    "title": "Pipeline Aggregation Strategy",
-                    "description": "The aggregation strategy for the pipeline.",
-                    "default": "simple"
-                },
-                "required": [
-                    "task",
-                    "model"
-                ]
-            }
+            "oneOf": [
+                {"type": "null"},
+                {
+                    "type": "object",
+                    "properties": {
+                        "task": {
+                            "type": "string",
+                            "title": "Pipneline Task",
+                            "description": "The task to perform the pipeline."
+                        },
+                        "model": {
+                            "type": "string",
+                            "title": "Pipeline Model",
+                            "description": "The model to use for the pipeline."
+                        },
+                        "revision": {
+                            "type": "string",
+                            "title": "Pipeline Model Revision",
+                            "description": "The revision of the pipeline model."
+                        },
+                        "aggregation_strategy": {
+                            "type": "string",
+                            "title": "Pipeline Aggregation Strategy",
+                            "description": "The aggregation strategy for the pipeline.",
+                            "default": "simple"
+                        }
+                    },
+                    "required": ["task", "model"]
+                }
+            ]
         }
     },
     "type": "object",
@@ -50,7 +52,7 @@
             "title": "Time Parsing Type",
             "description": "Type for parsing date time in the text.",
             "default": "strict",
-            "emum": [
+            "enum": [
                 "strict",
                 "non-strict"
             ]
@@ -86,6 +88,7 @@
                     }
                 }
             },
+            "minProperties": 1,
             "title": "List of Pseudo First Names",
             "description": "Define pseudo first names for each language.",
             "default": {
@@ -145,5 +148,6 @@
             "description": "The pipeline to use for NER.",
             "default": null
         }
-    }
+    },
+    "additionalProperties": false
 }

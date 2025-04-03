@@ -23,6 +23,86 @@ def test_get_input_handler_dir(tmpdir):
         main.get_input_handler(indir, in_type="dir")
 
 
+def test_is_valid_settings():
+    settings = {"default_lang": 1}
+    assert main.is_valid_settings(settings) is False
+    settings = {"default_lang": "fr"}
+    assert main.is_valid_settings(settings) is True
+    settings = {"default_lang": "unknown"}
+    assert main.is_valid_settings(settings) is True
+    settings = {"default_lang": ""}
+    assert main.is_valid_settings(settings) is True
+
+    settings = {"datetime_detection": True}
+    assert main.is_valid_settings(settings) is True
+    settings = {"datetime_detection": "test"}
+    assert main.is_valid_settings(settings) is False
+
+    settings = {"time_parsing": "strict"}
+    assert main.is_valid_settings(settings) is True
+    settings = {"time_parsing": "unknown"}
+    assert main.is_valid_settings(settings) is False
+
+    settings = {"pseudo_emailaddresses": True}
+    assert main.is_valid_settings(settings) is True
+    settings = {"pseudo_emailaddresses": "test"}
+    assert main.is_valid_settings(settings) is False
+
+    settings = {"pseudo_ne": False}
+    assert main.is_valid_settings(settings) is True
+    settings = {"pseudo_ne": "test"}
+    assert main.is_valid_settings(settings) is False
+
+    settings = {"pseudo_numbers": True}
+    assert main.is_valid_settings(settings) is True
+    settings = {"pseudo_numbers": "test"}
+    assert main.is_valid_settings(settings) is False
+
+    settings = {"pseudo_first_names": "test"}
+    assert main.is_valid_settings(settings) is False
+    settings = {"pseudo_first_names": []}
+    assert main.is_valid_settings(settings) is False
+    settings = {"pseudo_first_names": {}}
+    assert main.is_valid_settings(settings) is False
+    settings = {"pseudo_first_names": {"test": "test"}}
+    assert main.is_valid_settings(settings) is True
+    settings = {"pseudo_first_names": {"test": "test", "test2": "test2"}}
+    assert main.is_valid_settings(settings) is True
+
+    settings = {"lang_detection_lib": "langid"}
+    assert main.is_valid_settings(settings) is True
+    settings = {"lang_detection_lib": "unknown"}
+    assert main.is_valid_settings(settings) is False
+
+    settings = {"lang_pipeline": None}
+    assert main.is_valid_settings(settings) is True
+    settings = {"lang_pipeline": "unknown"}
+    assert main.is_valid_settings(settings) is False
+    settings = {"lang_pipeline": {}}
+    assert main.is_valid_settings(settings) is False
+    settings = {"lang_pipeline": {"test": "test"}}
+    assert main.is_valid_settings(settings) is False
+    settings = {"lang_pipeline": {"task": "test"}}
+    assert main.is_valid_settings(settings) is False
+    settings = {"lang_pipeline": {"model": "test"}}
+    assert main.is_valid_settings(settings) is False
+    settings = {"lang_pipeline": {"task": "test", "model": "test"}}
+    assert main.is_valid_settings(settings) is True
+
+    settings = {"spacy_model": "test"}
+    assert main.is_valid_settings(settings) is True
+    settings = {"spacy_model": {}}
+    assert main.is_valid_settings(settings) is False
+
+    settings = {"ner_pipeline": None}
+    assert main.is_valid_settings(settings) is True
+    settings = {"ner_pipeline": "unknown"}
+    assert main.is_valid_settings(settings) is False
+
+    settings = {"unknown_key": "value"}
+    assert main.is_valid_settings(settings) is False
+
+
 def test_get_workflow_settings(tmp_path):
     setting_path = tmp_path / "settings.json"
     with pytest.raises(FileNotFoundError):
