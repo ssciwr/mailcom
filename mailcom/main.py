@@ -77,18 +77,17 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
         workflow_settings (dict): The workflow settings.
     """
     # get workflow settings
-    settings = workflow_settings.get("pseudonymize", {})
-    lang = settings.get("default_lang", "")
+    lang = workflow_settings.get("default_lang", "")
     detect_lang = False if lang else True
-    detect_datetime = settings.get("datetime_detection", True)
-    pseudo_emailaddresses = settings.get("pseudo_emailaddresses", True)
-    pseudo_ne = settings.get("pseudo_ne", True)
-    pseudo_numbers = settings.get("pseudo_numbers", True)
-    pseudo_first_names = settings.get("pseudo_first_names", {})
-    lang_lib = settings.get("lang_detection").get("lang_lib", "langid")
-    lang_pipeline = settings.get("lang_detection").get("pipeline", None)
-    spacy_model = settings.get("spacy_model", "default")
-    ner_pipeline = settings.get("ner_pipeline", None)
+    detect_datetime = workflow_settings.get("datetime_detection", True)
+    pseudo_emailaddresses = workflow_settings.get("pseudo_emailaddresses", True)
+    pseudo_ne = workflow_settings.get("pseudo_ne", True)
+    pseudo_numbers = workflow_settings.get("pseudo_numbers", True)
+    pseudo_first_names = workflow_settings.get("pseudo_first_names", {})
+    lang_lib = workflow_settings.get("lang_detection_lib", "langid")
+    lang_pipeline = workflow_settings.get("lang_pipeline", None)
+    spacy_model = workflow_settings.get("spacy_model", "default")
+    ner_pipeline = workflow_settings.get("ner_pipeline", None)
 
     # init necessary objects
     spacy_loader = utils.SpacyLoader()
@@ -97,7 +96,7 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
     if detect_lang:
         lang_detector = LangDetector(trans_loader)
     if detect_datetime:
-        parsing_type = settings.get("time_parsing", "strict")
+        parsing_type = workflow_settings.get("time_parsing", "strict")
         time_detector = TimeDetector(parsing_type, spacy_loader)
 
     for email in email_list:

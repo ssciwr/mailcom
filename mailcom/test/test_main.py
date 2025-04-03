@@ -99,7 +99,7 @@ def test_process_data_default(get_data, get_settings, get_inout_hl):
 
 
 def test_process_data_no_lang(get_data, get_settings, get_inout_hl):
-    get_settings["pseudonymize"]["default_lang"] = "de"
+    get_settings["default_lang"] = "de"
     get_inout_hl.email_list = get_data
     main.process_data(get_inout_hl.get_email_list(), get_settings)
 
@@ -123,7 +123,7 @@ def test_process_data_no_lang(get_data, get_settings, get_inout_hl):
 
 
 def test_process_data_no_datetime(get_data, get_settings, get_inout_hl):
-    get_settings["pseudonymize"]["datetime_detection"] = False
+    get_settings["datetime_detection"] = False
     get_inout_hl.email_list = get_data
     main.process_data(get_inout_hl.get_email_list(), get_settings)
 
@@ -140,7 +140,7 @@ def test_process_data_no_datetime(get_data, get_settings, get_inout_hl):
 
 
 def test_process_data_no_email(get_data, get_settings, get_inout_hl):
-    get_settings["pseudonymize"]["pseudo_emailaddresses"] = False
+    get_settings["pseudo_emailaddresses"] = False
     get_inout_hl.email_list = get_data
     main.process_data(get_inout_hl.get_email_list(), get_settings)
 
@@ -154,7 +154,7 @@ def test_process_data_no_email(get_data, get_settings, get_inout_hl):
 
 
 def test_process_data_no_ne(get_data, get_settings, get_inout_hl):
-    get_settings["pseudonymize"]["pseudo_ne"] = False
+    get_settings["pseudo_ne"] = False
     get_inout_hl.email_list = get_data
     main.process_data(get_inout_hl.get_email_list(), get_settings)
 
@@ -176,7 +176,7 @@ def test_process_data_no_ne(get_data, get_settings, get_inout_hl):
 
 
 def test_process_data_no_numbers(get_data, get_settings, get_inout_hl):
-    get_settings["pseudonymize"]["pseudo_numbers"] = False
+    get_settings["pseudo_numbers"] = False
     get_inout_hl.email_list = get_data
     main.process_data(get_inout_hl.get_email_list(), get_settings)
 
