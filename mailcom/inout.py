@@ -189,14 +189,10 @@ class InoutHandler:
         self.email_list = [
             {
                 **{
-                    field: (
-                        row[col] if col in df.columns else unmatched_keyword
-                    )  # TODO discuss
+                    field: (row[col] if col in df.columns else unmatched_keyword)
                     for col, field in zip(common_cols, common_fields)
                 },
-                **{
-                    col: row[col] for col in remaining_cols if col in df.columns
-                },  # TODO discuss
+                **{col: row[col] for col in remaining_cols if col in df.columns},
                 **{field: None for field in remaining_fields},
             }
             for _, row in df.iterrows()
