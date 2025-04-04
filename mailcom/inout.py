@@ -148,6 +148,7 @@ class InoutHandler:
         self,
         infile: str,
         col_names: list = ["message"],
+        unmatched_keyword: str = "unmatched",
     ):
         """Load the email list from a csv file.
         The col_names should map the init_data_fields by order.
@@ -162,31 +163,36 @@ class InoutHandler:
             infile (str): The path of the file to be read.
             col_names (list): The list of column names that map the init_data_fields.
                 Defaults to ["message"].
+            unmatched_keyword (str): The keyword for marking unmatched columns.
         """
         if not col_names:
             raise ValueError("The column names should not be empty.")
         try:
             df = pd.read_csv(infile)
-
-            common_num = min(len(col_names), len(self.init_data_fields))
-            common_cols = col_names[:common_num]
-            remaining_cols = col_names[common_num:]
-            common_fields = self.init_data_fields[:common_num]
-            remaining_fields = self.init_data_fields[common_num:]
-
-            for _, row in df.iterrows():
-                email_dict = {}
-                for col, field in zip(common_cols, common_fields):
-                    email_dict[field] = row[col]
-                for col in remaining_cols:
-                    email_dict[col] = row[col]
-                for field in remaining_fields:
-                    email_dict[field] = None
-                self.email_list.append(email_dict)
-
         except OSError:
             raise OSError("File {} does not exist".format(infile))
-        except KeyError:
-            raise KeyError("Column {} does not exist in the file".format(col))
         except pd.errors.EmptyDataError:
             self.email_list = []
+            return
+
+        common_num = min(len(col_names), len(self.init_data_fields))
+        common_cols = col_names[:common_num]
+        remaining_cols = col_names[common_num:]
+        common_fields = self.init_data_fields[:common_num]
+        remaining_fields = self.init_data_fields[common_num:]
+
+        self.email_list = [
+            {
+                **{
+                    field: (
+                        row[col] if col in df.columns else unmatched_keyword
+                    )  # TODO discuss
+                    for col, field in zip(common_cols, common_fields)
+                },
+                **{
+                    col: row[col] for col in remaining_cols if col in df.columns
+                },  # TODO discuss
+                **{field: None for field in remaining_fields},
+            }
+            for _, row in df.iterrows()
+        ]

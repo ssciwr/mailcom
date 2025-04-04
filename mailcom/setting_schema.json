@@ -35,6 +35,12 @@
     },
     "type": "object",
     "properties": {
+        "csv_col_unmatched_keyword": {
+            "type": "string",
+            "title": "CSV Column Unmatched",
+            "description": "Keyword to makr unmatched columns while reading csv file.",
+            "default": "unmatched"
+        },
         "default_lang": {
             "type": "string",
             "title": "Default Language",

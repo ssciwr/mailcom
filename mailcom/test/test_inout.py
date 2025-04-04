@@ -272,9 +272,13 @@ def test_load_csv_invalid_col(get_instant, tmp_path):
         )
 
     # Test with a non-existing column name
-    with pytest.raises(KeyError, match="Column nonexisting does not exist in the file"):
-        col_name = "nonexisting"
-        get_instant.load_csv(infile, [col_name])
+    get_instant.load_csv(infile, ["nonexisting"], unmatched_keyword="unmatched")
+    emails = get_instant.get_email_list()
+    email = next(emails)
+    assert email["content"] == "unmatched"
+    assert email["date"] is None
+    assert email["attachment"] is None
+    assert email["attachement type"] is None
 
 
 def test_load_csv_invalid_file(get_instant):

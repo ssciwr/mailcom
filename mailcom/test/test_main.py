@@ -5,15 +5,39 @@ from mailcom.inout import InoutHandler
 import json
 from pathlib import Path
 from importlib import resources
+import csv
 
 
-def test_get_input_handler_csv(tmp_path):
+def test_get_input_handler_csv_empty(tmp_path):
     inpath = tmp_path / "test.csv"
     with open(inpath, "w", newline="", encoding="utf-8"):
         pass  # empty file
 
     inout_hl = main.get_input_handler(inpath, in_type="csv")
     assert inout_hl.email_list == []
+
+
+def test_get_input_handler_csv_unmatch(tmp_path):
+    inpath = tmp_path / "test.csv"
+    with open(inpath, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["no", "content"])
+        writer.writerow(
+            [
+                "1",
+                "Content of test email 1",
+            ]
+        )
+
+    inout_hl = main.get_input_handler(
+        inpath, in_type="csv", col_names=["nonexisting"], unmatched_keyword="unmatched"
+    )
+    emails = inout_hl.get_email_list()
+    email = next(emails)
+    assert email["content"] == "unmatched"
+    assert email["date"] is None
+    assert email["attachment"] is None
+    assert email["attachement type"] is None
 
 
 def test_get_input_handler_dir(tmpdir):
@@ -24,6 +48,11 @@ def test_get_input_handler_dir(tmpdir):
 
 
 def test_is_valid_settings():
+    settings = {"csv_col_unmatched_keyword": True}
+    assert main.is_valid_settings(settings) is False
+    settings = {"csv_col_unmatched_keyword": "error"}
+    assert main.is_valid_settings(settings) is True
+
     settings = {"default_lang": 1}
     assert main.is_valid_settings(settings) is False
     settings = {"default_lang": "fr"}
@@ -277,8 +306,19 @@ def test_process_data_no_numbers(get_data, get_settings, get_inout_hl):
 
 
 def test_process_data_empty_email(get_data, get_settings, get_inout_hl):
+    # no content key
     get_inout_hl.email_list = get_data
     get_inout_hl.email_list.append({"no-content": "test"})
+    main.process_data(get_inout_hl.get_email_list(), get_settings)
+    emails = get_inout_hl.get_email_list()
+    next(emails)
+    next(emails)
+    email_3 = next(emails)
+    assert "pseudo_content" not in email_3
+
+    # unmatched content
+    get_inout_hl.email_list = get_data
+    get_inout_hl.email_list.append({"content": "unmatched"})
     main.process_data(get_inout_hl.get_email_list(), get_settings)
     emails = get_inout_hl.get_email_list()
     next(emails)
@@ -339,9 +379,21 @@ def test_write_output_data_invalid(get_data, tmp_path, get_inout_hl, tmpdir):
     with pytest.raises(ValueError):
         main.write_output_data(get_inout_hl, tmpdir)
 
-    # non-empty file
+    # non-empty file, non-overwrite
     outpath = tmp_path / "test_output.csv"
     with open(outpath, "w", encoding="utf-8") as f:
         f.write("test")
     with pytest.raises(ValueError):
         main.write_output_data(get_inout_hl, outpath)
+
+
+def test_write_output_data_overwrite(get_data, tmp_path, get_inout_hl):
+    # non-empty file, overwrite
+    outpath = tmp_path / "test_output.csv"
+    with open(outpath, "w", encoding="utf-8") as f:
+        f.write("test")
+    get_inout_hl.email_list = get_data
+    main.write_output_data(get_inout_hl, outpath, overwrite=True)
+    with open(outpath, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+        assert len(lines) == 3  # header + 2 emails

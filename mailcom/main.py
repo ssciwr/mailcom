@@ -15,6 +15,7 @@ def get_input_handler(
     in_type: str = "dir",
     col_names: list = ["message"],
     init_data_fields: list = ["content", "date", "attachment", "attachement type"],
+    unmatched_keyword: str = "unmatched",
     file_types: list = [".eml", ".html"],
 ) -> InoutHandler:
     """Get input handler for a file or directory.
@@ -25,18 +26,21 @@ def get_input_handler(
             Possible values are ["dir", "csv"].
         col_names (list, optional): The list of column names that
             map the init_data_fields.
+        init_data_fields (list, optional): The list of fields
+            should be present in the data dict.
+        unmatched_keyword (str, optional): The keyword for
+            marking unmatch columns in csv files.
+            Defaults to "unmatched".
         file_types (list, optional): The list of file types
             to be processed in the directory.
             Defaults to [".eml", ".html"].
-        init_data_fields (list, optional): The list of fields
-            should be present in the data dict.
 
     Returns:
         InoutHandler: The input handler object.
     """
     inout_handler = InoutHandler(init_data_fields)
     if in_type == "csv":
-        inout_handler.load_csv(in_path, col_names)
+        inout_handler.load_csv(in_path, col_names, unmatched_keyword)
     else:
         inout_handler.list_of_files(in_path, file_types)
         inout_handler.process_emails()
@@ -100,6 +104,7 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
         workflow_settings (dict): The workflow settings.
     """
     # get workflow settings
+    unmatched_keyword = workflow_settings.get("unmatched_keyword", "unmatched")
     lang = workflow_settings.get("default_lang", "")
     detect_lang = False if lang else True
     detect_datetime = workflow_settings.get("datetime_detection", True)
@@ -124,7 +129,7 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
 
     for email in email_list:
         # skip if email content is empty or not present
-        if not email.get("content"):
+        if not email.get("content") or email.get("content") == unmatched_keyword:
             continue
 
         email_content, _ = utils.clean_up_content(email["content"])
@@ -159,18 +164,20 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
         email["ne_list"] = pseudonymizer.ne_list
 
 
-def write_output_data(inout_hl: InoutHandler, out_path: str):
+def write_output_data(inout_hl: InoutHandler, out_path: str, overwrite: bool = False):
     """Write the output data to a file.
 
     Args:
         inout_hl (InoutHandler): The input handler object containing the data.
         out_path (str): The path to the output file.
+        overwrite (bool, optional): Flag to overwrite the output file if it exists.
+            Defaults to False.
     """
     if not out_path:
         raise ValueError("No output path specified")
 
     # check if the output file is not empty
-    if Path(out_path).is_file() and Path(out_path).stat().st_size > 0:
+    if Path(out_path).is_file() and Path(out_path).stat().st_size > 0 and not overwrite:
         raise ValueError("Output file is not empty")
 
     file_type = Path(out_path).suffix[1:]

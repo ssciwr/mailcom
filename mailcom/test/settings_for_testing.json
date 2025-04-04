@@ -1,4 +1,5 @@
 {
+    "csv_col_unmatched_keyword": "unmatched",
     "default_lang": "",
     "datetime_detection": true,
     "time_parsing": "strict",
