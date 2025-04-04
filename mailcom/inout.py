@@ -7,12 +7,17 @@ import pandas as pd
 
 
 class InoutHandler:
-    def __init__(
-        self,
-        init_data_fields: list = ["content", "date", "attachment", "attachement type"],
-    ):
+    def __init__(self, init_data_fields: list = None):
         self.email_list = []
-        self.init_data_fields = init_data_fields
+        if not init_data_fields:
+            self.init_data_fields = [
+                "content",
+                "date",
+                "attachment",
+                "attachement type",
+            ]
+        else:
+            self.init_data_fields = init_data_fields
 
     def list_of_files(self, directory_name: str, file_types: list = [".eml", ".html"]):
         """Method to create a list of Path objects (files) that are present
