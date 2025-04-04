@@ -66,11 +66,32 @@ def is_valid_settings(workflow_setting: dict) -> bool:
         return False
 
 
+def _update_new_settings(workflow_settings: dict, new_settings: dict):
+    """Update the workflow settings with the new settings.
+
+    Args:
+        workflow_settings (dict): The workflow settings.
+        new_settings (dict): The new settings.
+
+    Returns:
+        dict: The updated workflow settings.
+    """
+    for key, value in new_settings.items():
+        if key in workflow_settings:
+            workflow_settings[key] = value
+        else:
+            warnings.warn(
+                "Key {} not found in the workflow settings "
+                "and will be skipped.".format(key),
+                UserWarning,
+            )
+
+
 def get_workflow_settings(
     setting_path: str = "default", new_settings: dict = {}
 ) -> dict:
     """Get the workflow settings.
-    If the setting path is default, return the default settings.
+    If the setting path is "default", return the default settings.
     If the setting path is not default, read the settings from the file.
     If the new settings are provided, overwrite the default/loaded settings.
 
@@ -91,37 +112,28 @@ def get_workflow_settings(
         with open(file_path, "r", encoding="utf-8") as file:
             return json.load(file)
 
-    if setting_path == "default":
-        workflow_settings = load_json(default_setting_path)
-    else:
-        try:
-            file_settings = load_json(setting_path)
-            if is_valid_settings(file_settings):
-                workflow_settings = file_settings
-            else:
-                warnings.warn(
-                    "Invalid workflow settings file. "
-                    "Using default settings instead.",
-                    UserWarning,
-                )
-                workflow_settings = load_json(default_setting_path)
-        except Exception:
+    try:
+        workflow_settings = (
+            load_json(default_setting_path)
+            if setting_path == "default"
+            else load_json(setting_path)
+        )
+        if setting_path != "default" and not is_valid_settings(workflow_settings):
             warnings.warn(
-                "Error in loading the workflow settings file. "
-                "Using default settings instead.",
+                "Invalid workflow settings file. " "Using default settings instead.",
                 UserWarning,
             )
             workflow_settings = load_json(default_setting_path)
+    except Exception:
+        warnings.warn(
+            "Error in loading the workflow settings file. "
+            "Using default settings instead.",
+            UserWarning,
+        )
+        workflow_settings = load_json(default_setting_path)
 
-    for key, value in new_settings.items():
-        if key in workflow_settings:
-            workflow_settings[key] = value
-        else:
-            warnings.warn(
-                "Key {} not found in the workflow settings "
-                "and will be skipped.".format(key),
-                UserWarning,
-            )
+    # update the workflow settings with the new settings
+    _update_new_settings(workflow_settings, new_settings)
 
     return workflow_settings
 

@@ -1,4 +1,5 @@
 {
+    "csv_col_unmatched_keyword": "unmatched",
     "default_lang": "fr",
     "datetime_detection": true,
     "time_parsing": "strict",
@@ -32,10 +33,8 @@
         ],
         "de": ["Mika"]
     },
-    "lang_detection": {
-        "lang_lib": "langid",
-        "lang_pipeline": null
-    },
+    "lang_detection_lib": "langid",
+    "lang_pipeline": null,
     "spacy_model": "default",
     "ner_pipeline": null
 }
