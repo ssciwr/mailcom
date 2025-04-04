@@ -144,27 +144,37 @@ def test_get_workflow_settings_file(tmp_path):
     setting_path = tmp_path / "settings.json"
 
     # invalid cases
+    # not existing file
     with pytest.warns(UserWarning):
         settings = main.get_workflow_settings(setting_path)
     assert settings.get("default_lang") == "fr"
 
+    # empty file
     with open(setting_path, "w", newline="", encoding="utf-8") as f:
-        pass  # empty file
+        pass
     with pytest.warns(UserWarning):
         settings = main.get_workflow_settings(setting_path)
     assert settings.get("default_lang") == "fr"
 
+    # invalid json file
     with open(setting_path, "w", newline="", encoding="utf-8") as f:
         f.write("test")
     with pytest.warns(UserWarning):
         settings = main.get_workflow_settings(setting_path)
     assert settings.get("default_lang") == "fr"
 
-    # valid cases
-    # TODO modify after adding the schema validation
+    # invalid json file against the schema
     with open(setting_path, "w", newline="", encoding="utf-8") as f:
         json.dump({"test": "test"}, f)
-    assert main.get_workflow_settings(setting_path) == {"test": "test"}
+    with pytest.warns(UserWarning):
+        settings = main.get_workflow_settings(setting_path)
+    assert settings.get("default_lang") == "fr"
+
+    # valid json file
+    with open(setting_path, "w", newline="", encoding="utf-8") as f:
+        json.dump({"default_lang": "es"}, f)
+    settings = main.get_workflow_settings(setting_path)
+    assert settings.get("default_lang") == "es"
 
 
 def test_get_workflow_settings_new_settings(tmp_path):
