@@ -1,0 +1,159 @@
+{
+    "$defs": {
+        "pipelineStructure": {
+            "oneOf": [
+                {"type": "null"},
+                {
+                    "type": "object",
+                    "properties": {
+                        "task": {
+                            "type": "string",
+                            "title": "Pipneline Task",
+                            "description": "The task to perform the pipeline."
+                        },
+                        "model": {
+                            "type": "string",
+                            "title": "Pipeline Model",
+                            "description": "The model to use for the pipeline."
+                        },
+                        "revision": {
+                            "type": "string",
+                            "title": "Pipeline Model Revision",
+                            "description": "The revision of the pipeline model."
+                        },
+                        "aggregation_strategy": {
+                            "type": "string",
+                            "title": "Pipeline Aggregation Strategy",
+                            "description": "The aggregation strategy for the pipeline.",
+                            "default": "simple"
+                        }
+                    },
+                    "required": ["task", "model"]
+                }
+            ]
+        }
+    },
+    "type": "object",
+    "properties": {
+        "csv_col_unmatched_keyword": {
+            "type": "string",
+            "title": "CSV Column Unmatched",
+            "description": "Keyword to makr unmatched columns while reading csv file.",
+            "default": "unmatched"
+        },
+        "default_lang": {
+            "type": "string",
+            "title": "Default Language",
+            "description": "The default language for the text.",
+            "default": "fr"
+        },
+        "datetime_detection": {
+            "type": "boolean",
+            "title": "Datetime Detection",
+            "description": "Enable or disable datetime detection.",
+            "default": true
+        },
+        "time_parsing": {
+            "type": "string",
+            "title": "Time Parsing Type",
+            "description": "Type for parsing date time in the text.",
+            "default": "strict",
+            "enum": [
+                "strict",
+                "non-strict"
+            ]
+        },
+        "pseudo_emailaddresses": {
+            "type": "boolean",
+            "title": "Pseudo Email Addresses",
+            "description": "Enable or disable pseudo email addresses.",
+            "default": true
+        },
+        "pseudo_ne": {
+            "type": "boolean",
+            "title": "Pseudo Named Entities",
+            "description": "Enable or disable pseudo named entities.",
+            "default": true
+        },
+        "pseudo_numbers": {
+            "type": "boolean",
+            "title": "Pseudo Numbers",
+            "description": "Enable or disable pseudo numbers.",
+            "default": true
+        },
+        "pseudo_first_names": {
+            "type": "object",
+            "properties": {
+                "lang": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "minProperties": 1,
+            "title": "List of Pseudo First Names",
+            "description": "Define pseudo first names for each language.",
+            "default": {
+                "es": [
+                    "José",
+                    "Angel",
+                    "Alex",
+                    "Ariel",
+                    "Cruz",
+                    "Fran",
+                    "Arlo",
+                    "Adri",
+                    "Marce",
+                    "Mati"
+                ],
+                "fr": [
+                    "Claude",
+                    "Dominique",
+                    "Claude",
+                    "Camille",
+                    "Charlie",
+                    "Florence",
+                    "Francis",
+                    "Maxime",
+                    "Remy",
+                    "Cécile"
+                ],
+                "de": ["Mika"]
+            }
+        },
+        "lang_detection_lib": {
+            "type": "string",
+            "title": "Language Detection Library",
+            "description": "The library to use for language detection.",
+            "default": "langid",
+            "enum": [
+                "langid",
+                "langdetect",
+                "trans"
+            ]
+        },
+        "lang_pipeline": {
+            "$ref": "#/$defs/pipelineStructure",
+            "title": "Language Detection Pipeline",
+            "description": "The pipeline to use for language detection.",
+            "default": null
+        },
+        "spacy_model": {
+            "type": "string",
+            "title": "Spacy Model",
+            "description": "The Spacy model for time detection and sentence splitting.",
+            "default": "default"
+        },
+        "ner_pipeline": {
+            "$ref": "#/$defs/pipelineStructure",
+            "title": "NER Pipeline",
+            "description": "The pipeline to use for NER.",
+            "default": null
+        }
+    },
+    "additionalProperties": false
+}

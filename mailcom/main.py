@@ -6,12 +6,16 @@ from mailcom.time_detector import TimeDetector
 from mailcom.parse import Pseudonymize
 import json
 from collections.abc import Iterator
+from importlib import resources
+import jsonschema
 
 
 def get_input_handler(
     in_path: str,
     in_type: str = "dir",
-    col_name: str = "message",
+    col_names: list = ["message"],
+    init_data_fields: list = ["content", "date", "attachment", "attachement type"],
+    unmatched_keyword: str = "unmatched",
     file_types: list = [".eml", ".html"],
 ) -> InoutHandler:
     """Get input handler for a file or directory.
@@ -20,9 +24,13 @@ def get_input_handler(
         in_path (str): The path to the input data.
         in_type (str, optional): The type of input data. Defaults to "dir".
             Possible values are ["dir", "csv"].
-        col_name (str, optional): The name of the column containing
-            the main content in csv file.
-            Defaults to "message".
+        col_names (list, optional): The list of column names that
+            map the init_data_fields.
+        init_data_fields (list, optional): The list of fields
+            should be present in the data dict.
+        unmatched_keyword (str, optional): The keyword for
+            marking unmatch columns in csv files.
+            Defaults to "unmatched".
         file_types (list, optional): The list of file types
             to be processed in the directory.
             Defaults to [".eml", ".html"].
@@ -30,13 +38,32 @@ def get_input_handler(
     Returns:
         InoutHandler: The input handler object.
     """
-    inout_handler = InoutHandler()
+    inout_handler = InoutHandler(init_data_fields)
     if in_type == "csv":
-        inout_handler.load_csv(in_path, col_name)
+        inout_handler.load_csv(in_path, col_names, unmatched_keyword)
     else:
         inout_handler.list_of_files(in_path, file_types)
         inout_handler.process_emails()
     return inout_handler
+
+
+def is_valid_settings(workflow_setting: dict) -> bool:
+    """Check if the workflow settings are valid.
+    Args:
+        workflow_setting (dict): The workflow settings.
+
+    Returns:
+        bool: True if the settings are valid, False otherwise.
+    """
+    pkg = resources.files("mailcom")
+    setting_schema_path = Path(pkg / "setting_schema.json")
+    setting_schema = json.load(open(setting_schema_path, "r", encoding="utf-8"))
+
+    try:
+        jsonschema.validate(instance=workflow_setting, schema=setting_schema)
+        return True
+    except jsonschema.ValidationError:
+        return False
 
 
 def get_workflow_settings(workflow_settings: str) -> dict:
@@ -77,18 +104,18 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
         workflow_settings (dict): The workflow settings.
     """
     # get workflow settings
-    settings = workflow_settings.get("pseudonymize", {})
-    lang = settings.get("default_lang", "")
+    unmatched_keyword = workflow_settings.get("unmatched_keyword", "unmatched")
+    lang = workflow_settings.get("default_lang", "")
     detect_lang = False if lang else True
-    detect_datetime = settings.get("datetime_detection", True)
-    pseudo_emailaddresses = settings.get("pseudo_emailaddresses", True)
-    pseudo_ne = settings.get("pseudo_ne", True)
-    pseudo_numbers = settings.get("pseudo_numbers", True)
-    pseudo_first_names = settings.get("pseudo_first_names", {})
-    lang_lib = settings.get("lang_detection").get("lang_lib", "langid")
-    lang_pipeline = settings.get("lang_detection").get("pipeline", None)
-    spacy_model = settings.get("spacy_model", "default")
-    ner_pipeline = settings.get("ner_pipeline", None)
+    detect_datetime = workflow_settings.get("datetime_detection", True)
+    pseudo_emailaddresses = workflow_settings.get("pseudo_emailaddresses", True)
+    pseudo_ne = workflow_settings.get("pseudo_ne", True)
+    pseudo_numbers = workflow_settings.get("pseudo_numbers", True)
+    pseudo_first_names = workflow_settings.get("pseudo_first_names", {})
+    lang_lib = workflow_settings.get("lang_detection_lib", "langid")
+    lang_pipeline = workflow_settings.get("lang_pipeline", None)
+    spacy_model = workflow_settings.get("spacy_model", "default")
+    ner_pipeline = workflow_settings.get("ner_pipeline", None)
 
     # init necessary objects
     spacy_loader = utils.SpacyLoader()
@@ -97,10 +124,14 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
     if detect_lang:
         lang_detector = LangDetector(trans_loader)
     if detect_datetime:
-        parsing_type = settings.get("time_parsing", "strict")
+        parsing_type = workflow_settings.get("time_parsing", "strict")
         time_detector = TimeDetector(parsing_type, spacy_loader)
 
     for email in email_list:
+        # skip if email content is empty or not present
+        if not email.get("content") or email.get("content") == unmatched_keyword:
+            continue
+
         email_content, _ = utils.clean_up_content(email["content"])
         email["cleaned_content"] = email_content
 
@@ -133,15 +164,21 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
         email["ne_list"] = pseudonymizer.ne_list
 
 
-def write_output_data(inout_hl: InoutHandler, out_path: str):
+def write_output_data(inout_hl: InoutHandler, out_path: str, overwrite: bool = False):
     """Write the output data to a file.
 
     Args:
         inout_hl (InoutHandler): The input handler object containing the data.
         out_path (str): The path to the output file.
+        overwrite (bool, optional): Flag to overwrite the output file if it exists.
+            Defaults to False.
     """
     if not out_path:
         raise ValueError("No output path specified")
+
+    # check if the output file is not empty
+    if Path(out_path).is_file() and Path(out_path).stat().st_size > 0 and not overwrite:
+        raise ValueError("Output file is not empty")
 
     file_type = Path(out_path).suffix[1:]
 
