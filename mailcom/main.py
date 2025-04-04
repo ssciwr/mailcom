@@ -10,6 +10,8 @@ from collections.abc import Iterator
 from importlib import resources
 import jsonschema
 import warnings
+from datetime import datetime
+import socket
 
 
 def get_input_handler(
@@ -66,29 +68,83 @@ def is_valid_settings(workflow_setting: dict) -> bool:
         return False
 
 
-def _update_new_settings(workflow_settings: dict, new_settings: dict):
-    """Update the workflow settings with the new settings.
+def _update_new_settings(workflow_settings: dict, new_settings: dict) -> bool:
+    """Update the workflow settings directly with the new settings.
 
     Args:
         workflow_settings (dict): The workflow settings.
         new_settings (dict): The new settings.
 
     Returns:
-        dict: The updated workflow settings.
+        bool: True if the settings are updated, False otherwise.
     """
-    for key, value in new_settings.items():
-        if key in workflow_settings:
-            workflow_settings[key] = value
-        else:
+    updated = False
+    if not workflow_settings:
+        raise ValueError("Workflow settings are empty")
+
+    for key, new_value in new_settings.items():
+        # check if the new value is different from the old value
+        # if the setting schema has more nested structures, deepdiff should be used
+        # here just simple check
+        updatable = (
+            key in workflow_settings
+            and workflow_settings[key] != new_value
+            and is_valid_settings({key: new_settings[key]})
+        )
+        if key not in workflow_settings:
             warnings.warn(
                 "Key {} not found in the workflow settings "
                 "and will be skipped.".format(key),
                 UserWarning,
             )
+        if key in workflow_settings and not is_valid_settings({key: new_settings[key]}):
+            warnings.warn(
+                "Vaue of key {} is not valid in the workflow settings "
+                "and will be skipped.".format(key),
+                UserWarning,
+            )
+        if updatable:
+            workflow_settings[key] = new_value
+            updated = True
+
+    return updated
+
+
+def save_settings_to_file(workflow_settings: dict, setting_path: str = None):
+    """Save the workflow settings to a file.
+    If setting_path is None, save to the current directory.
+
+    Args:
+        workflow_settings (dict): The workflow settings.
+        setting_path (str, optional): The path to save the settings file.
+            Defaults to None.
+    """
+    now = datetime.now()
+    timestamp = (
+        now.strftime("%Y%m%d_%H%M%S.") + now.strftime("%f")[:3]
+    )  # first 3 digits of milliseconds
+    hostname = socket.gethostname()
+    file_name = "updated_workflow_settings_{}_{}.json".format(timestamp, hostname)
+
+    if setting_path is None:
+        setting_path = Path.cwd() / file_name
+    else:
+        try:
+            Path(setting_path).mkdir(parents=True, exist_ok=True)
+            setting_path = Path(setting_path) / file_name
+        except FileExistsError:
+            # path is not a directory
+            raise ValueError("The path {} is not a directory".format(setting_path))
+
+    # save the settings to a file
+    with open(setting_path, "w", encoding="utf-8") as f:
+        json.dump(workflow_settings, f, indent=4, ensure_ascii=False)
 
 
 def get_workflow_settings(
-    setting_path: str = "default", new_settings: dict = {}
+    setting_path: str = "default",
+    new_settings: dict = {},
+    updated_setting_dir: str = None,
 ) -> dict:
     """Get the workflow settings.
     If the setting path is "default", return the default settings.
@@ -100,6 +156,8 @@ def get_workflow_settings(
             Defaults to "default".
         new_settings (dict): New settings to overwrite the existing settings.
             Defaults to {}.
+        updated_setting_dir (str): Directory to save the updated settings file.
+            Defaults to None.
 
     Returns:
         dict: The workflow settings.
@@ -133,7 +191,10 @@ def get_workflow_settings(
         workflow_settings = load_json(default_setting_path)
 
     # update the workflow settings with the new settings
-    _update_new_settings(workflow_settings, new_settings)
+    updated = _update_new_settings(workflow_settings, new_settings)
+
+    if updated:
+        save_settings_to_file(workflow_settings, updated_setting_dir)
 
     return workflow_settings
 

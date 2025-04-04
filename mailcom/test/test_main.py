@@ -132,6 +132,42 @@ def test_is_valid_settings():
     assert main.is_valid_settings(settings) is False
 
 
+def test_update_new_settings_empty():
+    updated = main._update_new_settings({"test": "test"}, {})
+    assert updated == False
+
+    with pytest.raises(ValueError):
+        main._update_new_settings({}, {"test": "test"})
+
+
+def test_update_new_settings_not_updated():
+    # invalid key
+    with pytest.warns(UserWarning):
+        updated = main._update_new_settings({"default_lang": "fr"}, {"test": "test"})
+    assert updated == False
+
+    # invalid structure
+    with pytest.warns(UserWarning):
+        updated = main._update_new_settings(
+            {"default_lang": "fr"}, {"default_lang": True}
+        )
+    assert updated == False
+
+    # same value
+    updated = main._update_new_settings({"default_lang": "fr"}, {"default_lang": "fr"})
+    assert updated == False
+
+
+def test_update_new_settings_updated():
+    settings = {"default_lang": "fr"}
+    updated = main._update_new_settings(settings, {"default_lang": "es"})
+    assert updated == True
+    assert settings.get("default_lang") == "es"
+
+
+# TODO: test save_settings_to_file
+
+
 def test_get_workflow_settings_default():
     settings = main.get_workflow_settings()
     assert settings.get("default_lang") == "fr"
