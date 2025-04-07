@@ -21,8 +21,8 @@ def get_files(dir_path: Path, name_phrase: str) -> list[Path]:
 
 def test_get_input_handler_csv_empty(tmp_path):
     inpath = tmp_path / "test.csv"
-    with open(inpath, "w", newline="", encoding="utf-8"):
-        pass  # empty file
+    # empty file
+    open(inpath, "w", newline="", encoding="utf-8").close()
 
     inout_hl = main.get_input_handler(inpath, in_type="csv")
     assert inout_hl.email_list == []
@@ -145,7 +145,7 @@ def test_is_valid_settings():
 
 def test_update_new_settings_empty():
     updated = main._update_new_settings({"test": "test"}, {})
-    assert updated == False
+    assert updated is False
 
     with pytest.raises(ValueError):
         main._update_new_settings({}, {"test": "test"})
@@ -155,24 +155,24 @@ def test_update_new_settings_not_updated():
     # invalid key
     with pytest.warns(UserWarning):
         updated = main._update_new_settings({"default_lang": "fr"}, {"test": "test"})
-    assert updated == False
+    assert updated is False
 
     # invalid structure
     with pytest.warns(UserWarning):
         updated = main._update_new_settings(
             {"default_lang": "fr"}, {"default_lang": True}
         )
-    assert updated == False
+    assert updated is False
 
     # same value
     updated = main._update_new_settings({"default_lang": "fr"}, {"default_lang": "fr"})
-    assert updated == False
+    assert updated is False
 
 
 def test_update_new_settings_updated():
     settings = {"default_lang": "fr"}
     updated = main._update_new_settings(settings, {"default_lang": "es"})
-    assert updated == True
+    assert updated is True
     assert settings.get("default_lang") == "es"
 
 
@@ -221,8 +221,7 @@ def test_get_workflow_settings_file(tmp_path):
     assert settings.get("default_lang") == "fr"
 
     # empty file
-    with open(setting_path, "w", newline="", encoding="utf-8") as f:
-        pass
+    open(setting_path, "w", newline="", encoding="utf-8").close()
     with pytest.warns(UserWarning):
         settings = main.get_workflow_settings(setting_path)
     assert settings.get("default_lang") == "fr"

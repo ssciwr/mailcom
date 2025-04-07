@@ -7,7 +7,6 @@ from mailcom.time_detector import TimeDetector
 from mailcom.parse import Pseudonymize
 import json
 from collections.abc import Iterator
-from importlib import resources
 import jsonschema
 import warnings
 from datetime import datetime
@@ -99,7 +98,7 @@ def _update_new_settings(workflow_settings: dict, new_settings: dict) -> bool:
             )
         if key in workflow_settings and not is_valid_settings({key: new_settings[key]}):
             warnings.warn(
-                "Vaue of key {} is not valid in the workflow settings "
+                "Value of key {} is not valid in the workflow settings "
                 "and will be skipped.".format(key),
                 UserWarning,
             )
@@ -172,7 +171,7 @@ def get_workflow_settings(
     pkg = resources.files("mailcom")
     default_setting_path = Path(pkg / "default_settings.json")
 
-    def load_json(file_path: str) -> dict:
+    def load_json(file_path: Path) -> dict:
         with open(file_path, "r", encoding="utf-8") as file:
             return json.load(file)
 
@@ -180,11 +179,11 @@ def get_workflow_settings(
         workflow_settings = (
             load_json(default_setting_path)
             if setting_path == "default"
-            else load_json(setting_path)
+            else load_json(Path(setting_path))
         )
         if setting_path != "default" and not is_valid_settings(workflow_settings):
             warnings.warn(
-                "Invalid workflow settings file. " "Using default settings instead.",
+                "Invalid workflow settings file. Using default settings instead.",
                 UserWarning,
             )
             workflow_settings = load_json(default_setting_path)
