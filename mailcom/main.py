@@ -142,6 +142,8 @@ def save_settings_to_file(workflow_settings: dict, dir_path: str = None):
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(workflow_settings, f, indent=4, ensure_ascii=False)
 
+    print("The workflow settings have been saved to {}".format(file_path))
+
 
 def get_workflow_settings(
     setting_path: str = "default",
