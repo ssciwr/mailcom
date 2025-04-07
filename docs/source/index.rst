@@ -15,9 +15,6 @@ documentation for details.
    :maxdepth: 2
    :caption: Contents:
 
-   readme_link
    notebooks/demo
    notebooks/performance_demo
-   modules
-   license_link
 
