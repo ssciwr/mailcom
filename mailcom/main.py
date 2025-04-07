@@ -36,7 +36,7 @@ def get_input_handler(
             marking unmatch columns in csv files.
             Defaults to "unmatched".
         file_types (list, optional): The list of file types
-            to be processed in the dirdef test_get_workflow_settings(tmp_path):
+            to be processed in the directory.
     Returns:
         InoutHandler: The input handler object.
     """
@@ -110,13 +110,13 @@ def _update_new_settings(workflow_settings: dict, new_settings: dict) -> bool:
     return updated
 
 
-def save_settings_to_file(workflow_settings: dict, setting_path: str = None):
+def save_settings_to_file(workflow_settings: dict, dir_path: str = None):
     """Save the workflow settings to a file.
-    If setting_path is None, save to the current directory.
+    If dir_path is None, save to the current directory.
 
     Args:
         workflow_settings (dict): The workflow settings.
-        setting_path (str, optional): The path to save the settings file.
+        dir_path (str, optional): The path to save the settings file.
             Defaults to None.
     """
     now = datetime.now()
@@ -125,19 +125,21 @@ def save_settings_to_file(workflow_settings: dict, setting_path: str = None):
     )  # first 3 digits of milliseconds
     hostname = socket.gethostname()
     file_name = "updated_workflow_settings_{}_{}.json".format(timestamp, hostname)
+    file_path = ""
 
-    if setting_path is None:
-        setting_path = Path.cwd() / file_name
+    if dir_path is None:
+        file_path = Path.cwd() / file_name
     else:
         try:
-            Path(setting_path).mkdir(parents=True, exist_ok=True)
-            setting_path = Path(setting_path) / file_name
+            Path(dir_path).mkdir(parents=True, exist_ok=True)
+            file_path = Path(dir_path) / file_name
         except FileExistsError:
-            # path is not a directory
-            raise ValueError("The path {} is not a directory".format(setting_path))
+            raise ValueError(
+                "The path {} already exists and is not a directory".format(dir_path)
+            )
 
     # save the settings to a file
-    with open(setting_path, "w", encoding="utf-8") as f:
+    with open(file_path, "w", encoding="utf-8") as f:
         json.dump(workflow_settings, f, indent=4, ensure_ascii=False)
 
 
@@ -145,6 +147,7 @@ def get_workflow_settings(
     setting_path: str = "default",
     new_settings: dict = {},
     updated_setting_dir: str = None,
+    save_updated_settings: bool = True,
 ) -> dict:
     """Get the workflow settings.
     If the setting path is "default", return the default settings.
@@ -158,6 +161,7 @@ def get_workflow_settings(
             Defaults to {}.
         updated_setting_dir (str): Directory to save the updated settings file.
             Defaults to None.
+        save_updated_settings (bool): Whether to save the updated settings to a file.
 
     Returns:
         dict: The workflow settings.
@@ -193,7 +197,7 @@ def get_workflow_settings(
     # update the workflow settings with the new settings
     updated = _update_new_settings(workflow_settings, new_settings)
 
-    if updated:
+    if updated and save_updated_settings:
         save_settings_to_file(workflow_settings, updated_setting_dir)
 
     return workflow_settings
