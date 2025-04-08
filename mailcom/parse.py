@@ -20,9 +20,20 @@ class Pseudonymize:
         self.spacy_loader = spacy_loader
 
     def init_spacy(self, language: str, model="default"):
+        """Initializes spacy model.
+
+        Args:
+            language (str): Language of the desired spacy model.
+            model (str, optional): Model specifier. Defaults to "default".
+        """
         self.nlp_spacy = utils.get_spacy_instance(self.spacy_loader, language, model)
 
     def init_transformers(self, pipeline_info: dict = None):
+        """Initializes transformers NER model.
+
+        Args:
+            pipeline_info (dict, optional): Tranformers pipeline info.
+        """
         self.ner_recognizer = utils.get_trans_instance(
             self.trans_loader, self.feature, pipeline_info
         )
