@@ -32,7 +32,7 @@ class Pseudonymize:
         """Initializes transformers NER model.
 
         Args:
-            pipeline_info (dict, optional): Tranformers pipeline info.
+            pipeline_info (dict, optional): Transformers pipeline info.
         """
         self.ner_recognizer = utils.get_trans_instance(
             self.trans_loader, self.feature, pipeline_info
