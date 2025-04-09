@@ -131,7 +131,7 @@ class Pseudonymize:
         Named entities categorized as persons are replaced with a pseudonym.
         Named entities categorized as locations, organizations or miscellaneous
         are replaced by a placeholder. Used pseudonyms are saved for each entity
-        for reuse in case of multile occurences.
+        for reuse in case of multiple occurrences.
 
         Args:
             ner (list[dict]): List of named entities found by the transformers model.
