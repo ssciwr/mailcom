@@ -22,7 +22,7 @@ extensions = ["sphinx.ext.autodoc", "sphinx.ext.napoleon", "myst_parser", "nbsph
 nbsphinx_execute = "never"
 
 templates_path = ["_templates"]
-exclude_patterns = []
+exclude_patterns = ["notebooks/performance_demo.ipynb"]
 
 
 # -- Options for HTML output -------------------------------------------------
