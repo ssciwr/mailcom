@@ -1,4 +1,5 @@
 from pathlib import Path
+from importlib import resources
 from mailcom.inout import InoutHandler
 from mailcom import utils
 from mailcom.lang_detector import LangDetector
@@ -6,8 +7,10 @@ from mailcom.time_detector import TimeDetector
 from mailcom.parse import Pseudonymize
 import json
 from collections.abc import Iterator
-from importlib import resources
 import jsonschema
+import warnings
+from datetime import datetime
+import socket
 
 
 def get_input_handler(
@@ -33,8 +36,6 @@ def get_input_handler(
             Defaults to "unmatched".
         file_types (list, optional): The list of file types
             to be processed in the directory.
-            Defaults to [".eml", ".html"].
-
     Returns:
         InoutHandler: The input handler object.
     """
@@ -66,28 +67,141 @@ def is_valid_settings(workflow_setting: dict) -> bool:
         return False
 
 
-def get_workflow_settings(workflow_settings: str) -> dict:
-    """Get the workflow settings from a file.
+def _update_new_settings(workflow_settings: dict, new_settings: dict) -> bool:
+    """Update the workflow settings directly with the new settings.
 
     Args:
-        workflow_settings (str): Path to the workflow settings file.
+        workflow_settings (dict): The workflow settings.
+        new_settings (dict): The new settings.
+
+    Returns:
+        bool: True if the settings are updated, False otherwise.
+    """
+    updated = False
+    if not workflow_settings:
+        raise ValueError("Workflow settings are empty")
+
+    for key, new_value in new_settings.items():
+        # check if the new value is different from the old value
+        # if the setting schema has more nested structures, deepdiff should be used
+        # here just simple check
+        updatable = (
+            key in workflow_settings
+            and workflow_settings[key] != new_value
+            and is_valid_settings({key: new_settings[key]})
+        )
+        if key not in workflow_settings:
+            warnings.warn(
+                "Key {} not found in the workflow settings "
+                "and will be skipped.".format(key),
+                UserWarning,
+            )
+        if key in workflow_settings and not is_valid_settings({key: new_settings[key]}):
+            warnings.warn(
+                "Value of key {} is not valid in the workflow settings "
+                "and will be skipped.".format(key),
+                UserWarning,
+            )
+        if updatable:
+            workflow_settings[key] = new_value
+            updated = True
+
+    return updated
+
+
+def save_settings_to_file(workflow_settings: dict, dir_path: str = None):
+    """Save the workflow settings to a file.
+    If dir_path is None, save to the current directory.
+
+    Args:
+        workflow_settings (dict): The workflow settings.
+        dir_path (str, optional): The path to save the settings file.
+            Defaults to None.
+    """
+    now = datetime.now()
+    timestamp = (
+        now.strftime("%Y%m%d_%H%M%S.") + now.strftime("%f")[:3]
+    )  # first 3 digits of milliseconds
+    hostname = socket.gethostname()
+    file_name = "updated_workflow_settings_{}_{}.json".format(timestamp, hostname)
+    file_path = ""
+
+    if dir_path is None:
+        file_path = Path.cwd() / file_name
+    else:
+        try:
+            Path(dir_path).mkdir(parents=True, exist_ok=True)
+            file_path = Path(dir_path) / file_name
+        except FileExistsError:
+            raise ValueError(
+                "The path {} already exists and is not a directory".format(dir_path)
+            )
+
+    # save the settings to a file
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(workflow_settings, f, indent=4, ensure_ascii=False)
+
+    print("The workflow settings have been saved to {}".format(file_path))
+
+
+def get_workflow_settings(
+    setting_path: str = "default",
+    new_settings: dict = {},
+    updated_setting_dir: str = None,
+    save_updated_settings: bool = True,
+) -> dict:
+    """Get the workflow settings.
+    If the setting path is "default", return the default settings.
+    If the setting path is not default, read the settings from the file.
+    If the new settings are provided, overwrite the default/loaded settings.
+
+    Args:
+        setting_path (str): Path to the workflow settings file.
+            Defaults to "default".
+        new_settings (dict): New settings to overwrite the existing settings.
+            Defaults to {}.
+        updated_setting_dir (str): Directory to save the updated settings file.
+            Defaults to None.
+        save_updated_settings (bool): Whether to save the updated settings to a file.
 
     Returns:
         dict: The workflow settings.
     """
-    try:
-        with open(workflow_settings, "r") as file:
+    workflow_settings = {}
+    pkg = resources.files("mailcom")
+    default_setting_path = Path(pkg / "default_settings.json")
+
+    def load_json(file_path: Path) -> dict:
+        with open(file_path, "r", encoding="utf-8") as file:
             return json.load(file)
-    except FileNotFoundError:
-        raise FileNotFoundError(
-            "Workflow settings file not found: {}".format(workflow_settings)
+
+    try:
+        workflow_settings = (
+            load_json(default_setting_path)
+            if setting_path == "default"
+            else load_json(Path(setting_path))
         )
-    except json.JSONDecodeError:
-        raise json.JSONDecodeError(
-            "Error reading workflow settings file: {}".format(workflow_settings),
-            doc="",
-            pos=0,
+        if setting_path != "default" and not is_valid_settings(workflow_settings):
+            warnings.warn(
+                "Invalid workflow settings file. Using default settings instead.",
+                UserWarning,
+            )
+            workflow_settings = load_json(default_setting_path)
+    except Exception:
+        warnings.warn(
+            "Error in loading the workflow settings file. "
+            "Using default settings instead.",
+            UserWarning,
         )
+        workflow_settings = load_json(default_setting_path)
+
+    # update the workflow settings with the new settings
+    updated = _update_new_settings(workflow_settings, new_settings)
+
+    if updated and save_updated_settings:
+        save_settings_to_file(workflow_settings, updated_setting_dir)
+
+    return workflow_settings
 
 
 def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):

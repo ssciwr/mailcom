@@ -208,8 +208,8 @@ def test_load_csv_empty(get_instant, tmp_path):
     # Test with a valid CSV file
     infile = tmp_path / "test.csv"
 
-    with open(infile, "w", newline="", encoding="utf-8") as f:
-        pass  # empty file
+    # Create an empty CSV file
+    open(infile, "w", newline="", encoding="utf-8").close()
 
     get_instant.load_csv(infile, ["content"])
     assert get_instant.email_list == []
