@@ -21,6 +21,14 @@ author = "Scientific Software Center, Heidelberg University"
 extensions = ["sphinx.ext.autodoc", "sphinx.ext.napoleon", "myst_parser", "nbsphinx"]
 nbsphinx_execute = "never"
 
+html_context = {
+    "display_github": True,  # Integrate GitHub
+    "github_user": "ssciwr",  # Username
+    "github_repo": "mailcom",  # Repo name
+    "github_version": "main",  # Version
+    "conf_py_path": "/docs/source/",  # Path in the checkout to the docs root
+}
+
 templates_path = ["_templates"]
 exclude_patterns = ["notebooks/performance_demo.ipynb"]
 
