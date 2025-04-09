@@ -8,10 +8,21 @@ from importlib import resources
 import csv
 
 
+def get_files(dir_path: Path, name_phrase: str) -> list[Path]:
+    """
+    Get all files in a directory that contain the name_phrase in their name.
+    """
+    return [
+        file
+        for file in dir_path.iterdir()
+        if file.is_file() and name_phrase in file.name
+    ]
+
+
 def test_get_input_handler_csv_empty(tmp_path):
     inpath = tmp_path / "test.csv"
-    with open(inpath, "w", newline="", encoding="utf-8"):
-        pass  # empty file
+    # empty file
+    open(inpath, "w", newline="", encoding="utf-8").close()
 
     inout_hl = main.get_input_handler(inpath, in_type="csv")
     assert inout_hl.email_list == []
@@ -132,24 +143,151 @@ def test_is_valid_settings():
     assert main.is_valid_settings(settings) is False
 
 
-def test_get_workflow_settings(tmp_path):
+def test_update_new_settings_empty():
+    updated = main._update_new_settings({"test": "test"}, {})
+    assert updated is False
+
+    with pytest.raises(ValueError):
+        main._update_new_settings({}, {"test": "test"})
+
+
+def test_update_new_settings_not_updated():
+    # invalid key
+    with pytest.warns(UserWarning):
+        updated = main._update_new_settings({"default_lang": "fr"}, {"test": "test"})
+    assert updated is False
+
+    # invalid structure
+    with pytest.warns(UserWarning):
+        updated = main._update_new_settings(
+            {"default_lang": "fr"}, {"default_lang": True}
+        )
+    assert updated is False
+
+    # same value
+    updated = main._update_new_settings({"default_lang": "fr"}, {"default_lang": "fr"})
+    assert updated is False
+
+
+def test_update_new_settings_updated():
+    settings = {"default_lang": "fr"}
+    updated = main._update_new_settings(settings, {"default_lang": "es"})
+    assert updated is True
+    assert settings.get("default_lang") == "es"
+
+
+def test_save_settings_to_file(tmpdir):
+    settings = {"default_lang": "de"}
+
+    # none dir path
+    main.save_settings_to_file(settings)
+    saved_files = get_files(Path.cwd(), "updated_workflow_settings_")
+    assert len(saved_files) == 1
+    with open(saved_files[0], "r", encoding="utf-8") as f:
+        updated_settings = json.load(f)
+    assert updated_settings.get("default_lang") == "de"
+    saved_files[0].unlink()  # remove the file
+
+    # valid dir path
+    directory = Path(tmpdir.mkdir("test"))
+    main.save_settings_to_file(settings, directory)
+    saved_files = get_files(directory, "updated_workflow_settings_")
+    assert len(saved_files) == 1
+    with open(saved_files[0], "r", encoding="utf-8") as f:
+        updated_settings = json.load(f)
+    assert updated_settings.get("default_lang") == "de"
+
+    # invalid dir path
+    file_path = Path(__file__).absolute()
+    with pytest.raises(ValueError):
+        main.save_settings_to_file(settings, file_path)
+
+
+def test_get_workflow_settings_default():
+    settings = main.get_workflow_settings()
+    assert settings.get("default_lang") == "fr"
+
+    settings = main.get_workflow_settings("default")
+    assert settings.get("default_lang") == "fr"
+
+
+def test_get_workflow_settings_file(tmp_path):
     setting_path = tmp_path / "settings.json"
-    with pytest.raises(FileNotFoundError):
-        main.get_workflow_settings(setting_path)
 
-    with open(setting_path, "w", newline="", encoding="utf-8") as f:
-        pass  # empty file
-    with pytest.raises(json.JSONDecodeError):
-        main.get_workflow_settings(setting_path)
+    # invalid cases
+    # not existing file
+    with pytest.warns(UserWarning):
+        settings = main.get_workflow_settings(setting_path)
+    assert settings.get("default_lang") == "fr"
 
+    # empty file
+    open(setting_path, "w", newline="", encoding="utf-8").close()
+    with pytest.warns(UserWarning):
+        settings = main.get_workflow_settings(setting_path)
+    assert settings.get("default_lang") == "fr"
+
+    # invalid json file
     with open(setting_path, "w", newline="", encoding="utf-8") as f:
         f.write("test")
-    with pytest.raises(json.JSONDecodeError):
-        main.get_workflow_settings(setting_path)
+    with pytest.warns(UserWarning):
+        settings = main.get_workflow_settings(setting_path)
+    assert settings.get("default_lang") == "fr"
 
+    # invalid json file against the schema
     with open(setting_path, "w", newline="", encoding="utf-8") as f:
         json.dump({"test": "test"}, f)
-    assert main.get_workflow_settings(setting_path) == {"test": "test"}
+    with pytest.warns(UserWarning):
+        settings = main.get_workflow_settings(setting_path)
+    assert settings.get("default_lang") == "fr"
+
+    # valid json file
+    with open(setting_path, "w", newline="", encoding="utf-8") as f:
+        json.dump({"default_lang": "es"}, f)
+    settings = main.get_workflow_settings(setting_path)
+    assert settings.get("default_lang") == "es"
+
+
+def test_get_workflow_settings_new_settings(tmp_path, tmpdir):
+    new_settings = {"default_lang": "es"}
+
+    # update default settings
+    settings = main.get_workflow_settings(
+        new_settings=new_settings, save_updated_settings=False
+    )
+    assert settings.get("default_lang") == "es"
+
+    # update settings from file
+    setting_path = tmp_path / "settings.json"
+    with open(setting_path, "w", newline="", encoding="utf-8") as f:
+        json.dump({"default_lang": "fr"}, f)
+    settings = main.get_workflow_settings(setting_path)
+    assert settings.get("default_lang") == "fr"
+    settings = main.get_workflow_settings(
+        setting_path, new_settings=new_settings, save_updated_settings=False
+    )
+    assert settings.get("default_lang") == "es"
+
+    # update settings from file with invalid new settings
+    new_settings = {"test": "test"}
+    with pytest.warns(UserWarning):
+        settings = main.get_workflow_settings(setting_path, new_settings=new_settings)
+    assert settings.get("default_lang") == "fr"
+
+    # update settings from file, save updated settings
+    new_settings = {"default_lang": "es"}
+    directory = Path(tmpdir.mkdir("test"))
+    settings = main.get_workflow_settings(
+        setting_path,
+        new_settings=new_settings,
+        updated_setting_dir=directory,
+        save_updated_settings=True,
+    )
+    assert settings.get("default_lang") == "es"
+    created_files = get_files(directory, "updated_workflow_settings_")
+    assert len(created_files) == 1
+    with open(created_files[0], "r", encoding="utf-8") as f:
+        updated_settings = json.load(f)
+    assert updated_settings.get("default_lang") == "es"
 
 
 @pytest.fixture()

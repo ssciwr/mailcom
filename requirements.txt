@@ -13,3 +13,4 @@ langdetect
 intervaltree
 dateparser
 datefinder
+accelerate
