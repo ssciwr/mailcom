@@ -13,6 +13,8 @@ class Pseudonymize:
 
         # records NEs in the last email
         self.ne_list = []
+        self.ne_sent = []  # indices of sentences with NEs
+        self.sentences = []  # record sentences obtained by spaCy
 
         self.trans_loader = trans_loader
         self.feature = "ner"
@@ -42,6 +44,8 @@ class Pseudonymize:
         """Clears the named entity list for processing a new email."""
         # reset NEs
         self.ne_list.clear()
+        self.ne_sent.clear()
+        self.sentences.clear()
 
     def get_sentences(self, input_text, language, model="default"):
         """Splits a text into sentences using spacy.
@@ -93,6 +97,10 @@ class Pseudonymize:
         Returns:
             str: Chosen pseudonym.
         """
+        if lang not in self.pseudo_first_names:
+            # get name from the first specified language
+            lang = next(iter(self.pseudo_first_names))
+
         pseudonym = ""
         # get list of already replaced names, and list of corresponding pseudonyms
         used_names = [ne["word"] for ne in self.ne_list]
@@ -126,7 +134,7 @@ class Pseudonymize:
                     pseudonym = self.pseudo_first_names[lang][0]
         return pseudonym
 
-    def pseudonymize_ne(self, ner, sentence, lang="fr"):
+    def pseudonymize_ne(self, ner, sentence, lang="fr", sent_idx=0):
         """Pseudonymizes all found named entities in a String.
         Named entities categorized as persons are replaced with a pseudonym.
         Named entities categorized as locations, organizations or miscellaneous
@@ -169,6 +177,7 @@ class Pseudonymize:
 
             # add this entity to the total NE list
             self.ne_list.append(entity)
+            self.ne_sent.append(sent_idx)
 
             # replace the NE with its pseudonym
             # only replace this occurence of the NE by using start and end positions
@@ -296,15 +305,17 @@ class Pseudonymize:
             str: Pseudonymized text
         """
         self.reset()
-        sentences = self.get_sentences(text, language, model)
+        self.sentences = self.get_sentences(text, language, model)
         pseudonymized_sentences = []
-        for sent in sentences:
+        for sent_idx, sent in enumerate(self.sentences):
             if pseudo_emailaddresses:
                 sent = self.pseudonymize_email_addresses(sent)
             if pseudo_ne:
                 ner = self.get_ner(sent, pipeline_info)
                 sent = (
-                    " ".join(self.pseudonymize_ne(ner, sent, language)) if ner else sent
+                    " ".join(self.pseudonymize_ne(ner, sent, language, sent_idx))
+                    if ner
+                    else sent
                 )
             if pseudo_numbers:
                 sent = self.pseudonymize_numbers(sent, detected_dates)
