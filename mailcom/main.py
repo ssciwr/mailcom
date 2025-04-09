@@ -276,6 +276,8 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
         )
         email["pseudo_content"] = pseudo_content
         email["ne_list"] = pseudonymizer.ne_list
+        email["ne_sent"] = pseudonymizer.ne_sent
+        email["sentences"] = pseudonymizer.sentences
 
 
 def write_output_data(inout_hl: InoutHandler, out_path: str, overwrite: bool = False):

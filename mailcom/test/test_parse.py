@@ -131,6 +131,8 @@ def test_reset(get_default_fr):
         # Test that used names lists are empty now
         # They should be cleared after every email
         assert len(get_default_fr.ne_list) == 0
+        assert len(get_default_fr.ne_sent) == 0
+        assert len(get_default_fr.sentences) == 0
 
 
 def test_get_ner(get_default_fr):
@@ -347,6 +349,18 @@ def test_choose_per_pseudonym_exhausted_list(get_default_fr):
     ]
     pseudonym = get_default_fr.choose_per_pseudonym(name)
     assert pseudonym == get_default_fr.pseudo_first_names["fr"][0]
+
+
+def test_choose_per_pseudonym_different_language(get_default_fr):
+    name = "John"
+
+    # exhausted list
+    get_default_fr.ne_list = [
+        {"word": "Claude", "entity_group": "PER", "pseudonym": pseudo}
+        for pseudo in get_default_fr.pseudo_first_names["es"]
+    ]
+    pseudonym = get_default_fr.choose_per_pseudonym(name, lang="gl")
+    assert pseudonym == get_default_fr.pseudo_first_names["es"][0]
 
 
 def test_pseudonymize_ne_person(get_default_fr):
