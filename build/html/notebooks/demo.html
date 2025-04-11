@@ -1,0 +1,298 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demonstration notebook for the mailcom package &mdash; mailcom  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mailcom package modules" href="../modules.html" />
+    <link rel="prev" title="mailcom" href="../readme_link.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            mailcom
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme_link.html">mailcom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readme_link.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readme_link.html#usage">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Demonstration notebook for the mailcom package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">mailcom package modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license_link.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mailcom</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Demonstration notebook for the mailcom package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ssciwr/mailcom/blob/main/docs/source/notebooks/demo.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Demonstration-notebook-for-the-mailcom-package">
+<h1>Demonstration notebook for the mailcom package<a class="headerlink" href="#Demonstration-notebook-for-the-mailcom-package" title="Link to this heading"></a></h1>
+<div class="line-block">
+<div class="line"><em>Scientific Software Center, University of Heidelberg, December 2024</em></div>
+<div class="line">The <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> package is used to anonymize/pseudonymize textual data, i.e. email content. It takes an <code class="docutils literal notranslate"><span class="pre">eml</span></code> or <code class="docutils literal notranslate"><span class="pre">html</span></code> file as input and extracts information about attachements, number of attachements and type, and the content of the email body. The latter is then parsed through <code class="docutils literal notranslate"><span class="pre">`spaCy</span></code> &lt;<a class="reference external" href="https://spacy.io/">https://spacy.io/</a>&gt;`__ and divided into sentences. The sentences are fed to a <code class="docutils literal notranslate"><span class="pre">`transformers</span></code> &lt;<a class="reference external" href="https://huggingface.co/docs/transformers/en/index">https://huggingface.co/docs/transformers/en/index</a>&gt;`__ named entity recognition (NER)
+<a class="reference external" href="https://huggingface.co/docs/transformers/v4.46.3/en/main_classes/pipelines">pipeline</a>, and person names, places, organizations, miscellaneous, are detected in the inference task. Names are replaced by pseudos, while locations, organizations and miscellaneous are replaced by <code class="docutils literal notranslate"><span class="pre">[location]</span></code>, <code class="docutils literal notranslate"><span class="pre">[organization]</span></code> and <code class="docutils literal notranslate"><span class="pre">[misc]</span></code>. The text is further parsed using string methods, to replace any numbers with <code class="docutils literal notranslate"><span class="pre">[number]</span></code> and email addresses with <code class="docutils literal notranslate"><span class="pre">[email]</span></code>. The processed text and metadata can then
+be written to an <code class="docutils literal notranslate"><span class="pre">xml</span></code> file or into a pandas dataframe.</div>
+</div>
+<p>Please note that 100% accuracy is not possible with this task. Any output needs to be further checked by a human to ensure the text has been anonymized completely.</p>
+<p>The current set-up is for Romance languages, however <a class="reference external" href="https://spacy.io/usage/models">other language models</a> can also be loaded into the spaCy pipeline. The transformers pipeline uses the <code class="docutils literal notranslate"><span class="pre">xlm-roberta-large-finetuned-conll03-english</span></code> model revision number <code class="docutils literal notranslate"><span class="pre">18f95e9</span></code> by default, but other models can also be passed (see below).</p>
+<p>Before using the <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> package, please install it into your conda environment using</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install mailcom
+</pre></div>
+</div>
+<p>After that, select the appropriate kernel for your Jupyter notebook and execute the cell below to import the package. The package is currently under active development and any function calls are subject to changes.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">mailcom</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">HTML</span>
+</pre></div>
+</div>
+</div>
+<p>The cell below defines a function used to display the result in the end, and highlight all named entities found in the text. It is used for demonstration purposes in this example.</p>
+<p>Generally, this is a simple approach at highlighting the replaced pseudonyms, but the method itself is prone to errors and should only be used with care when assessing if the text has been anonymized correctly.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># a dictionary matching colors to the different entity types</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;LOC&quot;</span><span class="p">:</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ORG&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MISC&quot;</span><span class="p">:</span> <span class="s2">&quot;yellow&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PER&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span>
+<span class="p">}</span>
+
+<span class="c1"># function for displaying the result using HTML</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">highlight_ne</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">):</span>
+    <span class="c1"># create a list of all entities with their positions</span>
+    <span class="n">entities</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ne</span> <span class="ow">in</span> <span class="n">ne_list</span><span class="p">:</span>
+        <span class="c1"># avoid substituting the same entity multiple times</span>
+        <span class="k">if</span> <span class="n">ne</span><span class="p">[</span><span class="s2">&quot;word&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entities</span> <span class="ow">and</span> <span class="n">ne</span><span class="p">[</span><span class="s2">&quot;entity_group&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">colors</span><span class="p">:</span>
+            <span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ne</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ne</span><span class="p">[</span><span class="s2">&quot;entity_group&quot;</span><span class="p">])))</span>
+
+    <span class="c1"># sort entities by their positions in the text in reverse order</span>
+    <span class="c1"># is this necessary?</span>
+    <span class="c1"># entities = sorted(entities, key=lambda x: x[0][&quot;start&quot;], reverse=True)</span>
+
+    <span class="c1"># replace all &quot;&lt;&quot; and &quot;&gt;&quot; which may mess up spans</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;lt;&quot;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;gt;&quot;</span><span class="p">)</span>
+    <span class="c1"># replace entities with highlighted spans</span>
+    <span class="k">for</span> <span class="n">entity</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+        <span class="n">ent_word</span> <span class="o">=</span> <span class="n">entity</span><span class="p">[</span><span class="s2">&quot;word&quot;</span><span class="p">]</span>
+        <span class="c1"># I think it may be overwriting the already replaced ones</span>
+        <span class="c1"># Instead, maybe sort which ones are different and not a subset?</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ent_word</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&lt;span style=</span><span class="se">\&quot;</span><span class="s2">background-color:</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">{</span><span class="n">ent_word</span><span class="si">}</span><span class="s2">&lt;/span&gt;&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">text</span>
+</pre></div>
+</div>
+</div>
+<p>All settings for the whole pseudonymize process are stored in the file <code class="docutils literal notranslate"><span class="pre">mailcom/default_settings.json</span></code>. You can customize them by:</p>
+<ul class="simple">
+<li><p>Modifying <code class="docutils literal notranslate"><span class="pre">mailcom/default_settings.json</span></code> directly, or</p></li>
+<li><p>Creating a new setting file, or</p></li>
+<li><p>Updating specific fields when loading the settings</p></li>
+</ul>
+<p>Function <code class="docutils literal notranslate"><span class="pre">mailcom.get_workflow_settings()</span></code> is used to load the workflow settings, as follows:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get workflow settings from a setting file</span>
+<span class="n">setting_path</span> <span class="o">=</span> <span class="s2">&quot;../../../mailcom/default_settings.json&quot;</span>
+<span class="n">workflow_settings</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_workflow_settings</span><span class="p">(</span><span class="n">setting_path</span><span class="o">=</span><span class="n">setting_path</span><span class="p">)</span>
+
+<span class="c1"># update some fields while loading the settings</span>
+<span class="n">new_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;default_lang&quot;</span><span class="p">:</span> <span class="s2">&quot;es&quot;</span><span class="p">}</span>
+<span class="n">setting_dir</span> <span class="o">=</span> <span class="s2">&quot;../../../mailcom/&quot;</span>
+<span class="n">workflow_settings</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_workflow_settings</span><span class="p">(</span><span class="n">new_settings</span><span class="o">=</span><span class="n">new_settings</span><span class="p">,</span>
+                                                  <span class="n">updated_setting_dir</span><span class="o">=</span> <span class="n">setting_dir</span><span class="p">,</span>
+                                                  <span class="n">save_updated_settings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>In the last example of the cell above, the updated settings are saved to a file. If <code class="docutils literal notranslate"><span class="pre">updated_setting_dir</span></code> is not provided, the file is saved in the current directory. To skip saving, set <code class="docutils literal notranslate"><span class="pre">save_updated_settings</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+<p>For this demo, we will use the default workflow settings:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get default workflow settings</span>
+<span class="n">workflow_settings</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_workflow_settings</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>We currently support two types of input data: (1) <code class="docutils literal notranslate"><span class="pre">csv</span></code>file and (2) directory of <code class="docutils literal notranslate"><span class="pre">eml</span></code> and <code class="docutils literal notranslate"><span class="pre">html</span></code> files.</p>
+<p>Each row of the <code class="docutils literal notranslate"><span class="pre">csv</span></code>file, <code class="docutils literal notranslate"><span class="pre">eml</span></code> file, or <code class="docutils literal notranslate"><span class="pre">html</span></code> file will be stored in an email dictionary, with pre-defined keys: <code class="docutils literal notranslate"><span class="pre">content</span></code>, <code class="docutils literal notranslate"><span class="pre">date</span></code>, <code class="docutils literal notranslate"><span class="pre">attachment</span></code>, and <code class="docutils literal notranslate"><span class="pre">attachement</span> <span class="pre">type</span></code>.</p>
+<p>When loading a <code class="docutils literal notranslate"><span class="pre">csv</span></code>file as an input, a list of columns in the file to map with the above pre-defined keys should be provided. For example:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import data from a csv file - change this to your own file</span>
+<span class="n">input_csv</span> <span class="o">=</span> <span class="s2">&quot;../../../data/mails_lb_sg.csv&quot;</span>
+<span class="n">unmatched_keyword</span> <span class="o">=</span> <span class="n">workflow_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;csv_col_unmatched_keyword&quot;</span><span class="p">)</span>
+<span class="n">input_handler</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_input_handler</span><span class="p">(</span><span class="n">in_path</span><span class="o">=</span><span class="n">input_csv</span><span class="p">,</span> <span class="n">in_type</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span>
+                                          <span class="n">col_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">],</span>
+                                          <span class="n">init_data_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span>
+                                          <span class="n">unmatched_keyword</span><span class="o">=</span><span class="n">unmatched_keyword</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>In the cell above, the <code class="docutils literal notranslate"><span class="pre">message</span></code> column from the <code class="docutils literal notranslate"><span class="pre">csv</span></code> file is mapped to the <code class="docutils literal notranslate"><span class="pre">content</span></code> key in the email dictionary, while other keys have <code class="docutils literal notranslate"><span class="pre">None</span></code> as their values.</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">csv</span></code> file lacks the <code class="docutils literal notranslate"><span class="pre">message</span></code> column, value of <code class="docutils literal notranslate"><span class="pre">content</span></code> is set to <code class="docutils literal notranslate"><span class="pre">unmatched_keyword</span></code></p>
+<p>Below, the input files are loaded from the given <code class="docutils literal notranslate"><span class="pre">input_dir</span></code> directory into an input handler. You can provide relative or absolute paths to the directory that contains your <code class="docutils literal notranslate"><span class="pre">eml</span></code> or <code class="docutils literal notranslate"><span class="pre">html</span></code> files. All files of the <code class="docutils literal notranslate"><span class="pre">eml</span></code> or <code class="docutils literal notranslate"><span class="pre">html</span></code> file type in that directory will be considered input files.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import files from input_dir - change this to your own directory</span>
+<span class="n">input_dir</span> <span class="o">=</span> <span class="s2">&quot;../../../data/in/&quot;</span>
+<span class="n">input_handler</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_input_handler</span><span class="p">(</span><span class="n">in_path</span><span class="o">=</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">in_type</span><span class="o">=</span><span class="s2">&quot;dir&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>In the cell below, the emails are looped over and the email content is processed. Depending on the settings, each email content goes through the following steps:</p>
+<ol class="arabic simple">
+<li><p>language detection (optional)</p></li>
+<li><p>date time detection (optional)</p></li>
+<li><p>email addresses pseudonymization (optional)</p></li>
+<li><p>name entities pseudonymization</p></li>
+<li><p>numbers pseudonymization (optional)</p></li>
+</ol>
+<p>For steps 3-5, the email content is divided into sentences, which are then pseudonymized. The modified sentences are recombined into a text and stored in the email dictionary under the key <code class="docutils literal notranslate"><span class="pre">&quot;pseudo_content&quot;</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># process the input data</span>
+<span class="n">processed_data</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">process_data</span><span class="p">(</span><span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">(),</span> <span class="n">workflow_settings</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The input text is displayed and the found named entities are highlighted for demonstration. Note that emails (all words containing ‘&#64;’) are filtered out seperately and thus not highlighted here.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># loop over mails and display the highlights</span>
+<span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">():</span>
+    <span class="c1"># display original text and highlight found and replaced NEs</span>
+    <span class="n">highlighted_html</span> <span class="o">=</span> <span class="n">highlight_ne</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">])</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">highlighted_html</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<p>After this, the output can be written to a file or processed further. The output is a list of dictionaries, each containing the metadata of the email and the pseudonymized content. In the below cell, the output is saved in a <code class="docutils literal notranslate"><span class="pre">pandas</span></code> dataframe.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># write output to pandas df</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<p>The output can be saved as a csv file as well.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># set overwrite to True to overwrite the existing file</span>
+<span class="n">mailcom</span><span class="o">.</span><span class="n">write_output_data</span><span class="p">(</span><span class="n">input_handler</span><span class="p">,</span> <span class="s2">&quot;../../../data/out/out_demo.csv&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../readme_link.html" class="btn btn-neutral float-left" title="mailcom" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../modules.html" class="btn btn-neutral float-right" title="mailcom package modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Scientific Software Center, Heidelberg University.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
