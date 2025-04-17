@@ -323,3 +323,53 @@ class Pseudonymize:
                 sent = self.pseudonymize_numbers(sent, detected_dates)
             pseudonymized_sentences.append(sent)
         return self.concatenate(pseudonymized_sentences)
+
+    def pseudonymize_with_updated_ne(
+        self,
+        sentences,
+        ne_sent_dict: dict,
+        language="de",
+        detected_dates: list[str] = None,
+        pseudo_emailaddresses=True,
+        pseudo_ne=True,
+        pseudo_numbers=True,
+    ):
+        """Pseudonymizes the email with updated named entities.
+        This function is used when the named entities have been updated
+        in the email and need to be pseudonymized again.
+
+        Args:
+            sentences (list[str]): List of sentences to pseudonymize.
+            ne_sent_dict (dict): Dictionary containing named entities
+            language (str, optional): Language of the email. Defaults to "de".
+            detected_dates (list[str], optional): Detected dates in the email.
+                Defaults to None.
+            pseudo_emailaddresses (bool, optional): Whether to pseudonymize
+                email addresses. Defaults to True.
+            pseudo_ne (bool, optional): Whether to pseudonymize named entities.
+                Defaults to True.
+            pseudo_numbers (bool, optional): Whether to pseudonymize numbers.
+                Defaults to True.
+
+        Returns:
+            str: Pseudonymized text
+        """
+        self.reset()
+        pseudonymized_sentences = []
+        for sent_idx, sent in enumerate(sentences):
+            if pseudo_emailaddresses:
+                sent = self.pseudonymize_email_addresses(sent)
+            if pseudo_ne:
+                sent = (
+                    " ".join(
+                        self.pseudonymize_ne(
+                            ne_sent_dict[str(sent_idx)], sent, language, sent_idx
+                        )
+                    )
+                    if str(sent_idx) in ne_sent_dict
+                    else sent
+                )
+            if pseudo_numbers:
+                sent = self.pseudonymize_numbers(sent, detected_dates)
+            pseudonymized_sentences.append(sent)
+        return self.concatenate(pseudonymized_sentences)

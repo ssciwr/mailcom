@@ -436,3 +436,8 @@ def test_pseudonymize_ne_empty_sentence(get_default_fr):
     ner = []
     pseudonymized_sentence = " ".join(get_default_fr.pseudonymize_ne(ner, sentence))
     assert pseudonymized_sentence == sentence
+
+
+def test_pseudonymize_with_updated_ne(get_default_fr):
+    # TODO
+    pass
