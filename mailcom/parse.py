@@ -146,6 +146,8 @@ class Pseudonymize:
             sentence (str): Input String to replace all named entities in.
             lang (str, optional): Language to choose pseudonyms from.
                 Defaults to "fr".
+            sent_idx (int, optional): Index of the sentence in the email.
+                Defaults to 0.
 
         Returns:
             list[str]: Pseudonymized sentence as list.
