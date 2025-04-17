@@ -80,6 +80,7 @@ class InoutHandler:
                 parsed_eml["attachment"][i]["extension"] for i in range(attachments)
             ]
         email_content = {
+            "file_name": file.name,
             "content": parsed_eml["body"][0]["content"],
             "date": parsed_eml["header"]["date"],
             "attachment": attachments,

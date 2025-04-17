@@ -11,6 +11,7 @@ import jsonschema
 import warnings
 from datetime import datetime
 import socket
+import copy
 
 
 def get_input_handler(
@@ -274,10 +275,14 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
             pseudo_ne=pseudo_ne,
             pseudo_numbers=pseudo_numbers,
         )
+        # use deepcopy to avoid issue with mutable objects
         email["pseudo_content"] = pseudo_content
-        email["ne_list"] = pseudonymizer.ne_list
-        email["ne_sent"] = pseudonymizer.ne_sent
-        email["sentences"] = pseudonymizer.sentences
+        email["ne_list"] = copy.deepcopy(pseudonymizer.ne_list)
+        # remove score from the list
+        for ne in email["ne_list"]:
+            ne.pop("score")
+        email["ne_sent"] = copy.deepcopy(pseudonymizer.ne_sent)
+        email["sentences"] = copy.deepcopy(pseudonymizer.sentences)
 
 
 def write_output_data(inout_hl: InoutHandler, out_path: str, overwrite: bool = False):
