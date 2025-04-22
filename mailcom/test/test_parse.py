@@ -439,5 +439,32 @@ def test_pseudonymize_ne_empty_sentence(get_default_fr):
 
 
 def test_pseudonymize_with_updated_ne(get_default_fr):
-    # TODO
-    pass
+    sentences = [
+        "Le Tour de France est un événement célèbre.",
+        "Thomas travaille chez Microsoft à Paris.",
+    ]
+    ner_sent_dict = {
+        "0": [
+            {"entity_group": "MISC", "word": "Tour de France", "start": 3, "end": 17},
+        ],
+        "1": [
+            {"entity_group": "PER", "word": "Thomas", "start": 0, "end": 6},
+            {"entity_group": "ORG", "word": "Microsoft", "start": 18, "end": 27},
+            {"entity_group": "LOC", "word": "Paris", "start": 30, "end": 35},
+        ],
+    }
+    pseudonymized_sentence = get_default_fr.pseudonymize_with_updated_ne(
+        sentences, ner_sent_dict, language="fr", detected_dates=None
+    )
+
+    assert "Tour de France" not in pseudonymized_sentence
+    assert "Thomas" not in pseudonymized_sentence
+    assert "Microsoft" not in pseudonymized_sentence
+    assert "Paris" not in pseudonymized_sentence
+    assert any(
+        pseudo in pseudonymized_sentence
+        for pseudo in get_default_fr.pseudo_first_names["fr"]
+    )
+    assert "[organization]" in pseudonymized_sentence
+    assert "[location]" in pseudonymized_sentence
+    assert "[misc]" in pseudonymized_sentence

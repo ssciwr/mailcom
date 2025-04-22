@@ -327,7 +327,7 @@ class Pseudonymize:
     def pseudonymize_with_updated_ne(
         self,
         sentences,
-        ne_sent_dict: dict,
+        ne_sent_dict: dict[list[dict]],
         language="de",
         detected_dates: list[str] = None,
         pseudo_emailaddresses=True,
@@ -340,7 +340,7 @@ class Pseudonymize:
 
         Args:
             sentences (list[str]): List of sentences to pseudonymize.
-            ne_sent_dict (dict): Dictionary containing named entities
+            ne_sent_dict (dict[list[dict]]): Dictionary containing named entities
             language (str, optional): Language of the email. Defaults to "de".
             detected_dates (list[str], optional): Detected dates in the email.
                 Defaults to None.
