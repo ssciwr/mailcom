@@ -149,6 +149,7 @@ def test_get_ner(get_default_fr):
 def test_get_sentences_empty_string(get_default_fr):
     text = ""
     assert get_default_fr.get_sentences(text, "fr") == []
+    assert "sentencizer" in get_default_fr.nlp_spacy.pipe_names
 
 
 def test_get_sentences_multiple_sentences(get_default_fr):
@@ -161,6 +162,7 @@ def test_get_sentences_multiple_sentences(get_default_fr):
     assert sentences[0] == "Ceci est la première phrase."
     assert sentences[1] == "Voici la deuxième phrase."
     assert sentences[2] == "Et enfin, la troisième phrase."
+    assert "sentencizer" in get_default_fr.nlp_spacy.pipe_names
 
 
 def test_get_sentences_with_punctuation(get_default_fr):
@@ -170,6 +172,7 @@ def test_get_sentences_with_punctuation(get_default_fr):
     assert sentences[0] == "Bonjour!"
     assert sentences[1] == "Comment ça va?"
     assert sentences[2] == "Très bien, merci."
+    assert "sentencizer" in get_default_fr.nlp_spacy.pipe_names
 
 
 def test_get_letter_indices_non_empty(get_default_fr):

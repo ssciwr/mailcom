@@ -62,7 +62,12 @@ class Pseudonymize:
         if not hasattr(self, "nlp_spacy"):
             self.init_spacy(language, model)
 
+        if "sentencizer" not in self.nlp_spacy.pipe_names:
+            config = {"punct_chars": [".", "!", "?"]}
+            self.nlp_spacy.add_pipe("sentencizer", before="parser", config=config)
+
         doc = self.nlp_spacy(input_text)
+
         text_as_sents = []
         for sent in doc.sents:
             text_as_sents.append(str(sent))
