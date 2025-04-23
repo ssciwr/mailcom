@@ -706,3 +706,9 @@ def test_get_date_time_fr_strict(get_time_detector_strict, get_date_samples):
     assert len(results) == len(date_info["strict"])
     for result, sample_time in zip(results, date_info["strict"]):
         assert result[0] == sample_time
+
+
+def test_get_date_time_fr_strict_single_data(get_time_detector_strict):
+    sample_sentence = "Enviado el: martes, 07 de mayo de 2013 12:52"
+    results = get_time_detector_strict.get_date_time(sample_sentence, "es")
+    assert len(results) == 0
