@@ -284,6 +284,13 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
         email["ne_sent"] = copy.deepcopy(pseudonymizer.ne_sent)
         email["sentences"] = copy.deepcopy(pseudonymizer.sentences)
 
+        # record sentences after email pseudonymization
+        if pseudo_emailaddresses:
+            email["sentences_after_email"] = [
+                pseudonymizer.pseudonymize_email_addresses(sent)
+                for sent in email["sentences"]
+            ]
+
 
 def write_output_data(inout_hl: InoutHandler, out_path: str, overwrite: bool = False):
     """Write the output data to a file.

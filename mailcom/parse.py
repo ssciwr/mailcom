@@ -1,4 +1,5 @@
 from mailcom import utils
+import re
 
 
 class Pseudonymize:
@@ -259,7 +260,7 @@ class Pseudonymize:
         Returns:
             str: Text with emails replaced by placeholder.
         """
-        split = sentence.split(" ")
+        split = re.split(r"\s+", sentence)  # split by any whitespace
         new_list = []
         for word in split:
             if "@" in word:
