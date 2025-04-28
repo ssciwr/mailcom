@@ -202,6 +202,7 @@ def test_validate_data(get_instant):
     get_instant.validate_data(email_dict)
     assert email_dict["content"] == "This is a test email"
     assert email_dict["date"] is None
+    assert email_dict["subject"] is None
 
 
 def test_load_csv_empty(get_instant, tmp_path):

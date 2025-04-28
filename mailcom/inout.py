@@ -15,6 +15,7 @@ class InoutHandler:
                 "date",
                 "attachment",
                 "attachement type",
+                "subject",
             ]
         else:
             self.init_data_fields = init_data_fields
@@ -85,6 +86,7 @@ class InoutHandler:
             "date": parsed_eml["header"]["date"],
             "attachment": attachments,
             "attachement type": attachmenttypes,
+            "subject": parsed_eml["header"]["subject"],
         }
         # clean up html content
         email_content["content"] = self.get_html_text(email_content["content"])

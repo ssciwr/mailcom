@@ -18,7 +18,13 @@ def get_input_handler(
     in_path: str,
     in_type: str = "dir",
     col_names: list = ["message"],
-    init_data_fields: list = ["content", "date", "attachment", "attachement type"],
+    init_data_fields: list = [
+        "content",
+        "date",
+        "attachment",
+        "attachement type",
+        "subject",
+    ],
     unmatched_keyword: str = "unmatched",
     file_types: list = [".eml", ".html"],
 ) -> InoutHandler:

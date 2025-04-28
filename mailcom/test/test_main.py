@@ -49,6 +49,7 @@ def test_get_input_handler_csv_unmatch(tmp_path):
     assert email["date"] is None
     assert email["attachment"] is None
     assert email["attachement type"] is None
+    assert email["subject"] is None
 
 
 def test_get_input_handler_dir(tmpdir):
