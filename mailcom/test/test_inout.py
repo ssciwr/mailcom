@@ -9,6 +9,7 @@ import csv
 pkg = resources.files("mailcom")
 
 FILE_PATH = Path(pkg / "test" / "data" / "Bonjour Agathe.eml")
+HTML_BODY_PATH = Path(pkg / "test" / "data" / "34.eml")
 XML_PATH = Path(pkg / "test" / "data" / "test.xml")
 
 TEXT_REF = "J'espère que tu vas bien!"
@@ -85,6 +86,10 @@ def test_extract_email_info(get_instant, tmp_path):
     # Test with a non-existing file
     with pytest.raises(OSError):
         get_instant.extract_email_info(tmp_path / "nonexisting.eml")
+
+    # file with only html content
+    email_info = get_instant.extract_email_info(HTML_BODY_PATH)
+    assert len(email_info["content"]) > 0
 
 
 def test_extract_email_extra_fields(get_instant):
