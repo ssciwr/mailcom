@@ -87,9 +87,13 @@ def test_extract_email_info(get_instant, tmp_path):
     with pytest.raises(OSError):
         get_instant.extract_email_info(tmp_path / "nonexisting.eml")
 
+
+def test_extract_email_info_html(get_instant):
     # file with only html content
+    # which means parsed_eml["body"][0]["content"] is empty
     email_info = get_instant.extract_email_info(HTML_BODY_PATH)
     assert len(email_info["content"]) > 0
+    assert "Hello, World!" in email_info["content"]
 
 
 def test_extract_email_extra_fields(get_instant):

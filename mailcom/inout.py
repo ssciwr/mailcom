@@ -82,7 +82,8 @@ class InoutHandler:
             ]
 
         body_content = parsed_eml["body"][0]["content"]
-        if not body_content:
+        if not body_content and len(parsed_eml["body"]) > 1:
+            # if the first body content is empty, use the second one
             body_content = parsed_eml["body"][1]["content"]
 
         email_content = {
