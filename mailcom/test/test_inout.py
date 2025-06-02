@@ -9,7 +9,7 @@ import csv
 pkg = resources.files("mailcom")
 
 FILE_PATH = Path(pkg / "test" / "data" / "Bonjour Agathe.eml")
-HTML_BODY_PATH = Path(pkg / "test" / "data" / "34.eml")
+HTML_BODY_PATH = Path(pkg / "test" / "data" / "only_html.eml")
 XML_PATH = Path(pkg / "test" / "data" / "test.xml")
 
 TEXT_REF = "J'espère que tu vas bien!"
