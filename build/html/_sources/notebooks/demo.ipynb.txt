@@ -34,9 +34,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "The cell below defines a function used to display the result in the end, and highlight all named entities found in the text. It is used for demonstration purposes in this example.\n",
+    "The cells below defines two functions used to display the result in the end, and highlight all named entities found in the text. It is used for demonstration purposes in this example.\n",
     "\n",
-    "Generally, this is a simple approach at highlighting the replaced pseudonyms, but the method itself is prone to errors and should only be used with care when assessing if the text has been anonymized correctly."
+    "The first function is a simple approach to highlight all words in the text that match the detected named entities. However, this approach is error-prone and should be used cautiously when evaluating whether the text has been properly anonymized."
    ]
   },
   {
@@ -51,8 +51,15 @@
     "    \"ORG\": \"blue\",\n",
     "    \"MISC\": \"yellow\",\n",
     "    \"PER\": \"red\"\n",
-    "}\n",
-    "\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
     "# function for displaying the result using HTML\n",
     "def highlight_ne(text, ne_list):\n",
     "    # create a list of all entities with their positions\n",
@@ -77,6 +84,53 @@
     "        text = text.replace(ent_word, f\"<span style=\\\"background-color:{color}\\\">{ent_word}</span>\")\n",
     "    \n",
     "    return text"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "As for the second display function, all detected named entities are correctly highlighted, but only after email addresses in the input text have been pseudonymized (i.e. replaced with `[email]`)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# another function for displaying the result using HTML\n",
+    "def highlight_ne_sent(text, ne_list):\n",
+    "    if not ne_list:\n",
+    "        return text\n",
+    "    \n",
+    "    # create a list of all entities with their positions\n",
+    "    entities = []\n",
+    "    for ne in ne_list:\n",
+    "        # avoid substituting the same entity multiple times\n",
+    "        if ne[\"word\"] not in entities and ne[\"entity_group\"] in colors:\n",
+    "            entities.append((ne, colors.get(ne[\"entity_group\"])))\n",
+    "\n",
+    "    # replace entities with highlighted spans\n",
+    "    text_chunks = []\n",
+    "    last_idx = 0\n",
+    "    for entity, color in entities:\n",
+    "        ent_word = entity[\"word\"]\n",
+    "        s_idx = entity[\"start\"]\n",
+    "        e_idx = entity[\"end\"]\n",
+    "        # add text before the entity\n",
+    "        text_chunks.append(text[last_idx:s_idx].replace(\"<\", \"&lt;\").replace(\">\", \"&gt;\"))\n",
+    "        # add the entity with a span\n",
+    "        # assume that the entity does not have any HTML tags\n",
+    "        replacement = f\"<span style=\\\"background-color:{color}\\\">{ent_word}</span>\"\n",
+    "        text_chunks.append(replacement)\n",
+    "        last_idx = e_idx\n",
+    "    # add the remaining text\n",
+    "    text_chunks.append(text[last_idx:].replace(\"<\", \"&lt;\").replace(\">\", \"&gt;\"))\n",
+    "    # join all text chunks\n",
+    "    result = \"\".join(text_chunks)\n",
+    "    \n",
+    "    return result"
    ]
   },
   {
@@ -208,14 +262,14 @@
    "outputs": [],
    "source": [
     "# process the input data\n",
-    "processed_data = mailcom.process_data(input_handler.get_email_list(), workflow_settings)"
+    "mailcom.process_data(input_handler.get_email_list(), workflow_settings)"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "The input text is displayed and the found named entities are highlighted for demonstration. Note that emails (all words containing '@') are filtered out seperately and thus not highlighted here."
+    "The input text is displayed and the found named entities are highlighted for demonstration, using the first display function. Note that emails (all words containing '@') are filtered out seperately and thus not highlighted here."
    ]
   },
   {
@@ -227,8 +281,39 @@
     "# loop over mails and display the highlights\n",
     "for email in input_handler.get_email_list():\n",
     "    # display original text and highlight found and replaced NEs\n",
-    "    highlighted_html = highlight_ne(email[\"content\"], email[\"ne_list\"])\n",
+    "    highlighted_html = highlight_ne(email[\"cleaned_content\"], email[\"ne_list\"])\n",
     "    display(HTML(highlighted_html))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "In case we pseudonymize all the emails first, the named entities in the input text are highlighted as follows:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# loop over mails and display the highlights\n",
+    "for email in input_handler.get_email_list():\n",
+    "    # get NE for each sentence in the email\n",
+    "    ne_sent_dict = {}\n",
+    "    for sent_idx, ne in zip(email[\"ne_sent\"], email[\"ne_list\"]):\n",
+    "        if str(sent_idx) not in ne_sent_dict:\n",
+    "            ne_sent_dict[str(sent_idx)] = []\n",
+    "        ne_sent_dict[str(sent_idx)].append(ne)\n",
+    "\n",
+    "    # display original text and highlight found and replaced NEs\n",
+    "    html_content = []\n",
+    "    for sent_idx, sentence in enumerate(email[\"sentences_after_email\"]):\n",
+    "        ne_list = ne_sent_dict.get(str(sent_idx), [])\n",
+    "        highlighted_html = highlight_ne_sent(sentence, ne_list)\n",
+    "        html_content.append(highlighted_html)\n",
+    "    display(HTML(\" \".join(html_content)))"
    ]
   },
   {

@@ -105,8 +105,8 @@ be written to an <code class="docutils literal notranslate"><span class="pre">xm
 </pre></div>
 </div>
 </div>
-<p>The cell below defines a function used to display the result in the end, and highlight all named entities found in the text. It is used for demonstration purposes in this example.</p>
-<p>Generally, this is a simple approach at highlighting the replaced pseudonyms, but the method itself is prone to errors and should only be used with care when assessing if the text has been anonymized correctly.</p>
+<p>The cells below defines two functions used to display the result in the end, and highlight all named entities found in the text. It is used for demonstration purposes in this example.</p>
+<p>The first function is a simple approach to highlight all words in the text that match the detected named entities. However, this approach is error-prone and should be used cautiously when evaluating whether the text has been properly anonymized.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -118,8 +118,14 @@ be written to an <code class="docutils literal notranslate"><span class="pre">xm
     <span class="s2">&quot;MISC&quot;</span><span class="p">:</span> <span class="s2">&quot;yellow&quot;</span><span class="p">,</span>
     <span class="s2">&quot;PER&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span>
 <span class="p">}</span>
-
-<span class="c1"># function for displaying the result using HTML</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># function for displaying the result using HTML</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">highlight_ne</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">):</span>
     <span class="c1"># create a list of all entities with their positions</span>
     <span class="n">entities</span> <span class="o">=</span> <span class="p">[]</span>
@@ -143,6 +149,46 @@ be written to an <code class="docutils literal notranslate"><span class="pre">xm
         <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ent_word</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&lt;span style=</span><span class="se">\&quot;</span><span class="s2">background-color:</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">{</span><span class="n">ent_word</span><span class="si">}</span><span class="s2">&lt;/span&gt;&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">text</span>
+</pre></div>
+</div>
+</div>
+<p>As for the second display function, all detected named entities are correctly highlighted, but only after email addresses in the input text have been pseudonymized (i.e. replaced with <code class="docutils literal notranslate"><span class="pre">[email]</span></code>).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># another function for displaying the result using HTML</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">highlight_ne_sent</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ne_list</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">text</span>
+
+    <span class="c1"># create a list of all entities with their positions</span>
+    <span class="n">entities</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ne</span> <span class="ow">in</span> <span class="n">ne_list</span><span class="p">:</span>
+        <span class="c1"># avoid substituting the same entity multiple times</span>
+        <span class="k">if</span> <span class="n">ne</span><span class="p">[</span><span class="s2">&quot;word&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entities</span> <span class="ow">and</span> <span class="n">ne</span><span class="p">[</span><span class="s2">&quot;entity_group&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">colors</span><span class="p">:</span>
+            <span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ne</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ne</span><span class="p">[</span><span class="s2">&quot;entity_group&quot;</span><span class="p">])))</span>
+
+    <span class="c1"># replace entities with highlighted spans</span>
+    <span class="n">text_chunks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">last_idx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">entity</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+        <span class="n">ent_word</span> <span class="o">=</span> <span class="n">entity</span><span class="p">[</span><span class="s2">&quot;word&quot;</span><span class="p">]</span>
+        <span class="n">s_idx</span> <span class="o">=</span> <span class="n">entity</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]</span>
+        <span class="n">e_idx</span> <span class="o">=</span> <span class="n">entity</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]</span>
+        <span class="c1"># add text before the entity</span>
+        <span class="n">text_chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">[</span><span class="n">last_idx</span><span class="p">:</span><span class="n">s_idx</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;lt;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;gt;&quot;</span><span class="p">))</span>
+        <span class="c1"># add the entity with a span</span>
+        <span class="c1"># assume that the entity does not have any HTML tags</span>
+        <span class="n">replacement</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;span style=</span><span class="se">\&quot;</span><span class="s2">background-color:</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">{</span><span class="n">ent_word</span><span class="si">}</span><span class="s2">&lt;/span&gt;&quot;</span>
+        <span class="n">text_chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">replacement</span><span class="p">)</span>
+        <span class="n">last_idx</span> <span class="o">=</span> <span class="n">e_idx</span>
+    <span class="c1"># add the remaining text</span>
+    <span class="n">text_chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">[</span><span class="n">last_idx</span><span class="p">:]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;lt;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;gt;&quot;</span><span class="p">))</span>
+    <span class="c1"># join all text chunks</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text_chunks</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span>
 </pre></div>
 </div>
 </div>
@@ -225,11 +271,11 @@ be written to an <code class="docutils literal notranslate"><span class="pre">xm
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># process the input data</span>
-<span class="n">processed_data</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">process_data</span><span class="p">(</span><span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">(),</span> <span class="n">workflow_settings</span><span class="p">)</span>
+<span class="n">mailcom</span><span class="o">.</span><span class="n">process_data</span><span class="p">(</span><span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">(),</span> <span class="n">workflow_settings</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>The input text is displayed and the found named entities are highlighted for demonstration. Note that emails (all words containing ‘&#64;’) are filtered out seperately and thus not highlighted here.</p>
+<p>The input text is displayed and the found named entities are highlighted for demonstration, using the first display function. Note that emails (all words containing ‘&#64;’) are filtered out seperately and thus not highlighted here.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -237,8 +283,32 @@ be written to an <code class="docutils literal notranslate"><span class="pre">xm
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># loop over mails and display the highlights</span>
 <span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">():</span>
     <span class="c1"># display original text and highlight found and replaced NEs</span>
-    <span class="n">highlighted_html</span> <span class="o">=</span> <span class="n">highlight_ne</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">])</span>
+    <span class="n">highlighted_html</span> <span class="o">=</span> <span class="n">highlight_ne</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;cleaned_content&quot;</span><span class="p">],</span> <span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">])</span>
     <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">highlighted_html</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<p>In case we pseudonymize all the emails first, the named entities in the input text are highlighted as follows:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># loop over mails and display the highlights</span>
+<span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">():</span>
+    <span class="c1"># get NE for each sentence in the email</span>
+    <span class="n">ne_sent_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">ne</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_sent&quot;</span><span class="p">],</span> <span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ne_sent_dict</span><span class="p">:</span>
+            <span class="n">ne_sent_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ne_sent_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ne</span><span class="p">)</span>
+
+    <span class="c1"># display original text and highlight found and replaced NEs</span>
+    <span class="n">html_content</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;sentences_after_email&quot;</span><span class="p">]):</span>
+        <span class="n">ne_list</span> <span class="o">=</span> <span class="n">ne_sent_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">),</span> <span class="p">[])</span>
+        <span class="n">highlighted_html</span> <span class="o">=</span> <span class="n">highlight_ne_sent</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">)</span>
+        <span class="n">html_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">highlighted_html</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">html_content</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
