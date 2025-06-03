@@ -38,7 +38,7 @@
         "csv_col_unmatched_keyword": {
             "type": "string",
             "title": "CSV Column Unmatched",
-            "description": "Keyword to makr unmatched columns while reading csv file.",
+            "description": "Keyword to mask unmatched columns while reading csv file.",
             "default": "unmatched"
         },
         "default_lang": {
