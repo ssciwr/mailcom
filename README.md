@@ -15,6 +15,7 @@ Create a Python virtual environment, ie. conda. Install `mailcom` into the envir
 For an overview over the available languages and models, check the [spaCy](https://spacy.io/usage/models) website. These models are used to sentencize the text, which is important for the subsequent `transformers` pipeline that carries out the Named Entity Recognition (NER).
 
 ## How to use mailcom
+See the full documentation at https://ssciwr.github.io/mailcom/build/html/index.html.
 
 The package can be configured using the configuration file, for an example see [here](mailcom/default_settings.json). The configuration options are:
 
@@ -103,7 +104,7 @@ pseudo_first_names = {
 ```
 
 ## Citation
-To reference the `mailcom` package in any publication, please use the information provided in the [citation file]().
+To reference the `mailcom` package in any publication, please use the information provided in the [citation file](CITATION.cff).
 
 ## Getting in touch
-Do not hesitate to open an issue to get in touch with us with requests or questions. Any community contributions are encouraged! Please follow the [contributor's guidelines]().
+Do not hesitate to open an issue to get in touch with us with requests or questions. Any community contributions are encouraged! Please follow the [contributor's guidelines](CONTRIBUTING.md).
