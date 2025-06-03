@@ -15,7 +15,7 @@ Create a Python virtual environment, ie. conda. Install `mailcom` into the envir
 For an overview over the available languages and models, check the [spaCy](https://spacy.io/usage/models) website. These models are used to sentencize the text, which is important for the subsequent `transformers` pipeline that carries out the Named Entity Recognition (NER).
 
 ## How to use mailcom
-See the full documentation at https://ssciwr.github.io/mailcom/build/html/index.html.
+See the full documentation at https://ssciwr.github.io/mailcom/build/html/index.html. To better understand the usage, please take a look at the [demo notebook](docs/source/notebooks/demo.ipynb) ([![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ssciwr/mailcom/blob/main/docs/source/notebooks/demo.ipynb)).
 
 The package can be configured using the configuration file, for an example see [here](mailcom/default_settings.json). The configuration options are:
 
@@ -45,9 +45,9 @@ An example for the transformers pipeline is this, with the default options:
     "aggregation_strategy": "simple",
 }
 ```
-The task is `token-classification`, which is NER (for a description of the available tasks, see [here]((https://huggingface.co/docs/transformers/en/main_classes/pipelines))). The default model is Hugging Face's default model for this task and default revision number as of January 2025. The aggregation strategy determines how the tokens are aggregated after the pipeline, with `simple` the text is basically reconstructed as it was and the beginning and end of each recognized NER is given in accordance. These options are not likely to be changed, however you may want to use a different model and revision number, which you may change out using the `ner_pipeline` keyword.
+The task is `token-classification`, which is NER (for a description of the available tasks, see [here]((https://huggingface.co/docs/transformers/en/main_classes/pipelines))). The default model is Hugging Face's default model for this task and default revision number as of January 2025. The aggregation strategy determines how the tokens are aggregated after the pipeline; with `simple` the text is basically reconstructed as it was and the beginning and end of each recognized NER is given in accordance. The options `task` and `aggregation_strategy` are not likely to be changed by the user, however you may want to use a different model and revision number, which is possible using the `ner_pipeline` keyword.
 
-The keyword `spacy_model` sets the model to use for the sentencizing. It is important that the initial text is split into sentences as accurate as possible, since this directly affects the subsequent NER accuracy. If the keyword is set to `default`, the models that spaCy uses as default for the given language is used. Some of the default models are:
+The keyword `spacy_model` sets the model to use for the sentencizing. It is important that the initial text is split into sentences with a high accuracy, since this directly affects the subsequent NER accuracy. If the keyword is set to `default`, the models that spaCy uses as default for the given language is used. Some of the default models are:
 ```
 "es": "es_core_news_md"
 "fr": "fr_core_news_md"
@@ -63,14 +63,14 @@ Other models can directly be passed using this keyword, see the [spaCy reference
 | `lang_pipeline` | [null], {"task": "text-classification"}, [for others see here](https://huggingface.co/docs/transformers/en/main_classes/pipelines) | the pipeline to use for the language detection, only valid for transformers language detection |
 | `datetime_detection` | [true], false | detect dates and retain them in the text |
 | `time_parsing` | ["non-strict"], "strict" | the pattern matching used to detect date/time patterns in the text (see below) |
-| ------- | ------ | ------ |
+
 The first keyword in this table, `lang_detection_lib`, enables dynamic detection of the language. While this increases the processing time, it is crucial for correct sentence splitting when multiple languages are present in the data. In principle, the language can be determined for each sentence; but the general use of this capability is language detection per eml/html file/row in the csv file. Please note that the default language must not be set for this option to be triggered (`default_lang=""`)! Three different libraries are available for language detection, [`langid`](https://github.com/saffsd/langid.py), [`langdetect`](https://github.com/Mimino666/langdetect), [`transformers`](https://huggingface.co/papluca/xlm-roberta-base-language-detection), that all lead to a similar performance on our test set. With the language detected dynamically, the spaCy model for sentence splitting is also set dynamically based on the detected language for each file/row; this should be combined with the `default` option for the spaCy model in order to work correctly.
 
 Using the keyword `datetime_detection`, `mailcom` can detect patterns that match dates, such as "09 février 2009" or "April 17th 2024" for `"non-strict"` parsing. These patterns can then be protected from the replacement of numbers, which would result in (for these examples) "[number] février [number]" or "April [number]th [number]". This feature could be important in texts in which chronology is not easy to follow, or where it is important to retain any information about time in the data.
 
 Setting the `time_parsing` to `"strict"`, only dates such as "17.04.2024" or "17/04/2024" are detected, not using the more advanced pattern matching rules as in "April 17th 2024".
 
-The input data can be provided as eml or html files, or as a csv file. For reading a csv file, more information about the column names needs to be provided. This is explained in the [demo notebook](docs/source/notebooks/demo.ipynb) ([![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ssciwr/mailcom/blob/main/docs/source/notebooks/demo.ipynb)).
+The input data can be provided as eml or html files, or as a csv file. For reading a csv file, more information about the column names needs to be provided. This is explained in the [demo notebook](docs/source/notebooks/demo.ipynb) (click here to [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ssciwr/mailcom/blob/main/docs/source/notebooks/demo.ipynb)).
 
 First and last names are replaced by pseudonyms. To make the pseudonimized text read more smoothly, names that are common for a specific language can be chosen; but basically any names can be set for any language using the `pseudo_first_names` keyword. The default option is:
 ```python
@@ -107,4 +107,4 @@ pseudo_first_names = {
 To reference the `mailcom` package in any publication, please use the information provided in the [citation file](CITATION.cff).
 
 ## Getting in touch
-Do not hesitate to open an issue to get in touch with us with requests or questions. Any community contributions are encouraged! Please follow the [contributor's guidelines](CONTRIBUTING.md).
+Do not hesitate to [open an issue](https://github.com/ssciwr/mailcom/issues) to get in touch with us with requests or questions. Any community contributions are encouraged! Please follow the [contributor's guidelines](CONTRIBUTING.md).
