@@ -131,6 +131,8 @@ def test_reset(get_default_fr):
         # Test that used names lists are empty now
         # They should be cleared after every email
         assert len(get_default_fr.ne_list) == 0
+        assert len(get_default_fr.ne_sent) == 0
+        assert len(get_default_fr.sentences) == 0
 
 
 def test_get_ner(get_default_fr):
@@ -147,6 +149,7 @@ def test_get_ner(get_default_fr):
 def test_get_sentences_empty_string(get_default_fr):
     text = ""
     assert get_default_fr.get_sentences(text, "fr") == []
+    assert "sentencizer" in get_default_fr.nlp_spacy.pipe_names
 
 
 def test_get_sentences_multiple_sentences(get_default_fr):
@@ -159,6 +162,7 @@ def test_get_sentences_multiple_sentences(get_default_fr):
     assert sentences[0] == "Ceci est la première phrase."
     assert sentences[1] == "Voici la deuxième phrase."
     assert sentences[2] == "Et enfin, la troisième phrase."
+    assert "sentencizer" in get_default_fr.nlp_spacy.pipe_names
 
 
 def test_get_sentences_with_punctuation(get_default_fr):
@@ -168,6 +172,7 @@ def test_get_sentences_with_punctuation(get_default_fr):
     assert sentences[0] == "Bonjour!"
     assert sentences[1] == "Comment ça va?"
     assert sentences[2] == "Très bien, merci."
+    assert "sentencizer" in get_default_fr.nlp_spacy.pipe_names
 
 
 def test_get_letter_indices_non_empty(get_default_fr):
@@ -349,6 +354,18 @@ def test_choose_per_pseudonym_exhausted_list(get_default_fr):
     assert pseudonym == get_default_fr.pseudo_first_names["fr"][0]
 
 
+def test_choose_per_pseudonym_different_language(get_default_fr):
+    name = "John"
+
+    # exhausted list
+    get_default_fr.ne_list = [
+        {"word": "Claude", "entity_group": "PER", "pseudonym": pseudo}
+        for pseudo in get_default_fr.pseudo_first_names["es"]
+    ]
+    pseudonym = get_default_fr.choose_per_pseudonym(name, lang="gl")
+    assert pseudonym == get_default_fr.pseudo_first_names["es"][0]
+
+
 def test_pseudonymize_ne_person(get_default_fr):
     sentence = "Mehdi et Théo sont amis."
     ner = [
@@ -422,3 +439,35 @@ def test_pseudonymize_ne_empty_sentence(get_default_fr):
     ner = []
     pseudonymized_sentence = " ".join(get_default_fr.pseudonymize_ne(ner, sentence))
     assert pseudonymized_sentence == sentence
+
+
+def test_pseudonymize_with_updated_ne(get_default_fr):
+    sentences = [
+        "Le Tour de France est un événement célèbre.",
+        "Thomas travaille chez Microsoft à Paris.",
+    ]
+    ner_sent_dict = {
+        "0": [
+            {"entity_group": "MISC", "word": "Tour de France", "start": 3, "end": 17},
+        ],
+        "1": [
+            {"entity_group": "PER", "word": "Thomas", "start": 0, "end": 6},
+            {"entity_group": "ORG", "word": "Microsoft", "start": 18, "end": 27},
+            {"entity_group": "LOC", "word": "Paris", "start": 30, "end": 35},
+        ],
+    }
+    pseudonymized_sentence = get_default_fr.pseudonymize_with_updated_ne(
+        sentences, ner_sent_dict, language="fr", detected_dates=None
+    )
+
+    assert "Tour de France" not in pseudonymized_sentence
+    assert "Thomas" not in pseudonymized_sentence
+    assert "Microsoft" not in pseudonymized_sentence
+    assert "Paris" not in pseudonymized_sentence
+    assert any(
+        pseudo in pseudonymized_sentence
+        for pseudo in get_default_fr.pseudo_first_names["fr"]
+    )
+    assert "[organization]" in pseudonymized_sentence
+    assert "[location]" in pseudonymized_sentence
+    assert "[misc]" in pseudonymized_sentence

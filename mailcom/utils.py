@@ -56,6 +56,9 @@ class SpacyLoader:
         self.spacy_instances = {}
 
     def get_default_model(self, language: str):
+        # special case for Galician
+        if language == "gl":
+            return "pt", self.spacy_default_model["pt"]
         # use German as the default language
         if language not in self.spacy_default_model:
             return "de", self.spacy_default_model["de"]

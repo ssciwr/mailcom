@@ -15,6 +15,7 @@ class InoutHandler:
                 "date",
                 "attachment",
                 "attachement type",
+                "subject",
             ]
         else:
             self.init_data_fields = init_data_fields
@@ -79,11 +80,19 @@ class InoutHandler:
             attachmenttypes = [
                 parsed_eml["attachment"][i]["extension"] for i in range(attachments)
             ]
+
+        body_content = parsed_eml["body"][0]["content"]
+        if not body_content and len(parsed_eml["body"]) > 1:
+            # if the first body content is empty, use the second one
+            body_content = parsed_eml["body"][1]["content"]
+
         email_content = {
-            "content": parsed_eml["body"][0]["content"],
+            "file_name": file.name,
+            "content": body_content,
             "date": parsed_eml["header"]["date"],
             "attachment": attachments,
             "attachement type": attachmenttypes,
+            "subject": parsed_eml["header"]["subject"],
         }
         # clean up html content
         email_content["content"] = self.get_html_text(email_content["content"])

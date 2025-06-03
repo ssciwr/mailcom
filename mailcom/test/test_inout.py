@@ -5,10 +5,12 @@ from importlib import resources
 import datetime
 import filecmp
 import csv
+import eml_parser
 
 pkg = resources.files("mailcom")
 
 FILE_PATH = Path(pkg / "test" / "data" / "Bonjour Agathe.eml")
+HTML_BODY_PATH = Path(pkg / "test" / "data" / "only_html.eml")
 XML_PATH = Path(pkg / "test" / "data" / "test.xml")
 
 TEXT_REF = "J'espère que tu vas bien!"
@@ -85,6 +87,21 @@ def test_extract_email_info(get_instant, tmp_path):
     # Test with a non-existing file
     with pytest.raises(OSError):
         get_instant.extract_email_info(tmp_path / "nonexisting.eml")
+
+
+def test_extract_email_info_html(get_instant):
+    # file with only html content
+    # which means parsed_eml["body"][0]["content"] is empty
+    with open(HTML_BODY_PATH, "rb") as fhdl:
+        raw_email = fhdl.read()
+    ep = eml_parser.EmlParser(include_raw_body=True)
+    parsed_eml = ep.decode_email_bytes(raw_email)
+    assert parsed_eml["body"][0]["content"] == ""
+    assert len(parsed_eml["body"]) > 1
+
+    email_info = get_instant.extract_email_info(HTML_BODY_PATH)
+    assert len(email_info["content"]) > 0
+    assert "Hello, World!" in email_info["content"]
 
 
 def test_extract_email_extra_fields(get_instant):
@@ -202,6 +219,7 @@ def test_validate_data(get_instant):
     get_instant.validate_data(email_dict)
     assert email_dict["content"] == "This is a test email"
     assert email_dict["date"] is None
+    assert email_dict["subject"] is None
 
 
 def test_load_csv_empty(get_instant, tmp_path):

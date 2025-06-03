@@ -49,6 +49,7 @@ def test_get_input_handler_csv_unmatch(tmp_path):
     assert email["date"] is None
     assert email["attachment"] is None
     assert email["attachement type"] is None
+    assert email["subject"] is None
 
 
 def test_get_input_handler_dir(tmpdir):
@@ -334,6 +335,14 @@ def test_process_data_default(get_data, get_settings, get_inout_hl):
         == "Claude [email] viendra au bâtiment à [number]h[number]. "
         "Nous nous rendrons ensuite au [location]"
     )
+    assert email_1.get("sentences") == [
+        "Alice (alice@gmail.com) viendra au bâtiment à 10h00.",
+        "Nous nous rendrons ensuite au MeetingPoint",
+    ]
+    assert email_1.get("sentences_after_email") == [
+        "Alice [email] viendra au bâtiment à 10h00.",
+        "Nous nous rendrons ensuite au MeetingPoint",
+    ]
 
     assert email_2.get("cleaned_content") == email_2.get("content")
     assert email_2.get("lang") == "es"
@@ -343,6 +352,14 @@ def test_process_data_default(get_data, get_settings, get_inout_hl):
         == "Esta foto fue tomada por José el 28.03.2025 a las 10:30. "
         "Compruébelo en el archivo adjunto"
     )
+    assert email_2.get("sentences") == [
+        "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30.",
+        "Compruébelo en el archivo adjunto",
+    ]
+    assert email_2.get("sentences_after_email") == [
+        "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30.",
+        "Compruébelo en el archivo adjunto",
+    ]
 
 
 def test_process_data_no_lang(get_data, get_settings, get_inout_hl):
@@ -398,6 +415,7 @@ def test_process_data_no_email(get_data, get_settings, get_inout_hl):
         == "Claude (alice@gmail.com) viendra au bâtiment à [number]h[number]. "
         "Nous nous rendrons ensuite au [location]"
     )
+    assert "sentences_after_email" not in email_1
 
 
 def test_process_data_no_ne(get_data, get_settings, get_inout_hl):

@@ -51,6 +51,10 @@ def test_get_default_model(get_spacy_loader):
     assert lang == "de"
     assert model == "de_core_news_md"
 
+    lang, model = get_spacy_loader.get_default_model("gl")
+    assert lang == "pt"
+    assert model == "pt_core_news_md"
+
 
 def test_init_spacy(get_spacy_loader):
     # correct cases
