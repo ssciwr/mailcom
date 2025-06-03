@@ -18,6 +18,44 @@ For an overview over the available languages and models, check the [spaCy](https
 
 The package can be configured using the configuration file, for an example see [here](mailcom/default_settings.json). The configuration options are:
 
-keyword | option
-----------------
-"datetime_detection" | true 
+| keyword | options [default in parenthesis] | explanation |
+| ------- | ------ | ------ |
+| `default_lang` | [fr], es, pt | default language of the textual data |
+| `pseudo_emailaddresses` | [true], false | replace email addresses by [email] |
+| `pseudo_ne` | [true], false | replace named entities by pseudonyms |
+| `pseudo_numbers` | [true], false | replace numbers by [number] |
+| `lang_detection_lib` | [["langid"]](), ["langdetect"](), ["trans"]() | automatically detect language of each text using the specified libary |
+| `lang_pipeline` | [null], {"task": "text-classification"}, [for others see here]() | The pipeline to use for the language detection, only valid for transformers language detection |
+| `spacy_model` | ["default"], | |
+| `ner_pipeline` | [null], | | 
+| `datetime_detection` | [true], false | detect dates and retain them in the text |
+| `time_parsing` | ["strict"], | |
+| `pseudo_first_names` | {
+        "es": [
+            "José",
+            "Angel",
+            "Alex",
+            "Ariel",
+            "Cruz",
+            "Fran",
+            "Arlo",
+            "Adri",
+            "Marce",
+            "Mati"
+        ],
+        "fr": [
+            "Claude",
+            "Dominique",
+            "Claude",
+            "Camille",
+            "Charlie",
+            "Florence",
+            "Francis",
+            "Maxime",
+            "Remy",
+            "Cécile"
+        ],
+        "de": ["Mika"]
+    }, | |
+The keyword for marking unmatched columns
+
