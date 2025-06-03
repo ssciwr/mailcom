@@ -5,6 +5,7 @@ from importlib import resources
 import datetime
 import filecmp
 import csv
+import eml_parser
 
 pkg = resources.files("mailcom")
 
@@ -91,6 +92,13 @@ def test_extract_email_info(get_instant, tmp_path):
 def test_extract_email_info_html(get_instant):
     # file with only html content
     # which means parsed_eml["body"][0]["content"] is empty
+    with open(HTML_BODY_PATH, "rb") as fhdl:
+        raw_email = fhdl.read()
+    ep = eml_parser.EmlParser(include_raw_body=True)
+    parsed_eml = ep.decode_email_bytes(raw_email)
+    assert parsed_eml["body"][0]["content"] == ""
+    assert len(parsed_eml["body"]) > 1
+
     email_info = get_instant.extract_email_info(HTML_BODY_PATH)
     assert len(email_info["content"]) > 0
     assert "Hello, World!" in email_info["content"]
