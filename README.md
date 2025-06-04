@@ -17,6 +17,8 @@ For an overview over the available languages and models, check the [spaCy](https
 ## How to use mailcom
 See the full documentation at https://ssciwr.github.io/mailcom/build/html/index.html. To better understand the usage, please take a look at the [demo notebook](docs/source/notebooks/demo.ipynb) ([![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ssciwr/mailcom/blob/main/docs/source/notebooks/demo.ipynb)).
 
+Please note that 100% accuracy is not possible with this task. Any output needs to be further checked by a human to ensure the text has been anonymized completely.
+
 The package can be configured using the configuration file, for an example see [here](mailcom/default_settings.json). The configuration options are:
 
 | keyword | options [default in parenthesis] | explanation |
