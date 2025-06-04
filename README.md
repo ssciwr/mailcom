@@ -1,4 +1,4 @@
-# mailcom: pseudonimization tool for textual data
+# mailcom: pseudonymization tool for textual data
 ![License: MIT](https://img.shields.io/github/license/ssciwr/mailcom)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ssciwr/mailcom/ci.yml?branch=main)
 ![codecov](https://img.shields.io/codecov/c/github/ssciwr/mailcom)
