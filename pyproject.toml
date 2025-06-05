@@ -15,9 +15,11 @@ classifiers = [
 ]
 authors = [
   { name="Inga Ulusoy", email="ssc@iwr.uni-heidelberg.de" },
+  { name="Tuyen Le", email="ssc@iwr.uni-heidelberg.de" },
+  { name="Felix Fleischle", email="ssc@iwr.uni-heidelberg.de" },
   { name="Thore Olthoff", email="ssc@iwr.uni-heidelberg.de" },
 ]
-version = "0.0.1"
+version = "0.1.0"
 
 dependencies = [
   "spacy",

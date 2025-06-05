@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Le"
+  given-names: "Kim Tuyen"
+  orcid: ""
+- family-names: "Ulusoy"
+  given-names: "Inga"
+  orcid: "https://orcid.org/0000-0001-7294-4148"
+- family-names: "Fleischle"
+  given-names: "Felix"
+  orcid: ""
+- family-names: "Schoeller"
+  given-names: "Thore"
+  orcid: ""
+- family-names: "Gaertner"
+  given-names: "Laura"
+  orcid: ""
+- family-names: "Grosse"
+  given-names: "Sybille"
+  orcid: ""
+title: "tba"
+version: 0.1.0
+doi: tba
+date-released: tba
+url: "https://github.com/ssciwr/mailcom"
