@@ -224,6 +224,7 @@
     "Other models can directly be passed using this keyword, see the [spaCy reference](https://spacy.io/models). To extend the available languages in `mailcom`, this list needs to be extended. Please also note that not all spaCy models have pipelines with the necessary components.\n",
     "\n",
     "`mailcom` has additional capabilities that can be used to enhance the text processing:\n",
+    "\n",
     "| keyword | options [default in parenthesis] | explanation |\n",
     "| ------- | ------ | ------ |\n",
     "| `lang_detection_lib` | [[\"langid\"]](https://github.com/saffsd/langid.py), [\"langdetect\"](https://github.com/Mimino666/langdetect), [\"trans\"](https://huggingface.co/papluca/xlm-roberta-base-language-detection) | automatically detect language of each text using the specified library |\n",
@@ -582,7 +583,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.12.9"
+   "version": "3.11.9"
   }
  },
  "nbformat": 4,

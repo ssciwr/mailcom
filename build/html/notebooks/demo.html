@@ -286,8 +286,34 @@ accordance. The options <code class="docutils literal notranslate"><span class="
 </pre></div>
 </div>
 <p>Other models can directly be passed using this keyword, see the <a class="reference external" href="https://spacy.io/models">spaCy reference</a>. To extend the available languages in <code class="docutils literal notranslate"><span class="pre">mailcom</span></code>, this list needs to be extended. Please also note that not all spaCy models have pipelines with the necessary components.</p>
-<p><code class="docutils literal notranslate"><span class="pre">mailcom</span></code> has additional capabilities that can be used to enhance the text processing: | keyword | options [default in parenthesis] | explanation | | ——- | —— | —— | | <code class="docutils literal notranslate"><span class="pre">lang_detection_lib</span></code> | <a class="reference external" href="https://github.com/saffsd/langid.py">[“langid”]</a>, <a class="reference external" href="https://github.com/Mimino666/langdetect">“langdetect”</a>, <a class="reference external" href="https://huggingface.co/papluca/xlm-roberta-base-language-detection">“trans”</a> | automatically detect language of each text using the specified library | |
-<code class="docutils literal notranslate"><span class="pre">lang_pipeline</span></code> | [null], {“task”: “text-classification”}, <a class="reference external" href="https://huggingface.co/docs/transformers/en/main_classes/pipelines">for others see here</a> | the pipeline to use for the language detection, only valid for transformers language detection | | <code class="docutils literal notranslate"><span class="pre">datetime_detection</span></code> | [true], false | detect dates and retain them in the text | | <code class="docutils literal notranslate"><span class="pre">time_parsing</span></code> | [“strict”], “non-strict” | the pattern matching used to detect date/time patterns in the text (see below) |</p>
+<p><code class="docutils literal notranslate"><span class="pre">mailcom</span></code> has additional capabilities that can be used to enhance the text processing:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>keyword</p></th>
+<th class="head"><p>options [default in parenthesis]</p></th>
+<th class="head"><p>explanation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lang_detection_lib</span></code></p></td>
+<td><p><a class="reference external" href="https://github.com/saffsd/langid.py">[“langid”]</a>, <a class="reference external" href="https://github.com/Mimino666/langdetect">“langdetect”</a>,
+<a class="reference external" href="https://huggingface.co/papluca/xlm-roberta-base-language-detection">“trans”</a></p></td>
+<td><p>automatically detect language of each text using the specified library</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lang_pipeline</span></code></p></td>
+<td><p>[null], {“task”: “text-classification”}, <a class="reference external" href="https://huggingface.co/docs/transformers/en/main_classes/pipelines">for others see here</a></p></td>
+<td><p>the pipeline to use for the language detection, only valid for transformers language detection</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">datetime_detection</span></code></p></td>
+<td><p>[true], false</p></td>
+<td><p>detect dates and retain them in the text</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">time_parsing</span></code></p></td>
+<td><p>[“strict”], “non-strict”</p></td>
+<td><p>the pattern matching used to detect date/time patterns in the text (see below)</p></td>
+</tr>
+</tbody>
+</table>
 <p>The first keyword in this table, <code class="docutils literal notranslate"><span class="pre">lang_detection_lib</span></code>, enables dynamic detection of the language. While this increases the processing time, it is crucial for correct sentence splitting when multiple languages are present in the data. In principle, the language can be determined for each sentence; but the general use of this capability is language detection per <code class="docutils literal notranslate"><span class="pre">eml</span></code>/<code class="docutils literal notranslate"><span class="pre">html</span></code> file/row in the <code class="docutils literal notranslate"><span class="pre">csv</span></code> file. Please note that the default language must not be set for this option to be triggered
 (<code class="docutils literal notranslate"><span class="pre">default_lang=&quot;&quot;</span></code>)! Three different libraries are available for language detection, <code class="docutils literal notranslate"><span class="pre">`langid</span></code> &lt;<a class="reference external" href="https://github.com/saffsd/langid.py">https://github.com/saffsd/langid.py</a>&gt;`__, <code class="docutils literal notranslate"><span class="pre">`langdetect</span></code> &lt;<a class="reference external" href="https://github.com/Mimino666/langdetect">https://github.com/Mimino666/langdetect</a>&gt;`__, <code class="docutils literal notranslate"><span class="pre">`transformers</span></code> &lt;<a class="reference external" href="https://huggingface.co/papluca/xlm-roberta-base-language-detection">https://huggingface.co/papluca/xlm-roberta-base-language-detection</a>&gt;`__, that all lead to a similar performance on our test set. With the language detected dynamically, the spaCy model for sentence splitting is also set dynamically based on the detected language for each
 file/row; this should be combined with the <code class="docutils literal notranslate"><span class="pre">default</span></code> option for the spaCy model in order to work correctly.</p>
