@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mailcom &mdash; mailcom  documentation</title>
+  <title>mailcom: pseudonymization tool for textual data &mdash; mailcom  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -45,9 +45,13 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">mailcom</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">mailcom: pseudonymization tool for textual data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-use-mailcom">How to use mailcom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#citation">Citation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-in-touch">Getting in touch</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/demo.html">Demonstration notebook for the mailcom package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">mailcom package modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license_link.html">License</a></li>
@@ -67,7 +71,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">mailcom</li>
+      <li class="breadcrumb-item active">mailcom: pseudonymization tool for textual data</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/ssciwr/mailcom/blob/main/docs/source/readme_link.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -77,20 +81,152 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="mailcom">
-<h1>mailcom<a class="headerlink" href="#mailcom" title="Link to this heading"></a></h1>
-<p>Tool to parse email body from email text (eml file), and retains only the text, with names removed, for French of Spanish emails.</p>
-</section>
+  <section id="mailcom-pseudonymization-tool-for-textual-data">
+<h1>mailcom: pseudonymization tool for textual data<a class="headerlink" href="#mailcom-pseudonymization-tool-for-textual-data" title="Link to this heading"></a></h1>
+<p><img alt="License: MIT" src="https://img.shields.io/github/license/ssciwr/mailcom" />
+<img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/ssciwr/mailcom/ci.yml?branch=main" />
+<img alt="codecov" src="https://img.shields.io/codecov/c/github/ssciwr/mailcom" />
+<img alt="Quality Gate Status" src="https://sonarcloud.io/api/project_badges/measure?project=ssciwr_mailcom&amp;metric=alert_status" />
+<img alt="Language" src="https://img.shields.io/github/languages/top/ssciwr/mailcom" />
+<a class="reference external" href="https://colab.research.google.com/github/ssciwr/mailcom/blob/main/docs/source/notebooks/demo.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p>Tool to parse email body from email text (<code class="docutils literal notranslate"><span class="pre">eml</span></code> or <code class="docutils literal notranslate"><span class="pre">html</span></code> file) or <code class="docutils literal notranslate"><span class="pre">csv</span></code> file, and retain only the text, with names removed. By default for French, Spanish and Portuguese, but can easily be adapted to further languages with the help of configuration files.</p>
 <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
-<p>Install using<br />
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<p>Create a Python virtual environment, ie. conda. Install <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> into the environment using<br />
 <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">mailcom</span></code></p>
-<p>For an overview over the available languages and models, check the <a class="reference external" href="https://spacy.io/usage/models">spaCy</a> website.</p>
+<p>For an overview over the available languages and models, check the <a class="reference external" href="https://spacy.io/usage/models">spaCy</a> website. These models are used to sentencize the text, which is important for the subsequent <code class="docutils literal notranslate"><span class="pre">transformers</span></code> pipeline that carries out the Named Entity Recognition (NER).</p>
 </section>
-<section id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
-<p>The package uses spaCy for sentencizing, based on the default language models, and transformers for NER recognition.
-Currently, you have to set the language and eml file directory manually at the top of <code class="docutils literal notranslate"><span class="pre">parse.py</span></code>; the default directory is <code class="docutils literal notranslate"><span class="pre">data/in</span></code>. Then run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">parse.py</span></code>. After the run, the output can be found in <code class="docutils literal notranslate"><span class="pre">data/out</span></code>.</p>
+<section id="how-to-use-mailcom">
+<h2>How to use mailcom<a class="headerlink" href="#how-to-use-mailcom" title="Link to this heading"></a></h2>
+<p>See the full documentation at https://ssciwr.github.io/mailcom/build/html/index.html. To better understand the usage, please take a look at the <a class="reference internal" href="#docs/source/notebooks/demo.ipynb"><span class="xref myst">demo notebook</span></a> (<a class="reference external" href="https://colab.research.google.com/github/ssciwr/mailcom/blob/main/docs/source/notebooks/demo.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>).</p>
+<p>Please note that 100% accuracy is not possible with this task. Any output needs to be further checked by a human to ensure the text has been anonymized completely.</p>
+<p>The package can be configured using the configuration file, for an example see <a class="reference internal" href="#mailcom/default_settings.json"><span class="xref myst">here</span></a>. The configuration options are:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>keyword</p></th>
+<th class="head"><p>options [default in parenthesis]</p></th>
+<th class="head"><p>explanation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">default_lang</span></code></p></td>
+<td><p>[“fr”], “es”, “pt”</p></td>
+<td><p>default language of the textual data</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pseudo_emailaddresses</span></code></p></td>
+<td><p>[true], false</p></td>
+<td><p>replace email addresses by [email]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pseudo_ne</span></code></p></td>
+<td><p>[true], false</p></td>
+<td><p>replace named entities by pseudonyms</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pseudo_numbers</span></code></p></td>
+<td><p>[true], false</p></td>
+<td><p>replace numbers by [number]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ner_pipeline</span></code></p></td>
+<td><p>[null], [valid transformers model name, revision number, and pipeline, aggregation strategy]</p></td>
+<td><p>the transformers pipeline to use for the NER</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">spacy_model</span></code></p></td>
+<td><p>[“default”], <a class="reference external" href="https://spacy.io/models">valid spaCy model</a></p></td>
+<td><p>which spaCy model to use for the sentence splitting (see below)</p></td>
+</tr>
+</tbody>
+</table>
+<p>These keywords set the options for the main processes of the <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> package. The default language can be used for text that is always in the same language, that is, each <code class="docutils literal notranslate"><span class="pre">eml</span></code>/<code class="docutils literal notranslate"><span class="pre">html</span></code> file or row of the <code class="docutils literal notranslate"><span class="pre">csv</span></code> contains data in the same language. If this is the case, processing is much faster. If not, the language of the text can be detected on-the-fly with options specified below. In this case, leave the default language empty, ie. <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> an empty string.</p>
+<p>The keywords <code class="docutils literal notranslate"><span class="pre">pseudo_emailaddresses</span></code> and <code class="docutils literal notranslate"><span class="pre">pseudo_numbers</span></code> are by default set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, which triggers the replacement of email addresses such as email&#64;gmail.com by [email], and numbers such as 69120 by [number].</p>
+<p>By using <code class="docutils literal notranslate"><span class="pre">pseudo_ne</span></code>, the replacement of recognized entities by a pseudonym or placeholder is triggered. A person’s name, i.e. “Michael” is replaced by “James”, a location like “Paris” is replaced by [location], an organization such as “GitHub” is replaced by [organization], and other entities like “iPhone 15” are replaced by [misc].</p>
+<p>All these three options related to replacement of identifying information can be triggered separately, but are set to <code class="docutils literal notranslate"><span class="pre">true</span></code> by default.</p>
+<p>An example for the transformers pipeline is this, with the default options:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;ner&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;task&quot;</span><span class="p">:</span> <span class="s2">&quot;token-classification&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;xlm-roberta-large-finetuned-conll03-english&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;revision&quot;</span><span class="p">:</span> <span class="s2">&quot;18f95e9&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;aggregation_strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The task is <code class="docutils literal notranslate"><span class="pre">token-classification</span></code>, which is NER (for a description of the available tasks, see <a class="reference internal" href="#(https://huggingface.co/docs/transformers/en/main_classes/pipelines)"><span class="xref myst">here</span></a>). The default model is Hugging Face’s default model for this task and default revision number as of January 2025. The aggregation strategy determines how the tokens are aggregated after the pipeline; with <code class="docutils literal notranslate"><span class="pre">simple</span></code> the text is basically reconstructed as it was and the beginning and end of each recognized NER is given in accordance. The options <code class="docutils literal notranslate"><span class="pre">task</span></code> and <code class="docutils literal notranslate"><span class="pre">aggregation_strategy</span></code> are not likely to be changed by the user, however you may want to use a different model and revision number, which is possible using the <code class="docutils literal notranslate"><span class="pre">ner_pipeline</span></code> keyword.</p>
+<p>The keyword <code class="docutils literal notranslate"><span class="pre">spacy_model</span></code> sets the model to use for the sentencizing and pattern recognition. It is important that the initial text is split into sentences with a high accuracy, since this directly affects the subsequent NER accuracy. If the keyword is set to <code class="docutils literal notranslate"><span class="pre">default</span></code>, the models that spaCy uses as default for the given language is used. Some of the default models are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;es&quot;</span><span class="p">:</span> <span class="s2">&quot;es_core_news_md&quot;</span>
+<span class="s2">&quot;fr&quot;</span><span class="p">:</span> <span class="s2">&quot;fr_core_news_md&quot;</span>
+<span class="s2">&quot;de&quot;</span><span class="p">:</span> <span class="s2">&quot;de_core_news_md&quot;</span>
+<span class="s2">&quot;pt&quot;</span><span class="p">:</span> <span class="s2">&quot;pt_core_news_md&quot;</span>
+</pre></div>
+</div>
+<p>Other models can directly be passed using this keyword, see the <a class="reference external" href="https://spacy.io/models">spaCy reference</a>. To extend the available languages in <code class="docutils literal notranslate"><span class="pre">mailcom</span></code>, this list needs to be extended. Please also note that not all spaCy models have pipelines with the necessary components.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mailcom</span></code> has additional capabilities that can be used to enhance the text processing:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>keyword</p></th>
+<th class="head"><p>options [default in parenthesis]</p></th>
+<th class="head"><p>explanation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lang_detection_lib</span></code></p></td>
+<td><p><a class="reference external" href="https://github.com/saffsd/langid.py">[“langid”]</a>, <a class="reference external" href="https://github.com/Mimino666/langdetect">“langdetect”</a>, <a class="reference external" href="https://huggingface.co/papluca/xlm-roberta-base-language-detection">“trans”</a></p></td>
+<td><p>automatically detect language of each text using the specified library</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lang_pipeline</span></code></p></td>
+<td><p>[null], {“task”: “text-classification”}, <a class="reference external" href="https://huggingface.co/docs/transformers/en/main_classes/pipelines">for others see here</a></p></td>
+<td><p>the pipeline to use for the language detection, only valid for transformers language detection</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">datetime_detection</span></code></p></td>
+<td><p>[true], false</p></td>
+<td><p>detect dates and retain them in the text</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">time_parsing</span></code></p></td>
+<td><p>[“strict”], “non-strict”</p></td>
+<td><p>the pattern matching used to detect date/time patterns in the text (see below)</p></td>
+</tr>
+</tbody>
+</table>
+<p>The first keyword in this table, <code class="docutils literal notranslate"><span class="pre">lang_detection_lib</span></code>, enables dynamic detection of the language. While this increases the processing time, it is crucial for correct sentence splitting when multiple languages are present in the data. In principle, the language can be determined for each sentence; but the general use of this capability is language detection per <code class="docutils literal notranslate"><span class="pre">eml</span></code>/<code class="docutils literal notranslate"><span class="pre">html</span></code> file/row in the <code class="docutils literal notranslate"><span class="pre">csv</span></code> file. Please note that the default language must not be set for this option to be triggered (<code class="docutils literal notranslate"><span class="pre">default_lang=&quot;&quot;</span></code>)! Three different libraries are available for language detection, <a class="reference external" href="https://github.com/saffsd/langid.py"><code class="docutils literal notranslate"><span class="pre">langid</span></code></a>, <a class="reference external" href="https://github.com/Mimino666/langdetect"><code class="docutils literal notranslate"><span class="pre">langdetect</span></code></a>, <a class="reference external" href="https://huggingface.co/papluca/xlm-roberta-base-language-detection"><code class="docutils literal notranslate"><span class="pre">transformers</span></code></a>, that all lead to a similar performance on our test set. With the language detected dynamically, the spaCy model for sentence splitting is also set dynamically based on the detected language for each file/row; this should be combined with the <code class="docutils literal notranslate"><span class="pre">default</span></code> option for the spaCy model in order to work correctly.</p>
+<p>Using the keyword <code class="docutils literal notranslate"><span class="pre">datetime_detection</span></code>, <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> can detect patterns that match dates, such as “09 février 2009” or “April 17th 2024” for <code class="docutils literal notranslate"><span class="pre">&quot;non-strict&quot;</span></code> parsing. These patterns can then be protected from the replacement of numbers, which would result in (for these examples) “[number] février [number]” or “April [number]th [number]”. This feature could be important in texts in which chronology is not easy to follow, or where it is important to retain any information about time in the data.</p>
+<p>Setting the <code class="docutils literal notranslate"><span class="pre">time_parsing</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;strict&quot;</span></code>, only precise date-time formats such as “17. April 2024 um 16:58:57” or “17.04.2024 17:33:23” are detected, not using the more flexible pattern matching rules as in “April 17th 2024”. This option could be useful for identifying forwarded dates within email bodies.</p>
+<p>The input data can be provided as <code class="docutils literal notranslate"><span class="pre">eml</span></code> or <code class="docutils literal notranslate"><span class="pre">html</span></code> files, or as a <code class="docutils literal notranslate"><span class="pre">csv</span></code> file. For reading a <code class="docutils literal notranslate"><span class="pre">csv</span></code> file, more information about the column names needs to be provided. This is explained in the <a class="reference internal" href="#docs/source/notebooks/demo.ipynb"><span class="xref myst">demo notebook</span></a> (click here to <a class="reference external" href="https://colab.research.google.com/github/ssciwr/mailcom/blob/main/docs/source/notebooks/demo.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>).</p>
+<p>First and last names are replaced by pseudonyms. To make the pseudonimized text read more smoothly, names that are common for a specific language can be chosen; but basically any names can be set for any language using the <code class="docutils literal notranslate"><span class="pre">pseudo_first_names</span></code> keyword. The default option is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pseudo_first_names</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;es&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;José&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Angel&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Alex&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Ariel&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Cruz&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Fran&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Arlo&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Adri&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Marce&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Mati&quot;</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;fr&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;Claude&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Dominique&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Claude&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Camille&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Charlie&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Florence&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Francis&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Maxime&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Remy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Cécile&quot;</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;de&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Mika&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="citation">
+<h2>Citation<a class="headerlink" href="#citation" title="Link to this heading"></a></h2>
+<p>To reference the <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> package in any publication, please use the information provided in the <a class="reference internal" href="#CITATION.cff"><span class="xref myst">citation file</span></a>.</p>
+</section>
+<section id="getting-in-touch">
+<h2>Getting in touch<a class="headerlink" href="#getting-in-touch" title="Link to this heading"></a></h2>
+<p>Do not hesitate to <a class="reference external" href="https://github.com/ssciwr/mailcom/issues">open an issue</a> to get in touch with us with requests or questions. Any community contributions are encouraged! Please follow the <a class="reference internal" href="#CONTRIBUTING.md"><span class="xref myst">contributor’s guidelines</span></a>.</p>
+</section>
 </section>
 
 

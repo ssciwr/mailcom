@@ -5,18 +5,41 @@
    "metadata": {},
    "source": [
     "# Demonstration notebook for the mailcom package\n",
-    "*Scientific Software Center, University of Heidelberg, December 2024*  \n",
-    "The `mailcom` package is used to anonymize/pseudonymize textual data, i.e. email content. It takes an `eml` or `html` file as input and extracts information about attachements, number of attachements and type, and the content of the email body. The latter is then parsed through [`spaCy`](https://spacy.io/) and divided into sentences. The sentences are fed to a [`transformers`](https://huggingface.co/docs/transformers/en/index) named entity recognition (NER) [pipeline](https://huggingface.co/docs/transformers/v4.46.3/en/main_classes/pipelines), and person names, places, organizations, miscellaneous, are detected in the inference task. Names are replaced by pseudos, while locations, organizations and miscellaneous are replaced by `[location]`, `[organization]` and `[misc]`. The text is further parsed using string methods, to replace any numbers with `[number]` and email addresses with `[email]`. The processed text and metadata can then be written to an `xml` file or into a pandas dataframe.\n",
+    "\n",
+    "*Scientific Software Center, University of Heidelberg, May 2025*  \n",
+    "\n",
+    "The `mailcom` package is used to anonymize/pseudonymize textual data, i.e. email content. It takes an `eml`, `html` or `csv` file as input and extracts information about attachements, number of attachements and type, and the content of the email body and subject line. The email body and subject line are then parsed through [`spaCy`](https://spacy.io/) and divided into sentences. The sentences are fed to a [`transformers`](https://huggingface.co/docs/transformers/en/index) named entity recognition (NER) [pipeline](https://huggingface.co/docs/transformers/v4.46.3/en/main_classes/pipelines), and person names, places, organizations, miscellaneous, are detected in the inference task. Names are replaced by pseudonyms, while locations, organizations and miscellaneous are replaced by `[location]`, `[organization]` and `[misc]`. The text is further parsed using string methods, to replace any numbers with `[number]` and email addresses with `[email]`. The processed text and metadata can then be written to an `xml` file or into a pandas dataframe.\n",
+    "\n",
+    "`mailcom` can automatically detect the (dominant) text language and also has the capability of preserving dates in the text (so that only numbers are replaced, but not patterns that match dates).\n",
     "\n",
     "Please note that 100% accuracy is not possible with this task. Any output needs to be further checked by a human to ensure the text has been anonymized completely.\n",
     "\n",
-    "The current set-up is for Romance languages, however [other language models](https://spacy.io/usage/models) can also be loaded into the spaCy pipeline. The transformers pipeline uses the `xlm-roberta-large-finetuned-conll03-english` model revision number `18f95e9` by default, but other models can also be passed (see below).\n",
+    "The current set-up is for Romance languages, however [other language models](https://spacy.io/usage/models) can also be loaded into the spaCy pipeline. The transformers pipeline uses the `xlm-roberta-large-finetuned-conll03-english` model revision number `18f95e9` by default, but other models can also be passed via the config file (see below).\n",
     "\n",
     "Before using the `mailcom` package, please install it into your conda environment using\n",
     "```\n",
     "pip install mailcom\n",
     "```\n",
-    "After that, select the appropriate kernel for your Jupyter notebook and execute the cell below to import the package. The package is currently under active development and any function calls are subject to changes."
+    "After that, select the appropriate kernel for your Jupyter notebook and execute the cells below to import the package. The package is currently under active development and any function calls are subject to changes.\n",
+    "\n",
+    "You may also run this on google colab via the link provided in the repository."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# if running on google colab\n",
+    "# flake8-noqa-cell\n",
+    "\n",
+    "if \"google.colab\" in str(get_ipython()):\n",
+    "    %pip install git+https://github.com/ssciwr/mailcom.git -qqq\n",
+    "    # mount Google Drive to access files\n",
+    "    from google.colab import drive\n",
+    "\n",
+    "    drive.mount(\"/content/drive\")"
    ]
   },
   {
@@ -27,16 +50,19 @@
    "source": [
     "import mailcom\n",
     "import pandas as pd\n",
-    "from IPython.display import display, HTML"
+    "from IPython.display import display, HTML\n",
+    "import pprint\n",
+    "\n",
+    "pp = pprint.PrettyPrinter(indent=4)"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "The cells below defines two functions used to display the result in the end, and highlight all named entities found in the text. It is used for demonstration purposes in this example.\n",
+    "## Processed text visualization\n",
     "\n",
-    "The first function is a simple approach to highlight all words in the text that match the detected named entities. However, this approach is error-prone and should be used cautiously when evaluating whether the text has been properly anonymized."
+    "The cells below define functionality used to display the result in the end, and highlight all named entities found in the text. It is used for demonstration purposes in this demo notebook."
    ]
   },
   {
@@ -55,51 +81,19 @@
    ]
   },
   {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The highlight function below is used to visualize what will be replaced in the text, but only after email addresses in the input text have been pseudonymized (i.e. replaced with `[email]`)."
+   ]
+  },
+  {
    "cell_type": "code",
    "execution_count": null,
    "metadata": {},
    "outputs": [],
    "source": [
     "# function for displaying the result using HTML\n",
-    "def highlight_ne(text, ne_list):\n",
-    "    # create a list of all entities with their positions\n",
-    "    entities = []\n",
-    "    for ne in ne_list:\n",
-    "        # avoid substituting the same entity multiple times\n",
-    "        if ne[\"word\"] not in entities and ne[\"entity_group\"] in colors:\n",
-    "            entities.append((ne, colors.get(ne[\"entity_group\"])))\n",
-    "    \n",
-    "    # sort entities by their positions in the text in reverse order\n",
-    "    # is this necessary?\n",
-    "    # entities = sorted(entities, key=lambda x: x[0][\"start\"], reverse=True)\n",
-    "\n",
-    "    # replace all \"<\" and \">\" which may mess up spans\n",
-    "    text = text.replace(\"<\", \"&lt;\")\n",
-    "    text = text.replace(\">\", \"&gt;\")\n",
-    "    # replace entities with highlighted spans\n",
-    "    for entity, color in entities:\n",
-    "        ent_word = entity[\"word\"]\n",
-    "        # I think it may be overwriting the already replaced ones\n",
-    "        # Instead, maybe sort which ones are different and not a subset?\n",
-    "        text = text.replace(ent_word, f\"<span style=\\\"background-color:{color}\\\">{ent_word}</span>\")\n",
-    "    \n",
-    "    return text"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "As for the second display function, all detected named entities are correctly highlighted, but only after email addresses in the input text have been pseudonymized (i.e. replaced with `[email]`)."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "# another function for displaying the result using HTML\n",
     "def highlight_ne_sent(text, ne_list):\n",
     "    if not ne_list:\n",
     "        return text\n",
@@ -137,13 +131,15 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "All settings for the whole pseudonymize process are stored in the file `mailcom/default_settings.json`. You can customize them by:\n",
+    "## Configuring your text processing pipeline\n",
+    "\n",
+    "All settings for the whole text processing are stored in the file `mailcom/default_settings.json`. You can customize them by:\n",
     "\n",
     "* Modifying `mailcom/default_settings.json` directly, or\n",
-    "* Creating a new setting file, or\n",
-    "* Updating specific fields when loading the settings\n",
+    "* Creating a new configuration file, or\n",
+    "* Updating specific fields when loading the configuration.\n",
     "\n",
-    "Function `mailcom.get_workflow_settings()` is used to load the workflow settings, as follows:"
+    "The function `mailcom.get_workflow_settings()` is used to load the workflow settings. It will also store the updated settings to a directory provided as keyword."
    ]
   },
   {
@@ -152,15 +148,16 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "# get workflow settings from a setting file\n",
+    "# get workflow settings from a configuration file\n",
     "setting_path = \"../../../mailcom/default_settings.json\"\n",
     "workflow_settings = mailcom.get_workflow_settings(setting_path=setting_path)\n",
     "\n",
     "# update some fields while loading the settings\n",
-    "new_settings = {\"default_lang\": \"es\"}\n",
-    "setting_dir = \"../../../mailcom/\"\n",
+    "new_settings = {\"default_lang\": \"es\"}   \n",
+    "# save the updated configuration to a file for reproducibility purposes\n",
+    "new_settings_dir = \"../../../mailcom/\"\n",
     "workflow_settings = mailcom.get_workflow_settings(new_settings=new_settings, \n",
-    "                                                  updated_setting_dir= setting_dir,\n",
+    "                                                  updated_setting_dir= new_settings_dir,\n",
     "                                                  save_updated_settings=True)"
    ]
   },
@@ -187,16 +184,161 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "We currently support two types of input data: (1) `csv`file and (2) directory of `eml` and `html` files.\n",
+    "The configuration options are:\n",
     "\n",
-    "Each row of the `csv`file, `eml` file, or `html` file will be stored in an email dictionary, with pre-defined keys: `content`, `date`, `attachment`, and `attachement type`."
+    "| keyword | options [default in parenthesis] | explanation |\n",
+    "| ------- | ------ | ------ |\n",
+    "| `default_lang` | [\"fr\"], \"es\", \"pt\" | default language of the textual data |\n",
+    "| `pseudo_emailaddresses` | [true], false | replace email addresses by [email] |\n",
+    "| `pseudo_ne` | [true], false | replace named entities by pseudonyms |\n",
+    "| `pseudo_numbers` | [true], false | replace numbers by [number] |\n",
+    "| `ner_pipeline` | [null], [valid transformers model name, revision number, and pipeline, aggregation strategy] | the transformers pipeline to use for the NER | \n",
+    "| `spacy_model` | [\"default\"], [valid spaCy model](https://spacy.io/models) | which spaCy model to use for the sentence splitting (see below) |\n",
+    "\n",
+    "These keywords set the options for the main processes of the `mailcom` package. The default language can be used for text that is always in the same language, that is, each `eml`/`html` file or row of the `csv` contains data in the same language. If this is the case, processing is much faster. If not, the language of the text can be detected on-the-fly with options specified below. In this case, leave the default language empty, ie. `\"\"` an empty string.\n",
+    "\n",
+    "The keywords `pseudo_emailaddresses` and `pseudo_numbers` are by default set to `true`, which triggers the replacement of email addresses such as email@gmail.com by [email], and numbers such as 69120 by [number].\n",
+    "\n",
+    "By using `pseudo_ne`, the replacement of recognized entities by a pseudonym or spaceholder is triggered. A person's name, i.e. \"Michael\" is replaced by \"James\", a location like \"Paris\" is replaced by [location], an organization such as \"GitHub\" is replaced by [organization], and other entities like \"iPhone 15\" are replaced by [misc].\n",
+    "\n",
+    "All these three options related to replacement of identifying information can be triggered separately, but are set to `true` by default.\n",
+    "\n",
+    "An example for the transformers pipeline is this, with the default options:\n",
+    "```python\n",
+    "\"ner\": {\n",
+    "    \"task\": \"token-classification\",\n",
+    "    \"model\": \"xlm-roberta-large-finetuned-conll03-english\",\n",
+    "    \"revision\": \"18f95e9\",\n",
+    "    \"aggregation_strategy\": \"simple\",\n",
+    "}\n",
+    "```\n",
+    "The task is `token-classification`, which is NER (for a description of the available tasks, see [here]((https://huggingface.co/docs/transformers/en/main_classes/pipelines))). The default model is Hugging Face's default model for this task and default revision number as of January 2025. The aggregation strategy determines how the tokens are aggregated after the pipeline; with `simple` the text is basically reconstructed as it was and the beginning and end of each recognized NER is given in accordance. The options `task` and `aggregation_strategy` are not likely to be changed by the user, however you may want to use a different model and revision number, which is possible using the `ner_pipeline` keyword.\n",
+    "\n",
+    "The keyword `spacy_model` sets the model to use for the sentencizing and pattern recognition. It is important that the initial text is split into sentences with a high accuracy, since this directly affects the subsequent NER accuracy. If the keyword is set to `default`, the models that spaCy uses as default for the given language is used. Some of the default models are:\n",
+    "```\n",
+    "\"es\": \"es_core_news_md\"\n",
+    "\"fr\": \"fr_core_news_md\"\n",
+    "\"de\": \"de_core_news_md\"\n",
+    "\"pt\": \"pt_core_news_md\"\n",
+    "```\n",
+    "Other models can directly be passed using this keyword, see the [spaCy reference](https://spacy.io/models). To extend the available languages in `mailcom`, this list needs to be extended. Please also note that not all spaCy models have pipelines with the necessary components.\n",
+    "\n",
+    "`mailcom` has additional capabilities that can be used to enhance the text processing:\n",
+    "| keyword | options [default in parenthesis] | explanation |\n",
+    "| ------- | ------ | ------ |\n",
+    "| `lang_detection_lib` | [[\"langid\"]](https://github.com/saffsd/langid.py), [\"langdetect\"](https://github.com/Mimino666/langdetect), [\"trans\"](https://huggingface.co/papluca/xlm-roberta-base-language-detection) | automatically detect language of each text using the specified library |\n",
+    "| `lang_pipeline` | [null], {\"task\": \"text-classification\"}, [for others see here](https://huggingface.co/docs/transformers/en/main_classes/pipelines) | the pipeline to use for the language detection, only valid for transformers language detection |\n",
+    "| `datetime_detection` | [true], false | detect dates and retain them in the text |\n",
+    "| `time_parsing` | [\"strict\"], \"non-strict\" | the pattern matching used to detect date/time patterns in the text (see below) |\n",
+    "\n",
+    "The first keyword in this table, `lang_detection_lib`, enables dynamic detection of the language. While this increases the processing time, it is crucial for correct sentence splitting when multiple languages are present in the data. In principle, the language can be determined for each sentence; but the general use of this capability is language detection per `eml`/`html` file/row in the `csv` file. Please note that the default language must not be set for this option to be triggered (`default_lang=\"\"`)! Three different libraries are available for language detection, [`langid`](https://github.com/saffsd/langid.py), [`langdetect`](https://github.com/Mimino666/langdetect), [`transformers`](https://huggingface.co/papluca/xlm-roberta-base-language-detection), that all lead to a similar performance on our test set. With the language detected dynamically, the spaCy model for sentence splitting is also set dynamically based on the detected language for each file/row; this should be combined with the `default` option for the spaCy model in order to work correctly.\n",
+    "\n",
+    "Using the keyword `datetime_detection`, `mailcom` can detect patterns that match dates, such as \"09 février 2009\" or \"April 17th 2024\" for `\"non-strict\"` parsing. These patterns can then be protected from the replacement of numbers, which would result in (for these examples) \"[number] février [number]\" or \"April [number]th [number]\". This feature could be important in texts in which chronology is not easy to follow, or where it is important to retain any information about time in the data.\n",
+    "\n",
+    "Setting the `time_parsing` to `\"strict\"`, only precise date-time formats such as \"17. April 2024 um 16:58:57\" or \"17.04.2024 17:33:23\" are detected, not using the more flexible pattern matching rules as in \"April 17th 2024\". This option could be useful for identifying forwarded dates within email bodies.\n",
+    "\n",
+    "The input data can be provided as `eml` or `html` files, or as a `csv` file. For reading a `csv` file, more information about the column names needs to be provided. This is explained in the [demo notebook](docs/source/notebooks/demo.ipynb) (click here to [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ssciwr/mailcom/blob/main/docs/source/notebooks/demo.ipynb)).\n",
+    "\n",
+    "First and last names are replaced by pseudonyms. To make the pseudonimized text read more smoothly, names that are common for a specific language can be chosen; but basically any names can be set for any language using the `pseudo_first_names` keyword. The default option is:\n",
+    "```python\n",
+    "pseudo_first_names = {\n",
+    "        \"es\": [\n",
+    "            \"José\",\n",
+    "            \"Angel\",\n",
+    "            \"Alex\",\n",
+    "            \"Ariel\",\n",
+    "            \"Cruz\",\n",
+    "            \"Fran\",\n",
+    "            \"Arlo\",\n",
+    "            \"Adri\",\n",
+    "            \"Marce\",\n",
+    "            \"Mati\"\n",
+    "        ],\n",
+    "        \"fr\": [\n",
+    "            \"Claude\",\n",
+    "            \"Dominique\",\n",
+    "            \"Claude\",\n",
+    "            \"Camille\",\n",
+    "            \"Charlie\",\n",
+    "            \"Florence\",\n",
+    "            \"Francis\",\n",
+    "            \"Maxime\",\n",
+    "            \"Remy\",\n",
+    "            \"Cécile\"\n",
+    "        ],\n",
+    "        \"de\": [\"Mika\"]\n",
+    "    }\n",
+    "```\n"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "When loading a `csv`file as an input, a list of columns in the file to map with the above pre-defined keys should be provided. For example:"
+    "## Reading input data\n",
+    "\n",
+    "We currently support two types of input data: (1) a `csv`file and (2) a directory of `eml` and/or `html` files.\n",
+    "\n",
+    "Each row of the `csv` file, `eml` file, or `html` file will be stored in a dictionary, with pre-defined keys: `content`, `date`, `attachment`, `attachement type` and `subject`. Dicttionaries of `eml` and `html` files have an additional key named `file_name`.\n",
+    "\n",
+    "**Of these pre-defined keys, only `content` will be processed through the pipeline, all other information is retained as is.**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Reading from a `csv` file\n",
+    "\n",
+    "When loading a `csv`file as an input, a list of columns in the file to map with the above pre-defined keys should be provided, in the correct order.\n",
+    "\n",
+    "A. Example of correct matching:\n",
+    "\n",
+    "* pre-defined keys `init_data_fields` = `content`, `date`, `attachment`, `attachement type`, `subject`\n",
+    "* matching columns `col_names` = `message`, `time`, `attachement`, `attachement_type`, `subject`\n",
+    "\n",
+    "B. If there are fewer columns in the `csv` than pre-defined keys, the remaining pre-defined keys will be set to `None` in the processing, for instance:\n",
+    "\n",
+    "* pre-defined keys `init_data_fields` = `content`, `date`, `attachment`\n",
+    "* matching columns `col_names` = `message`, `time`\n",
+    "\n",
+    "The input data dictionary for each row in this case is saved like this:\n",
+    "```python\n",
+    "row_data = {\n",
+    "    \"content\": row[\"message\"],\n",
+    "    \"date\": row[\"time\"],\n",
+    "    \"attachment\": None\n",
+    "}\n",
+    "```\n",
+    "\n",
+    "C. If there are more columns than pre-defined keys, the extra columns are stored in the data dictionary without modification.\n",
+    "\n",
+    "* pre-defined keys `init_data_fields` = `content`, `date`  \n",
+    "* matching columns `col_names` = `message`, `time`, `summary`\n",
+    "\n",
+    "The data dictionary for each row is in this case is:\n",
+    "```python\n",
+    "row_data = {\n",
+    "    \"content\": row[\"message\"],\n",
+    "    \"date\": row[\"time\"],\n",
+    "    \"summary\": row[\"summary\"]\n",
+    "}\n",
+    "```\n",
+    "\n",
+    "D. If a column name intended to match a predefined key is misspelled, a string label is stored for that key instead. This label is specified by the `csv_col_unmatched_keyword` in the configuration file. By default, this keyword is set to `\"unmatched\"`, but can be updated by the user through modifying the configuration file/passing a new value to this keyword.\n",
+    "\n",
+    "* pre-defined keys `init_data_fields` = `content`, `date`  \n",
+    "* matching columns `col_names` = `message`, `tiem_with_typo`\n",
+    "\n",
+    "Assuming that column `tiem_with_typo` does not exist in the `csv` file, the data dictionary for each row in this case is:\n",
+    "```python\n",
+    "row_data = {\n",
+    "    \"content\": row[\"message\"],\n",
+    "    \"date\": \"unmatched\"\n",
+    "}\n",
+    "```\n",
+    "\n",
+    "The examples below shall serve to demonstrate the input options and resulting behaviour of `mailcom` when processing `csv` files."
    ]
   },
   {
@@ -205,12 +347,20 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "# import data from a csv file - change this to your own file\n",
-    "input_csv = \"../../../data/mails_lb_sg.csv\"\n",
+    "# path to your csv file - change this to your own file\n",
+    "input_csv = \"../../../data/in/sample_data.csv\"\n",
+    "# the columns of the csv that should be passed through the processing pipeline/retained in the pipeline\n",
+    "matching_columns = [\"message\", \"date\", \"attachment\", \"attachement_type\", \"subject\"]\n",
+    "# the predefined keys that should be used to match these columns, in the correct order\n",
+    "pre_defined_keys = [\"content\", \"date\", \"attachment\", \"attachement_type\", \"subject\"]\n",
+    "# what to call any columns that are not matched to pre-defined keys\n",
+    "unmatched_keyword = \"unmatched\"\n",
+    "# or get the unmatched keyword from the workflow settings\n",
     "unmatched_keyword = workflow_settings.get(\"csv_col_unmatched_keyword\")\n",
+    "\n",
     "input_handler = mailcom.get_input_handler(in_path=input_csv, in_type=\"csv\", \n",
-    "                                          col_names=[\"message\"], \n",
-    "                                          init_data_fields=[\"content\"], \n",
+    "                                          col_names=matching_columns, \n",
+    "                                          init_data_fields=pre_defined_keys, \n",
     "                                          unmatched_keyword=unmatched_keyword)"
    ]
   },
@@ -218,15 +368,63 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "In the cell above, the `message` column from the `csv` file is mapped to the `content` key in the email dictionary, while other keys have `None` as their values.\n",
+    "In the cell above, the `message` column from the `csv` file is mapped to the `content` key in the email dictionary."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pp.pprint(input_handler.email_list[0])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# path to your csv file - change this to your own file\n",
+    "input_csv = \"../../../data/in/sample_data.csv\"\n",
+    "# the columns of the csv that should be passed through the processing pipeline/retained in the pipeline\n",
+    "matching_columns = [\"message\", \"date\"]\n",
+    "# the predefined keys that should be used to match these columns, in the correct order\n",
+    "pre_defined_keys = [\"content\", \"date\"]\n",
+    "# what to call any columns that are not matched to pre-defined keys\n",
+    "unmatched_keyword = \"unmatched\"\n",
+    "# or get the unmatched keyword from the workflow settings\n",
+    "unmatched_keyword = workflow_settings.get(\"csv_col_unmatched_keyword\")\n",
     "\n",
-    "If the `csv` file lacks the `message` column, value of `content` is set to `unmatched_keyword`"
+    "input_handler = mailcom.get_input_handler(in_path=input_csv, in_type=\"csv\", \n",
+    "                                          col_names=matching_columns, \n",
+    "                                          init_data_fields=pre_defined_keys, \n",
+    "                                          unmatched_keyword=unmatched_keyword)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pp.pprint(input_handler.email_list[0])"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "Here, we have asked the input handler only to match two of the columns, so the other columns are discarded."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Reading `eml`/`html` files from a directory\n",
+    "\n",
     "Below, the input files are loaded from the given `input_dir` directory into an input handler. You can provide relative or absolute paths to the directory that contains your `eml` or `html` files. All files of the `eml` or `html` file type in that directory will be considered input files."
    ]
   },
@@ -245,7 +443,25 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "In the cell below, the emails are looped over and the email content is processed. Depending on the settings, each email content goes through the following steps:\n",
+    "The data is then loaded into the same dictionary structure used for the `csv` input file, with the addition of a `file_name`key."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pp.pprint(input_handler.email_list[0])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Processing of the data\n",
+    "\n",
+    "In the cell below, the emails are looped over and the email content is processed. Depending on the settings, each \"content\" goes through the following steps:\n",
     "1. language detection (optional)\n",
     "2. date time detection (optional)\n",
     "3. email addresses pseudonymization (optional)\n",
@@ -263,26 +479,6 @@
    "source": [
     "# process the input data\n",
     "mailcom.process_data(input_handler.get_email_list(), workflow_settings)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "The input text is displayed and the found named entities are highlighted for demonstration, using the first display function. Note that emails (all words containing '@') are filtered out seperately and thus not highlighted here."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "# loop over mails and display the highlights\n",
-    "for email in input_handler.get_email_list():\n",
-    "    # display original text and highlight found and replaced NEs\n",
-    "    highlighted_html = highlight_ne(email[\"cleaned_content\"], email[\"ne_list\"])\n",
-    "    display(HTML(highlighted_html))"
    ]
   },
   {
@@ -330,14 +526,33 @@
    "outputs": [],
    "source": [
     "# write output to pandas df\n",
-    "df = pd.DataFrame(input_handler.get_email_list())"
+    "df = pd.DataFrame(input_handler.get_email_list())\n",
+    "df.head(5)"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "The output can be saved as a csv file as well."
+    "The meaning of the added columns are: \n",
+    "\n",
+    "`cleaned_content` - the text cleaned from extra newlines and extra heading and trailing whitespaces; \n",
+    "\n",
+    "`lang` - the language used to parse the emails (depends on your settings in the configuration file); \n",
+    "\n",
+    "`detected_datetime` - the dates that were detected; \n",
+    "\n",
+    "`pseudo_content` - the pseudonymized content of the processed text; \n",
+    "\n",
+    "`ne_list` - the list of recognized named entities and their properties; \n",
+    "\n",
+    "`ne_sent` - indices of sentences containing named entities; \n",
+    "\n",
+    "`sentences` - a list of sentences as detected by spaCy, of the text data; \n",
+    "\n",
+    "`sentences_after_email` - the list of sentences after replacing email addresses by [email].\n",
+    "\n",
+    "The output can be saved as a `csv` file as well."
    ]
   },
   {
