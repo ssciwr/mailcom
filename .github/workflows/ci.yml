@@ -1,5 +1,5 @@
 name: CI Check
-on: [push, pull_request, workflow_dispatch]
+on: [pull_request, workflow_dispatch]
 jobs:
   clean-and-test:
     runs-on: ${{ matrix.os }}
