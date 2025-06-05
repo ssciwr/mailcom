@@ -29,6 +29,7 @@ jobs:
       run: python -m pytest -svv --cov=mailcom --cov-report=xml:mailcom/coverage_re/coverage.xml
 
     - name: Upload coverage reports to Codecov
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
       uses: codecov/codecov-action@v4.0.1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
