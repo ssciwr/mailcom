@@ -354,7 +354,7 @@ file/row; this should be combined with the <code class="docutils literal notrans
 <section id="Reading-input-data">
 <h2>Reading input data<a class="headerlink" href="#Reading-input-data" title="Link to this heading"></a></h2>
 <p>We currently support two types of input data: (1) a <code class="docutils literal notranslate"><span class="pre">csv</span></code>file and (2) a directory of <code class="docutils literal notranslate"><span class="pre">eml</span></code> and/or <code class="docutils literal notranslate"><span class="pre">html</span></code> files.</p>
-<p>Each row of the <code class="docutils literal notranslate"><span class="pre">csv</span></code> file, <code class="docutils literal notranslate"><span class="pre">eml</span></code> file, or <code class="docutils literal notranslate"><span class="pre">html</span></code> file will be stored in a dictionary, with pre-defined keys: <code class="docutils literal notranslate"><span class="pre">content</span></code>, <code class="docutils literal notranslate"><span class="pre">date</span></code>, <code class="docutils literal notranslate"><span class="pre">attachment</span></code>, <code class="docutils literal notranslate"><span class="pre">attachement</span> <span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">subject</span></code>. Dicttionaries of <code class="docutils literal notranslate"><span class="pre">eml</span></code> and <code class="docutils literal notranslate"><span class="pre">html</span></code> files have an additional key named <code class="docutils literal notranslate"><span class="pre">file_name</span></code>.</p>
+<p>Each row of the <code class="docutils literal notranslate"><span class="pre">csv</span></code> file, <code class="docutils literal notranslate"><span class="pre">eml</span></code> file, or <code class="docutils literal notranslate"><span class="pre">html</span></code> file will be stored in a dictionary, with pre-defined keys: <code class="docutils literal notranslate"><span class="pre">content</span></code>, <code class="docutils literal notranslate"><span class="pre">date</span></code>, <code class="docutils literal notranslate"><span class="pre">attachment</span></code>, <code class="docutils literal notranslate"><span class="pre">attachement</span> <span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">subject</span></code>. Dictionaries of <code class="docutils literal notranslate"><span class="pre">eml</span></code> and <code class="docutils literal notranslate"><span class="pre">html</span></code> files have an additional key named <code class="docutils literal notranslate"><span class="pre">file_name</span></code>.</p>
 <p><strong>Of these pre-defined keys, only ``content`` will be processed through the pipeline, all other information is retained as is.</strong></p>
 <section id="Reading-from-a-csv-file">
 <h3>Reading from a <code class="docutils literal notranslate"><span class="pre">csv</span></code> file<a class="headerlink" href="#Reading-from-a-csv-file" title="Link to this heading"></a></h3>
@@ -504,9 +504,9 @@ file/row; this should be combined with the <code class="docutils literal notrans
 <ol class="arabic simple">
 <li><p>language detection (optional)</p></li>
 <li><p>date time detection (optional)</p></li>
-<li><p>email addresses pseudonymization (optional)</p></li>
-<li><p>name entities pseudonymization</p></li>
-<li><p>numbers pseudonymization (optional)</p></li>
+<li><p>email address pseudonymization (optional)</p></li>
+<li><p>named entity pseudonymization</p></li>
+<li><p>number pseudonymization (optional)</p></li>
 </ol>
 <p>For steps 3-5, the email content is divided into sentences, which are then pseudonymized. The modified sentences are recombined into a text and stored in the email dictionary under the key <code class="docutils literal notranslate"><span class="pre">&quot;pseudo_content&quot;</span></code>.</p>
 <div class="nbinput nblast docutils container">
