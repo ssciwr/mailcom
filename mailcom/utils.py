@@ -51,6 +51,7 @@ class SpacyLoader:
             "fr": "fr_core_news_md",
             "de": "de_core_news_md",
             "pt": "pt_core_news_md",
+            "en": "en_core_web_md",
         }
 
         self.spacy_instances = {}
@@ -73,7 +74,7 @@ class SpacyLoader:
         try:
             # disable not needed components
             self.spacy_instances[language][model] = sp.load(
-                model, exclude=["attribute_ruler", "lemmatizer", "ner"]
+                model, exclude=["lemmatizer", "ner"]
             )
         except OSError:
             try:
@@ -84,7 +85,7 @@ class SpacyLoader:
                 sp.cli.download(model)
                 self.spacy_instances[language][model] = sp.load(
                     model,
-                    exclude=["attribute_ruler", "lemmatizer", "ner"],
+                    exclude=["lemmatizer", "ner"],
                 )
             except SystemExit:
                 raise SystemExit("Could not download {} from repo".format(model))
