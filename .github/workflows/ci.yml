@@ -20,6 +20,7 @@ jobs:
     - name: Install dependencies and package
       run: |
         python -m pip install --upgrade pip
+        pip install setuptools wheel 
         pip install blis
         pip install --prefer-binary -e .
 
