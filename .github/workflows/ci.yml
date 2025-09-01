@@ -18,10 +18,12 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Install dependencies and package
+      env:
+        BLIS_ARCH: generic
       run: |
         python -m pip install --upgrade pip
         pip install setuptools wheel 
-        BLIS_ARCH="generic" pip install spacy --no-binary blis
+        pip install spacy --no-binary blis
         pip install -e .
 
     - name: Install pytest
