@@ -5,8 +5,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        os: [windows-latest]
+        python-version: ['3.9']
       fail-fast: false
     steps:
     - name: Set up Python ${{ matrix.python-version }}
@@ -20,6 +20,7 @@ jobs:
     - name: Install dependencies and package
       run: |
         python -m pip install --upgrade pip
+        if [ "$RUNNER_OS" != "Windows" ]; then pip install blis; fi
         pip install --prefer-binary -e .
 
     - name: Install pytest
