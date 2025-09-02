@@ -1,8 +1,16 @@
+# -*- coding: utf-8 -*-
 import pytest
 import math
+import sys
+import io
 from mailcom.lang_detector import LangDetector
 from string import punctuation
 from mailcom.utils import TransformerLoader
+
+# Ensure UTF-8 output on Windows
+if sys.platform.startswith("win"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 
 # test cases for email language detection
@@ -473,7 +481,13 @@ def test_detect_mixed_lang_with_langdetect(get_lang_detector, get_mixed_lang_doc
         if not wrong_detect_second_lang and len(detections) > 1:
             assert detections[1][0] == get_mixed_lang_docs[doc][1]
             assert detections[1][1] > MULTI_DETECT_THRESHOLD
-    print(" ".join(incomplete_detec))
+    # Handle Unicode characters properly for Windows compatibility
+    try:
+        print(" ".join(incomplete_detec))
+    except UnicodeEncodeError:
+        print(
+            " ".join(incomplete_detec).encode("utf-8", errors="replace").decode("utf-8")
+        )
 
 
 @pytest.mark.langdet
