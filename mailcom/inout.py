@@ -143,7 +143,7 @@ class InoutHandler:
         if not text:
             raise ValueError("The text to be written is empty")
 
-        with open(outfile, "w") as file:
+        with open(outfile, "w", encoding="utf-8") as file:
             file.write(text)
 
     def write_csv(self, outfile: str):
