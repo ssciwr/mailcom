@@ -1,40 +1,40 @@
 {
-    "csv_col_unmatched_keyword": "unmatched",
     "default_lang": "fr",
-    "datetime_detection": true,
-    "time_parsing": "strict",
     "pseudo_emailaddresses": true,
     "pseudo_ne": true,
     "pseudo_numbers": true,
+    "datetime_detection": true,
+    "time_parsing": "strict",
     "pseudo_first_names": {
         "es": [
-            "José",
-            "Angel",
-            "Alex",
-            "Ariel",
-            "Cruz",
-            "Fran",
-            "Arlo",
-            "Adri",
-            "Marce",
-            "Mati"
+            "Marta",
+            "Alejandro",
+            "Isabel",
+            "Sergio",
+            "Raquel",
+            "Carlos",
+            "Dayana",
+            "Ferran",
+            "Elena",
+            "José"
         ],
         "fr": [
-            "Claude",
-            "Dominique",
-            "Claude",
-            "Camille",
-            "Charlie",
-            "Florence",
-            "Francis",
-            "Maxime",
-            "Remy",
-            "Cécile"
+            "Julien",
+            "Manon",
+            "Stéphane",
+            "Nathalie",
+            "Georges",
+            "Denise",
+            "Idriss",
+            "Aïcha",
+            "Hugo",
+            "Léa"
         ],
         "de": ["Mika"]
     },
     "lang_detection_lib": "langid",
     "lang_pipeline": null,
     "spacy_model": "default",
-    "ner_pipeline": null
+    "ner_pipeline": null,
+    "csv_col_unmatched_keyword": "unmatched"
 }
