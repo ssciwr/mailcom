@@ -9,6 +9,7 @@ title: "Feature request"
 A clear and concise description of what the feature is.
 
 ## To Implement
+Describe the steps, requirements, or technical details needed to implement this feature. Include any relevant code snippets, dependencies, or design considerations.
 
 ## Expected behavior
 A clear and concise description of what you expect to happen.
