@@ -138,13 +138,11 @@ def test_reset(get_default_fr):
 def test_get_ne_sent_dict(get_default_fr):
     text = {"content": "Francois et Agathe vont à Paris."}
     _ = get_default_fr.pseudonymize(text["content"], language="fr")
-    print(get_default_fr.ne_sent)
     assert get_default_fr.ne_sent == [0, 0, 0]
     assert get_default_fr.ne_list[0]["entity_group"] == "PER"
     assert get_default_fr.ne_list[0]["word"] == "Francois"
     assert get_default_fr.ne_list[2]["word"] == "Paris"
     ne_sent_dict = get_default_fr._get_ne_sent_dict()
-    print(ne_sent_dict)
     assert ne_sent_dict["0"][0]["entity_group"] == "PER"
     assert ne_sent_dict["0"][1]["word"] == "Agathe"
     assert ne_sent_dict["0"][2]["start"] == 26
@@ -159,6 +157,14 @@ def test_get_ner(get_default_fr):
     sents = get_default_fr.get_sentences(text, "fr")
     for sent in sents:
         assert get_default_fr.get_ner(sent)
+
+
+def test_check_pseudonyms_in_content(get_default_fr):
+    get_default_fr.ne_list = [{"entity_group": "PER", "word": "Agathe"}]
+    assert not get_default_fr._check_pseudonyms_in_content()
+    get_default_fr.ne_list = [{"entity_group": "PER", "word": "Claude"}]
+    assert get_default_fr._check_pseudonyms_in_content()
+    assert "Claude" not in get_default_fr.pseudo_first_names
 
 
 def test_get_sentences_empty_string(get_default_fr):

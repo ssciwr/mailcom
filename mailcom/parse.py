@@ -1,5 +1,6 @@
 from mailcom import utils
 import re
+from typing import Optional
 
 
 class Pseudonymize:
@@ -394,7 +395,7 @@ class Pseudonymize:
     def pseudonymize_with_updated_ne(
         self,
         sentences,
-        ne_sent_dict: dict[list[dict]] | None,
+        ne_sent_dict: Optional[dict[list[dict]]],
         language="de",
         detected_dates: list[str] = None,
         pseudo_emailaddresses=True,
