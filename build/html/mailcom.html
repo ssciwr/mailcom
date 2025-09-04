@@ -145,6 +145,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#utils.clean_up_content"><code class="docutils literal notranslate"><span class="pre">clean_up_content()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#utils.get_spacy_instance"><code class="docutils literal notranslate"><span class="pre">get_spacy_instance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#utils.get_trans_instance"><code class="docutils literal notranslate"><span class="pre">get_trans_instance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.highlight_ne_sent"><code class="docutils literal notranslate"><span class="pre">highlight_ne_sent()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#utils.make_dir"><code class="docutils literal notranslate"><span class="pre">make_dir()</span></code></a></li>
 </ul>
 </li>
@@ -1330,6 +1331,27 @@ in multiple word format.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pipeline</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.highlight_ne_sent">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">highlight_ne_sent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ne_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.highlight_ne_sent" title="Link to this definition"></a></dt>
+<dd><p>Highlight named entities in the text using HTML spans.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – The text to highlight entities in.</p></li>
+<li><p><strong>ne_list</strong> (<em>list</em>) – A list of named entities to highlight.</p></li>
+<li><p><strong>colors</strong> (<em>dict</em>) – A dictionary mapping entity groups to colors.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The text with highlighted entities.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
