@@ -7,7 +7,10 @@ from mailcom.main import (
 )
 from mailcom.utils import highlight_ne_sent
 
-__version__ = metadata.version("mailcom")
+try:
+    __version__ = metadata.version("mailcom")
+except metadata.PackageNotFoundError:
+    __version__ = "development"
 
 __all__ = [
     "get_input_handler",
