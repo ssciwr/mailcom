@@ -48,6 +48,18 @@ class Pseudonymize:
         self.ne_sent.clear()
         self.sentences.clear()
 
+    def _get_ne_sent_dict(self) -> dict:
+        """Convert the list of named entities and their sentence
+        indices into a dictionary."""
+        ne_sent_dict = {}
+        for sent_idx, ne in zip(self.ne_sent, self.ne_list):
+            # drop any existing pseudonyms in ne_list
+            ne.pop("pseudonym", None)
+            if str(sent_idx) not in ne_sent_dict:
+                ne_sent_dict[str(sent_idx)] = []
+            ne_sent_dict[str(sent_idx)].append(ne)
+        return ne_sent_dict
+
     def get_sentences(self, input_text, language, model="default"):
         """Splits a text into sentences using spacy.
 
@@ -89,6 +101,49 @@ class Pseudonymize:
             self.init_transformers(pipeline_info)
         ner = self.ner_recognizer(sentence)
         return ner
+
+    def _check_pseudonyms_in_content(self, lang: str = "fr"):
+        """Checks if any of the pseudonyms are present in the current content.
+
+        Args:
+            lang (str): Language context of the data, defaults to "fr".
+        """
+        names = []
+        exclude_pseudonym = False
+        for entity in self.ne_list:
+            if entity["entity_group"] == "PER":
+                name = entity["word"]
+                # here we should consider first names only, without
+                # the given name after the space
+                name = name.split(" ")[0] if " " in name else name
+                (
+                    names.extend([name, name.lower(), name.title()])
+                    if name not in names
+                    else None
+                )
+        # now we have collected all possible names, lets check for a match
+        if any(pseudo in names for pseudo in self.pseudo_first_names.get(lang, [])):
+            print("Found matching name(s) from pseudonyms to actual person names.")
+            print(f"Names found: {names}")
+            print(f"Pseudonyms provided: {self.pseudo_first_names.get(lang, [])}")
+            exclude_pseudonym = True
+            # drop the pseudonym from all further processing
+            self.pseudo_first_names[lang] = [
+                pseudo
+                for pseudo in self.pseudo_first_names[lang]
+                if pseudo not in names
+            ]
+            print(f"Updated pseudonyms: {self.pseudo_first_names.get(lang, [])}")
+        # raise an exception for the user to restart with other pseudonyms if there are
+        # no pseudonyms left in the list
+        if not self.pseudo_first_names[lang]:
+            raise ValueError(
+                """Please provide a different list of pseudonyms via the
+                             workflow settings file. The current list of pseudonyms
+                             is too short and contains only names that already
+                             exist in the actual data."""
+            )
+        return exclude_pseudonym
 
     def choose_per_pseudonym(self, name, lang="fr"):
         """Chooses a pseudonym for a PER named entity based on previously used pseudonyms.
@@ -328,12 +383,18 @@ class Pseudonymize:
             if pseudo_numbers:
                 sent = self.pseudonymize_numbers(sent, detected_dates)
             pseudonymized_sentences.append(sent)
-        return self.concatenate(pseudonymized_sentences)
+        # check that pseudonyms are not the same as actual
+        # names in the current content
+        # if they are, the pseudonym is dropped for the present and all future content
+        exclude_pseudonym = (
+            self._check_pseudonyms_in_content(lang=language) if self.ne_list else False
+        )
+        return self.concatenate(pseudonymized_sentences), exclude_pseudonym
 
     def pseudonymize_with_updated_ne(
         self,
         sentences,
-        ne_sent_dict: dict[list[dict]],
+        ne_sent_dict: dict[list[dict]] | None,
         language="de",
         detected_dates: list[str] = None,
         pseudo_emailaddresses=True,
@@ -346,7 +407,9 @@ class Pseudonymize:
 
         Args:
             sentences (list[str]): List of sentences to pseudonymize.
-            ne_sent_dict (dict[list[dict]]): Dictionary containing named entities
+            ne_sent_dict (dict[list[dict]]|None): Dictionary containing named entities.
+                If set to none, the previous named entities will be used. This is the case
+                for reprocessing emails with new pseudonyms.
             language (str, optional): Language of the email. Defaults to "de".
             detected_dates (list[str], optional): Detected dates in the email.
                 Defaults to None.
@@ -360,7 +423,12 @@ class Pseudonymize:
         Returns:
             str: Pseudonymized text
         """
+        if not ne_sent_dict:
+            # the ne was ok last time, but we need to rerun with new pseudonyms
+            ne_sent_dict = self._get_ne_sent_dict()
+
         self.reset()
+        self.sentences = sentences
         pseudonymized_sentences = []
         for sent_idx, sent in enumerate(sentences):
             if pseudo_emailaddresses:
@@ -378,4 +446,10 @@ class Pseudonymize:
             if pseudo_numbers:
                 sent = self.pseudonymize_numbers(sent, detected_dates)
             pseudonymized_sentences.append(sent)
-        return self.concatenate(pseudonymized_sentences)
+        # check that pseudonyms are not the same as actual
+        # names in the current content
+        # if they are, the pseudonym is dropped for the present and all future content
+        exclude_pseudonym = (
+            self._check_pseudonyms_in_content(lang=language) if self.ne_list else False
+        )
+        return self.concatenate(pseudonymized_sentences), exclude_pseudonym

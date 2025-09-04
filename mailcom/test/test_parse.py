@@ -135,6 +135,21 @@ def test_reset(get_default_fr):
         assert len(get_default_fr.sentences) == 0
 
 
+def test_get_ne_sent_dict(get_default_fr):
+    text = {"content": "Francois et Agathe vont à Paris."}
+    _ = get_default_fr.pseudonymize(text["content"], language="fr")
+    print(get_default_fr.ne_sent)
+    assert get_default_fr.ne_sent == [0, 0, 0]
+    assert get_default_fr.ne_list[0]["entity_group"] == "PER"
+    assert get_default_fr.ne_list[0]["word"] == "Francois"
+    assert get_default_fr.ne_list[2]["word"] == "Paris"
+    ne_sent_dict = get_default_fr._get_ne_sent_dict()
+    print(ne_sent_dict)
+    assert ne_sent_dict["0"][0]["entity_group"] == "PER"
+    assert ne_sent_dict["0"][1]["word"] == "Agathe"
+    assert ne_sent_dict["0"][2]["start"] == 26
+
+
 def test_get_ner(get_default_fr):
     text = (
         "ceci est un exemple de texte écrit par Claude. "
@@ -276,7 +291,7 @@ def test_pseudonymize(get_default_fr):
         "content": "Francois et Agathe sont amis. "
         "Mon numéro de téléphone est 123-456-7890."  # noqa
     }
-    pseudonymized_text = get_default_fr.pseudonymize(text["content"], language="fr")
+    pseudonymized_text, _ = get_default_fr.pseudonymize(text["content"], language="fr")
 
     # Check that names are pseudonymized
     assert "Francois" not in pseudonymized_text
@@ -292,13 +307,13 @@ def test_pseudonymize(get_default_fr):
 
 def test_pseudonymize_empty_string(get_default_fr):
     text = {"content": ""}
-    pseudonymized_text = get_default_fr.pseudonymize(text["content"], language="fr")
+    pseudonymized_text, _ = get_default_fr.pseudonymize(text["content"], language="fr")
     assert pseudonymized_text == ""
 
 
 def test_pseudonymize_no_entities(get_default_fr):
     text = {"content": "Ceci est une phrase simple sans entités nommées ni chiffres."}
-    pseudonymized_text = get_default_fr.pseudonymize(text["content"], language="fr")
+    pseudonymized_text, _ = get_default_fr.pseudonymize(text["content"], language="fr")
     assert pseudonymized_text == text["content"]
 
 
@@ -456,7 +471,7 @@ def test_pseudonymize_with_updated_ne(get_default_fr):
             {"entity_group": "LOC", "word": "Paris", "start": 30, "end": 35},
         ],
     }
-    pseudonymized_sentence = get_default_fr.pseudonymize_with_updated_ne(
+    pseudonymized_sentence, _ = get_default_fr.pseudonymize_with_updated_ne(
         sentences, ner_sent_dict, language="fr", detected_dates=None
     )
 
@@ -471,3 +486,32 @@ def test_pseudonymize_with_updated_ne(get_default_fr):
     assert "[organization]" in pseudonymized_sentence
     assert "[location]" in pseudonymized_sentence
     assert "[misc]" in pseudonymized_sentence
+
+
+def test_pseudonymize_for_same_pseudo_and_name(get_default_fr):
+    text = {
+        "content": "Claude et Camille sont amis. "
+        "Mon numéro de téléphone est 123-456-7890."  # noqa
+    }
+    pseudonymized_text, exclude_pseudonym = get_default_fr.pseudonymize(
+        text["content"], language="fr"
+    )
+    assert exclude_pseudonym
+    assert "Claude" not in get_default_fr.pseudo_first_names
+    assert "Camille" not in get_default_fr.pseudo_first_names
+    # now re-pseudonymize with the correct pseudonyms
+    pseudonymized_text, exclude_pseudonym = get_default_fr.pseudonymize_with_updated_ne(
+        text["content"], ne_sent_dict=None, language="fr"
+    )
+    assert "Claude" not in pseudonymized_text
+    assert "Camille" not in pseudonymized_text
+    assert any(
+        pseudo in pseudonymized_text
+        for pseudo in get_default_fr.pseudo_first_names["fr"]
+    )
+    # Check that numbers are pseudonymized
+    assert "123-456-7890" not in pseudonymized_text
+    # check that all properties required for the processing dict are there
+    assert get_default_fr.sentences == text["content"]
+    assert get_default_fr.ne_list
+    assert get_default_fr.ne_sent

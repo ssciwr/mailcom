@@ -270,8 +270,8 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
             email["detected_datetime"] = [
                 item[0] for item in detected_time
             ]  # only keep the strings
-
-        pseudo_content = pseudonymizer.pseudonymize(
+        exclude_pseudonym = False
+        pseudo_content, exclude_pseudonym = pseudonymizer.pseudonymize(
             email_content,
             lang,
             model=spacy_model,
@@ -281,6 +281,23 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
             pseudo_ne=pseudo_ne,
             pseudo_numbers=pseudo_numbers,
         )
+        while exclude_pseudonym:
+            # make sure ne pseudonymization is restarted in case of
+            # matching pseudonym
+            # note that the matching pseudonym is subsequently excluded
+            # from all further processing but will be present in the initial
+            # data entries
+            pseudo_content, exclude_pseudonym = (
+                pseudonymizer.pseudonymize_with_updated_ne(
+                    copy.deepcopy(pseudonymizer.sentences),
+                    None,
+                    language=lang,
+                    detected_dates=email.get("detected_datetime", None),
+                    pseudo_emailaddresses=pseudo_emailaddresses,
+                    pseudo_ne=pseudo_ne,
+                    pseudo_numbers=pseudo_numbers,
+                )
+            )
         # use deepcopy to avoid issue with mutable objects
         email["pseudo_content"] = pseudo_content
         email["ne_list"] = copy.deepcopy(pseudonymizer.ne_list)
