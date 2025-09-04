@@ -176,3 +176,65 @@ def get_trans_instance(
         trans_loader.init_transformers(feature, pipeline_info)
 
     return trans_loader.trans_instances[feature]
+
+
+# function for displaying the result using HTML
+def highlight_ne_sent(text: str, ne_list: list, colors: dict):
+    """Highlight named entities in the text using HTML spans.
+
+    Args:
+        text (str): The text to highlight entities in.
+        ne_list (list): A list of named entities to highlight.
+        colors (dict): A dictionary mapping entity groups to colors.
+
+    Returns:
+        str: The text with highlighted entities.
+    """
+    # no named entities in text
+    if not ne_list:
+        return text
+
+    # make sure the ne_list has all the keys that are required
+    required_keys = {"word", "start", "end", "entity_group"}
+    for ne in ne_list:
+        if not required_keys.issubset(ne.keys()):
+            raise ValueError(
+                "Named entity is missing required keys for \
+                 displaying highlighted text: {}".format(
+                    ne
+                )
+            )
+
+    # make sure all entities have a color
+    # else assign a default color
+    missing_colors = {
+        ne["entity_group"]: "lightgray"
+        for ne in ne_list
+        if ne["entity_group"] not in colors
+    }
+    colors.update(missing_colors)
+    # create a list of all entities with their positions
+    entities = [(ne, colors.get(ne["entity_group"])) for ne in ne_list]
+
+    # replace entities with highlighted spans
+    text_chunks = []
+    last_idx = 0
+    for entity, color in entities:
+        ent_word = entity["word"]
+        s_idx = entity["start"]
+        e_idx = entity["end"]
+        # add text before the entity
+        text_chunks.append(
+            text[last_idx:s_idx].replace("<", "&lt;").replace(">", "&gt;")
+        )
+        # add the entity with a span
+        # assume that the entity does not have any HTML tags
+        replacement = f'<span style="background-color:{color}">{ent_word}</span>'
+        text_chunks.append(replacement)
+        last_idx = e_idx
+    # add the remaining text
+    text_chunks.append(text[last_idx:].replace("<", "&lt;").replace(">", "&gt;"))
+    # join all text chunks
+    result = "".join(text_chunks)
+
+    return result

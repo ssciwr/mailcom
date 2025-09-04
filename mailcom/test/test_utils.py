@@ -147,3 +147,73 @@ def test_get_trans_instance(get_transformer_loader):
     # invalid case
     with pytest.raises(ValueError):
         utils.get_trans_instance(get_transformer_loader, "invalid-feature")
+
+
+def test_highlight_ne_sent():
+    text = "Hello, my name is John Doe."
+    ne_list = [{"word": "John Doe", "start": 18, "end": 26, "entity_group": "PERSON"}]
+    colors = {"PERSON": "lightblue"}
+    result = utils.highlight_ne_sent(text, ne_list, colors)
+    expected = (
+        'Hello, my name is <span style="background-color:lightblue">John Doe</span>.'
+    )
+    assert result == expected
+    text = "I am a Research Software Engineer at the Scientific Software Center. Most of my time I spend in Heidelberg, writing tests for Python packages."  # noqa
+    ne_list = [
+        {
+            "word": "Research Software Engineer",
+            "start": 7,
+            "end": 33,
+            "entity_group": "PERSON",
+        },
+        {
+            "word": "Scientific Software Center",
+            "start": 41,
+            "end": 67,
+            "entity_group": "ORG",
+        },
+        {"word": "Heidelberg", "start": 96, "end": 106, "entity_group": "LOC"},
+        {"word": "Python", "start": 126, "end": 132, "entity_group": "MISC"},
+    ]
+    colors = {
+        "PERSON": "lightblue",
+        "ORG": "lightgreen",
+        "LOC": "lightyellow",
+        "MISC": "lightpink",
+    }
+    result = utils.highlight_ne_sent(text, ne_list, colors)
+    expected = 'I am a <span style="background-color:lightblue">Research Software Engineer</span> at the <span style="background-color:lightgreen">Scientific Software Center</span>. Most of my time I spend in <span style="background-color:lightyellow">Heidelberg</span>, writing tests for <span style="background-color:lightpink">Python</span> packages.'  # noqa
+    assert result == expected
+    # test if no color was assigned for entity
+    colors = {}
+    result = utils.highlight_ne_sent(text, ne_list, colors)
+    expected = 'I am a <span style="background-color:lightgray">Research Software Engineer</span> at the <span style="background-color:lightgray">Scientific Software Center</span>. Most of my time I spend in <span style="background-color:lightgray">Heidelberg</span>, writing tests for <span style="background-color:lightgray">Python</span> packages.'  # noqa
+    assert result == expected
+    # test with no named entities
+    text = "I am a Research Software Engineer at the Scientific Software Center."
+    ne_list = []
+    colors = {
+        "PERSON": "lightblue",
+        "ORG": "lightgreen",
+        "LOC": "lightyellow",
+        "MISC": "lightpink",
+    }
+    result = utils.highlight_ne_sent(text, ne_list, colors)
+    assert result == text
+    # with same entry multiple times
+    text = "Hello, my name is John Doe. You can call me John Doe."
+    ne_list = [
+        {"word": "John Doe", "start": 18, "end": 26, "entity_group": "PERSON"},
+        {"word": "John Doe", "start": 44, "end": 52, "entity_group": "PERSON"},
+    ]
+    colors = {"PERSON": "lightblue"}
+    result = utils.highlight_ne_sent(text, ne_list, colors)
+    expected = 'Hello, my name is <span style="background-color:lightblue">John Doe</span>. You can call me <span style="background-color:lightblue">John Doe</span>.'  # noqa
+    assert result == expected
+    # missing keys in ne_list
+    ne_list = [
+        {"word": "John Doe", "start": 18, "end": 26, "entity_group": "PERSON"},
+        {"word": "John Doe", "start": 44, "end": 52},
+    ]
+    with pytest.raises(ValueError):
+        utils.highlight_ne_sent(text, ne_list, colors)

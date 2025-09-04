@@ -19,7 +19,7 @@ authors = [
   { name="Felix Fleischle", email="ssc@iwr.uni-heidelberg.de" },
   { name="Thore Olthoff", email="ssc@iwr.uni-heidelberg.de" },
 ]
-version = "0.1.0"
+version = "0.1.1"
 
 dependencies = [
   "spacy",
