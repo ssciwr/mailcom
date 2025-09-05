@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
@@ -19,7 +19,7 @@ authors = [
   { name="Felix Fleischle", email="ssc@iwr.uni-heidelberg.de" },
   { name="Thore Olthoff", email="ssc@iwr.uni-heidelberg.de" },
 ]
-version = "0.1.1"
+dynamic = ["version"]
 
 dependencies = [
   "spacy",
@@ -56,3 +56,6 @@ markers = [
     "langdet: marks tests related to language detection",
     "datelib : marks tests related to date library",
 ]
+
+[tool.hatch.version]
+source = "vcs"
