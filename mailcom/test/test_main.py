@@ -308,6 +308,18 @@ def get_data():
 
 
 @pytest.fixture()
+def get_data_small():
+    return [
+        {
+            "content": "Esta foto fue tomada por Alice e Angel el 28.03.2025 a las 10:30. "  # noqa
+            "Compruébelo en el archivo adjunto",
+            "attachment": 1,
+            "attachement type": ["jpg"],
+        },
+    ]
+
+
+@pytest.fixture()
 def get_settings():
     pkg = resources.files("mailcom")
     setting_path = Path(pkg / "test" / "settings_for_testing.json")
@@ -438,6 +450,115 @@ def test_process_data_no_ne(get_data, get_settings, get_inout_hl):
         == "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30. "
         "Compruébelo en el archivo adjunto"
     )
+
+
+def test_process_data_matching_pseudonym(get_data, get_settings, get_inout_hl):
+    get_inout_hl.email_list = get_data
+    new_settings = {
+        "pseudo_first_names": {
+            "es": ["Alice", "Angel", "Alex"],
+            "fr": ["Claude", "Dominique", "Alice"],
+        }
+    }
+    main._update_new_settings(get_settings, new_settings=new_settings)
+    # check that pseudonyms have been updated
+    assert get_settings["pseudo_first_names"] == new_settings["pseudo_first_names"]
+    main.process_data(get_inout_hl.get_email_list(), get_settings)
+
+    emails = get_inout_hl.get_email_list()
+    email_1 = next(emails)
+    email_2 = next(emails)
+
+    assert email_1.get("cleaned_content") == email_1.get("content")
+    assert email_1.get("lang") == "fr"
+    assert email_1.get("detected_datetime") == []
+    assert (
+        email_1.get("pseudo_content")
+        == "Claude [email] viendra au bâtiment à [number]h[number]. "
+        "Nous nous rendrons ensuite au [location]"
+    )
+    assert email_1.get("sentences") == [
+        "Alice (alice@gmail.com) viendra au bâtiment à 10h00.",
+        "Nous nous rendrons ensuite au MeetingPoint",
+    ]
+    assert email_1.get("sentences_after_email") == [
+        "Alice [email] viendra au bâtiment à 10h00.",
+        "Nous nous rendrons ensuite au MeetingPoint",
+    ]
+
+    assert email_2.get("cleaned_content") == email_2.get("content")
+    assert email_2.get("lang") == "es"
+    assert email_2.get("detected_datetime") == ["28.03.2025 a las 10:30"]
+    assert (
+        email_2.get("pseudo_content")
+        == "Esta foto fue tomada por Angel el 28.03.2025 a las 10:30. "
+        "Compruébelo en el archivo adjunto"
+    )
+    assert email_2.get("sentences") == [
+        "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30.",
+        "Compruébelo en el archivo adjunto",
+    ]
+    assert email_2.get("sentences_after_email") == [
+        "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30.",
+        "Compruébelo en el archivo adjunto",
+    ]
+
+
+def test_process_data_multiple_same_pseudonyms(
+    get_data_small, get_settings, get_inout_hl
+):
+    get_inout_hl.email_list = get_data_small
+    new_settings = {
+        "pseudo_first_names": {
+            "es": [
+                "Alice",
+                "Alaya",
+                "Angel",
+            ],
+        }
+    }
+    main._update_new_settings(get_settings, new_settings=new_settings)
+    # check that pseudonyms have been updated
+    assert get_settings["pseudo_first_names"] == new_settings["pseudo_first_names"]
+    main.process_data(get_inout_hl.get_email_list(), get_settings)
+
+    emails = get_inout_hl.get_email_list()
+    email_2 = next(emails)
+
+    assert email_2.get("cleaned_content") == email_2.get("content")
+    assert email_2.get("lang") == "es"
+    assert email_2.get("detected_datetime") == ["28.03.2025 a las 10:30"]
+    assert (
+        email_2.get("pseudo_content")
+        == "Esta foto fue tomada por Alaya e Alaya el 28.03.2025 a las 10:30. "
+        "Compruébelo en el archivo adjunto"
+    )
+    assert email_2.get("sentences") == [
+        "Esta foto fue tomada por Alice e Angel el 28.03.2025 a las 10:30.",
+        "Compruébelo en el archivo adjunto",
+    ]
+    assert email_2.get("sentences_after_email") == [
+        "Esta foto fue tomada por Alice e Angel el 28.03.2025 a las 10:30.",
+        "Compruébelo en el archivo adjunto",
+    ]
+
+
+def test_process_data_same_pseudonym_not_enough_pseudos(
+    get_data_small, get_settings, get_inout_hl
+):
+    get_inout_hl.email_list = get_data_small
+    new_settings = {
+        "pseudo_first_names": {
+            "es": [
+                "Alice",
+            ],
+        }
+    }
+    main._update_new_settings(get_settings, new_settings=new_settings)
+    # check that pseudonyms have been updated
+    assert get_settings["pseudo_first_names"] == new_settings["pseudo_first_names"]
+    with pytest.raises(ValueError):
+        main.process_data(get_inout_hl.get_email_list(), get_settings)
 
 
 def test_process_data_no_numbers(get_data, get_settings, get_inout_hl):
