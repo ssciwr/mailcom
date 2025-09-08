@@ -22,7 +22,7 @@ def get_input_handler(
         "content",
         "date",
         "attachment",
-        "attachement type",
+        "attachment type",
         "subject",
     ],
     unmatched_keyword: str = "unmatched",
@@ -237,6 +237,7 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
     lang_pipeline = workflow_settings.get("lang_pipeline", None)
     spacy_model = workflow_settings.get("spacy_model", "default")
     ner_pipeline = workflow_settings.get("ner_pipeline", None)
+    pseudo_fields = workflow_settings.get("pseudo_fields", [])
 
     # init necessary objects
     spacy_loader = utils.SpacyLoader()
@@ -249,67 +250,81 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
         time_detector = TimeDetector(parsing_type, spacy_loader)
 
     for email in email_list:
-        # skip if email content is empty or not present
-        if not email.get("content") or email.get("content") == unmatched_keyword:
-            continue
+        # prepare additional keys for each email dict
+        email["ne_list"] = {}
+        email["ne_sent"] = {}
+        email["sentences"] = {}
+        email["sentences_after_email"] = {}
+        email["lang"] = {}
+        email["detected_datetime"] = {}
 
-        email_content, _ = utils.clean_up_content(email["content"])
-        email["cleaned_content"] = email_content
+        # pseudonymize each specified field in an email
+        for field in pseudo_fields:
+            # skip if field is empty or not present
+            if not email.get(field) or email.get(field) == unmatched_keyword:
+                continue
 
-        if detect_lang:
-            det_langs = lang_detector.get_detections(
-                email_content, lang_lib=lang_lib, pipeline_info=lang_pipeline
+            cleaned_content, _ = utils.clean_up_content(email[field])
+            cleaned_content_name = f"cleaned_{field}"
+            email[cleaned_content_name] = cleaned_content
+
+            if detect_lang:
+                det_langs = lang_detector.get_detections(
+                    cleaned_content, lang_lib=lang_lib, pipeline_info=lang_pipeline
+                )
+                lang = det_langs[0][0]  # first detected lang, no prob.
+            email["lang"][field] = lang
+
+            if detect_datetime:
+                detected_time = time_detector.get_date_time(
+                    cleaned_content, lang, model=spacy_model
+                )
+                email["detected_datetime"][field] = [
+                    item[0] for item in detected_time
+                ]  # only keep the strings
+            exclude_pseudonym = False
+            pseudo_content, exclude_pseudonym = pseudonymizer.pseudonymize(
+                cleaned_content,
+                lang,
+                model=spacy_model,
+                pipeline_info=ner_pipeline,
+                detected_dates=email.get("detected_datetime", {}).get(field, None),
+                pseudo_emailaddresses=pseudo_emailaddresses,
+                pseudo_ne=pseudo_ne,
+                pseudo_numbers=pseudo_numbers,
             )
-            lang = det_langs[0][0]  # first detected lang, no prob.
-        email["lang"] = lang
+            if exclude_pseudonym:
+                # make sure ne pseudonymization is restarted in case of
+                # matching pseudonym
+                # note that the matching pseudonym is subsequently excluded
+                # from all further processing but will be present in the initial
+                # data entries
+                pseudo_content, _ = pseudonymizer.pseudonymize_with_updated_ne(
+                    copy.deepcopy(pseudonymizer.sentences),
+                    None,
+                    language=lang,
+                    detected_dates=email.get("detected_datetime", {}).get(field, None),
+                    pseudo_emailaddresses=pseudo_emailaddresses,
+                    pseudo_ne=pseudo_ne,
+                    pseudo_numbers=pseudo_numbers,
+                )
+            # use deepcopy to avoid issue with mutable objects
+            pseudo_content_name = f"pseudo_{field}"
+            email[pseudo_content_name] = pseudo_content
 
-        if detect_datetime:
-            detected_time = time_detector.get_date_time(
-                email_content, lang, model=spacy_model
-            )
-            email["detected_datetime"] = [
-                item[0] for item in detected_time
-            ]  # only keep the strings
-        exclude_pseudonym = False
-        pseudo_content, exclude_pseudonym = pseudonymizer.pseudonymize(
-            email_content,
-            lang,
-            model=spacy_model,
-            pipeline_info=ner_pipeline,
-            detected_dates=email.get("detected_datetime", None),
-            pseudo_emailaddresses=pseudo_emailaddresses,
-            pseudo_ne=pseudo_ne,
-            pseudo_numbers=pseudo_numbers,
-        )
-        # make sure ne pseudonymization is restarted in case of
-        # matching pseudonym
-        # note that the matching pseudonym is subsequently excluded
-        # from all further processing but will be present in the initial
-        # data entries
-        pseudo_content, _ = pseudonymizer.pseudonymize_with_updated_ne(
-            copy.deepcopy(pseudonymizer.sentences),
-            None,
-            language=lang,
-            detected_dates=email.get("detected_datetime", None),
-            pseudo_emailaddresses=pseudo_emailaddresses,
-            pseudo_ne=pseudo_ne,
-            pseudo_numbers=pseudo_numbers,
-        )
-        # use deepcopy to avoid issue with mutable objects
-        email["pseudo_content"] = pseudo_content
-        email["ne_list"] = copy.deepcopy(pseudonymizer.ne_list)
-        # remove score from the list
-        for ne in email["ne_list"]:
-            ne.pop("score")
-        email["ne_sent"] = copy.deepcopy(pseudonymizer.ne_sent)
-        email["sentences"] = copy.deepcopy(pseudonymizer.sentences)
+            email["ne_list"][field] = copy.deepcopy(pseudonymizer.ne_list)
+            # remove score from the list
+            for ne in email["ne_list"][field]:
+                ne.pop("score")
+            email["ne_sent"][field] = copy.deepcopy(pseudonymizer.ne_sent)
+            email["sentences"][field] = copy.deepcopy(pseudonymizer.sentences)
 
-        # record sentences after email pseudonymization
-        if pseudo_emailaddresses:
-            email["sentences_after_email"] = [
-                pseudonymizer.pseudonymize_email_addresses(sent)
-                for sent in email["sentences"]
-            ]
+            # record sentences after email pseudonymization
+            if pseudo_emailaddresses:
+                email["sentences_after_email"][field] = [
+                    pseudonymizer.pseudonymize_email_addresses(sent)
+                    for sent in email["sentences"][field]
+                ]
 
 
 def write_output_data(inout_hl: InoutHandler, out_path: str, overwrite: bool = False):

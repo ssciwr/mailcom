@@ -137,11 +137,11 @@ class Pseudonymize:
             print(f"Updated pseudonyms: {self.pseudo_first_names.get(lang, [])}")
         # raise an exception for the user to restart with other pseudonyms if there are
         # no pseudonyms left in the list
-        if not self.pseudo_first_names[lang]:
+        if not self.pseudo_first_names.get(lang, []):
             raise ValueError(
                 """Please provide a different list of pseudonyms via the
                              workflow settings file. The current list of pseudonyms
-                             is too short and contains only names that already
+                             is empty or too short and contains only names that already
                              exist in the actual data."""
             )
         return exclude_pseudonym
