@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from importlib import resources
 import csv
+import copy
 
 
 def get_files(dir_path: Path, name_phrase: str) -> list[Path]:
@@ -315,46 +316,29 @@ def get_data():
 
 
 @pytest.fixture()
-def get_data_w_subject():
-    return [
-        {
-            "subject": "Rendez-vous à 10h00",
-            "content": "Alice (alice@gmail.com) viendra au bâtiment à 10h00. "
-            "Nous nous rendrons ensuite au MeetingPoint",
-        },
-        {
-            "subject": "Foto del 28.03.2025",
-            "content": "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30. "
-            "Compruébelo en el archivo adjunto",
-            "attachment": 1,
-            "attachment type": ["jpg"],
-        },
-    ]
+def get_data_w_subject(get_data):
+    data_w_subject = copy.deepcopy(get_data)
+    data_w_subject[0]["subject"] = "Rendez-vous à 10h00"
+    data_w_subject[1]["subject"] = "Foto del 28.03.2025"
+    return data_w_subject
 
 
 @pytest.fixture()
-def get_data_small():
-    return [
-        {
-            "content": "Esta foto fue tomada por Alice e Angel el 28.03.2025 a las 10:30. "  # noqa
-            "Compruébelo en el archivo adjunto",
-            "attachment": 1,
-            "attachment type": ["jpg"],
-        },
-    ]
+def get_data_small(get_data):
+    small_data = copy.deepcopy(get_data)
+    small_data.pop(0)
+    small_data[0]["content"] = (
+        "Esta foto fue tomada por Alice e Angel el 28.03.2025 a las 10:30. "
+        "Compruébelo en el archivo adjunto"
+    )
+    return small_data
 
 
 @pytest.fixture()
-def get_data_small_w_subject():
-    return [
-        {
-            "subject": "Foto del 28.03.2025 por Alice e Angel",
-            "content": "Esta foto fue tomada por Alice e Angel el 28.03.2025 a las 10:30. "  # noqa
-            "Compruébelo en el archivo adjunto",
-            "attachment": 1,
-            "attachment type": ["jpg"],
-        },
-    ]
+def get_data_small_w_subject(get_data_small):
+    small_data_w_subject = copy.deepcopy(get_data_small)
+    small_data_w_subject[0]["subject"] = "Foto del 28.03.2025 por Alice e Angel"
+    return small_data_w_subject
 
 
 @pytest.fixture()
