@@ -258,6 +258,9 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
         email["lang"] = {}
         email["detected_datetime"] = {}
 
+        # record ne_list between fields
+        # to make sure that used pseudonyms are consistent across fields
+        prev_ne_list = []
         # pseudonymize each specified field in an email
         for field in pseudo_fields:
             # skip if field is empty or not present
@@ -292,6 +295,7 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
                 pseudo_emailaddresses=pseudo_emailaddresses,
                 pseudo_ne=pseudo_ne,
                 pseudo_numbers=pseudo_numbers,
+                prev_ne_list=prev_ne_list,
             )
             if exclude_pseudonym:
                 # make sure ne pseudonymization is restarted in case of
@@ -307,7 +311,12 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
                     pseudo_emailaddresses=pseudo_emailaddresses,
                     pseudo_ne=pseudo_ne,
                     pseudo_numbers=pseudo_numbers,
+                    prev_ne_list=prev_ne_list,
                 )
+
+            # record ne_list between fields
+            prev_ne_list.extend(pseudonymizer.ne_list)
+
             # use deepcopy to avoid issue with mutable objects
             pseudo_content_name = f"pseudo_{field}"
             email[pseudo_content_name] = pseudo_content

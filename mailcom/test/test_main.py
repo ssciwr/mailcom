@@ -337,7 +337,7 @@ def get_data_small(get_data):
 @pytest.fixture()
 def get_data_small_w_subject(get_data_small):
     small_data_w_subject = copy.deepcopy(get_data_small)
-    small_data_w_subject[0]["subject"] = "Foto del 28.03.2025 por Alice e Angel"
+    small_data_w_subject[0]["subject"] = "Foto del 28.03.2025 por Angel e Alice"
     return small_data_w_subject
 
 
@@ -675,7 +675,41 @@ def test_process_data_with_subject_multiple_same_pseudonyms(
         == "Foto del [number].[number].[number] por Alaya e Alex"
     )
     assert email.get("pseudo_content") == (
-        "Esta foto fue tomada por Alaya e Alex el 28.03.2025 a las 10:30. "
+        "Esta foto fue tomada por Alex e Alaya el 28.03.2025 a las 10:30. "
+        "Compruébelo en el archivo adjunto"
+    )
+
+
+def test_process_data_with_subject_with_prev_ne_list(
+    get_data_small_w_subject, get_settings, get_inout_hl
+):
+    # simplify the test without duplicate names
+    data = copy.deepcopy(get_data_small_w_subject)
+    data[0]["content"] = (
+        "Esta foto fue tomada por Alice e Tony el 28.03.2025 a las 10:30. "
+        "Compruébelo en el archivo adjunto"
+    )
+    # switch per name position to check that the prev_ne_list works
+    data[0]["subject"] = "Foto del 28.03.2025 por Tony e Alice"
+
+    get_inout_hl.email_list = data
+
+    # make sure only use es pseudonyms
+    new_settings = copy.deepcopy(get_settings)
+    new_settings["default_lang"] = "es"
+
+    main.process_data(get_inout_hl.get_email_list(), new_settings)
+
+    emails = get_inout_hl.get_email_list()
+    email = next(emails)
+
+    assert (
+        email.get("pseudo_subject")
+        == "Foto del [number].[number].[number] por José e Angel"
+    )
+
+    assert email.get("pseudo_content") == (
+        "Esta foto fue tomada por Angel e José el 28.03.2025 a las 10:30. "
         "Compruébelo en el archivo adjunto"
     )
 
