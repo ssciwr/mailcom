@@ -315,7 +315,7 @@ def get_data():
     ]
 
 
-def _modify_data(base_data: list, updates: tuple, remove_indices=None):
+def _modify_data(base_data: list, updates: list, remove_indices=None):
     data = copy.deepcopy(base_data)
 
     for index, field, value in updates:
