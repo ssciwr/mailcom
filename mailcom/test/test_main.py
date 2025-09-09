@@ -315,30 +315,52 @@ def get_data():
     ]
 
 
+def _modify_data(base_data: list, updates: tuple, remove_indices=None):
+    data = copy.deepcopy(base_data)
+
+    for index, field, value in updates:
+        data[index][field] = value
+
+    if remove_indices:
+        for index in sorted(remove_indices, reverse=True):
+            data.pop(index)
+
+    return data
+
+
 @pytest.fixture()
 def get_data_w_subject(get_data):
-    data_w_subject = copy.deepcopy(get_data)
-    data_w_subject[0]["subject"] = "Rendez-vous à 10h00"
-    data_w_subject[1]["subject"] = "Foto del 28.03.2025"
-    return data_w_subject
+    return _modify_data(
+        get_data,
+        updates=[
+            (0, "subject", "Rendez-vous à 10h00"),
+            (1, "subject", "Foto del 28.03.2025"),
+        ],
+    )
 
 
 @pytest.fixture()
 def get_data_small(get_data):
-    small_data = copy.deepcopy(get_data)
-    small_data.pop(0)
-    small_data[0]["content"] = (
-        "Esta foto fue tomada por Alice e Angel el 28.03.2025 a las 10:30. "
-        "Compruébelo en el archivo adjunto"
+    return _modify_data(
+        get_data,
+        updates=[
+            (
+                1,
+                "content",
+                "Esta foto fue tomada por Alice e Angel el 28.03.2025 a las 10:30. "
+                "Compruébelo en el archivo adjunto",
+            )
+        ],
+        remove_indices=[0],
     )
-    return small_data
 
 
 @pytest.fixture()
 def get_data_small_w_subject(get_data_small):
-    small_data_w_subject = copy.deepcopy(get_data_small)
-    small_data_w_subject[0]["subject"] = "Foto del 28.03.2025 por Angel e Alice"
-    return small_data_w_subject
+    return _modify_data(
+        get_data_small,
+        updates=[(0, "subject", "Foto del 28.03.2025 por Angel e Alice")],
+    )
 
 
 @pytest.fixture()

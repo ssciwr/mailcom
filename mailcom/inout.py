@@ -73,9 +73,9 @@ class InoutHandler:
         ep = eml_parser.EmlParser(include_raw_body=True)
         parsed_eml = ep.decode_email_bytes(raw_email)
         attachmenttypes = []
-        # find if there are any attachements, and if yes, how many
+        # find if there are any attachments, and if yes, how many
         attachments = len(parsed_eml["attachment"]) if "attachment" in parsed_eml else 0
-        # find the types of attachements
+        # find the types of attachments
         if attachments > 0:
             attachmenttypes = [
                 parsed_eml["attachment"][i]["extension"] for i in range(attachments)
