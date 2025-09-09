@@ -14,7 +14,7 @@ class InoutHandler:
                 "content",
                 "date",
                 "attachment",
-                "attachement type",
+                "attachment type",
                 "subject",
             ]
         else:
@@ -91,7 +91,7 @@ class InoutHandler:
             "content": body_content,
             "date": parsed_eml["header"]["date"],
             "attachment": attachments,
-            "attachement type": attachmenttypes,
+            "attachment type": attachmenttypes,
             "subject": parsed_eml["header"]["subject"],
         }
         # clean up html content
