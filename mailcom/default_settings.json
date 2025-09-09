@@ -1,5 +1,6 @@
 {
     "default_lang": "fr",
+    "pseudo_fields": ["subject", "content"],
     "pseudo_emailaddresses": true,
     "pseudo_ne": true,
     "pseudo_numbers": true,

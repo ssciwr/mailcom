@@ -137,16 +137,16 @@ class Pseudonymize:
             print(f"Updated pseudonyms: {self.pseudo_first_names.get(lang, [])}")
         # raise an exception for the user to restart with other pseudonyms if there are
         # no pseudonyms left in the list
-        if not self.pseudo_first_names[lang]:
+        if not self.pseudo_first_names.get(lang, []):
             raise ValueError(
                 """Please provide a different list of pseudonyms via the
                              workflow settings file. The current list of pseudonyms
-                             is too short and contains only names that already
+                             is empty or too short and contains only names that already
                              exist in the actual data."""
             )
         return exclude_pseudonym
 
-    def choose_per_pseudonym(self, name, lang="fr"):
+    def choose_per_pseudonym(self, name, lang="fr", prev_ne_list: list = None):
         """Chooses a pseudonym for a PER named entity based on previously used pseudonyms.
         If the name has previously been replaced, the same pseudonym is used again.
         If not, a new pseudonym is taken from the list of available pseudonyms.
@@ -155,22 +155,37 @@ class Pseudonymize:
             name (str): Word of the named entity.
             lang (str, optional): Language to choose pseudonyms from.
                 Defaults to "fr".
+            prev_ne_list (list, optional): List of named entities from previous fields
+                in the email.
+                Defaults to None.
 
         Returns:
             str: Chosen pseudonym.
         """
+
+        def _get_used_names(ne_list):
+            return [ne["word"] for ne in ne_list] if ne_list else []
+
+        def _get_used_pseudonyms(ne_list):
+            return [ne.get("pseudonym", "") for ne in ne_list] if ne_list else []
+
+        def _get_n_pseudonyms_used(ne_list):
+            return [ne["entity_group"] for ne in ne_list].count("PER") if ne_list else 0
+
         if lang not in self.pseudo_first_names:
             # get name from the first specified language
             lang = next(iter(self.pseudo_first_names))
 
         pseudonym = ""
         # get list of already replaced names, and list of corresponding pseudonyms
-        used_names = [ne["word"] for ne in self.ne_list]
-        used_pseudonyms = [
-            ne["pseudonym"] if "pseudonym" in ne else "" for ne in self.ne_list
-        ]
+        used_names = _get_used_names(self.ne_list) + _get_used_names(prev_ne_list)
+        used_pseudonyms = _get_used_pseudonyms(self.ne_list) + _get_used_pseudonyms(
+            prev_ne_list
+        )
         # amount of pseudonyms for PER used (PER for "PERSON")
-        n_pseudonyms_used = [ne["entity_group"] for ne in self.ne_list].count("PER")
+        n_pseudonyms_used = _get_n_pseudonyms_used(
+            self.ne_list
+        )  # count only actually used pseudonyms, i.e. not count prev_ne_list
         # check all variations of the name
         name_variations = [
             name,
@@ -196,7 +211,9 @@ class Pseudonymize:
                     pseudonym = self.pseudo_first_names[lang][0]
         return pseudonym
 
-    def pseudonymize_ne(self, ner, sentence, lang="fr", sent_idx=0):
+    def pseudonymize_ne(
+        self, ner, sentence, lang="fr", sent_idx=0, prev_ne_list: list = None
+    ):
         """Pseudonymizes all found named entities in a String.
         Named entities categorized as persons are replaced with a pseudonym.
         Named entities categorized as locations, organizations or miscellaneous
@@ -210,6 +227,8 @@ class Pseudonymize:
                 Defaults to "fr".
             sent_idx (int, optional): Index of the sentence in the email.
                 Defaults to 0.
+            prev_ne_list (list, optional): List of named entities from previous
+                fields in the email. Defaults to None.
 
         Returns:
             list[str]: Pseudonymized sentence as list.
@@ -225,7 +244,9 @@ class Pseudonymize:
             start, end = entity["start"], entity["end"]
             # choose the pseudonym of current NE based on its type
             if ent_string == "PER":
-                pseudonym = self.choose_per_pseudonym(ent_word, lang)
+                pseudonym = self.choose_per_pseudonym(
+                    ent_word, lang, prev_ne_list=prev_ne_list
+                )
             # replace LOC
             elif ent_string == "LOC":
                 pseudonym = "[location]"
@@ -339,13 +360,14 @@ class Pseudonymize:
     def pseudonymize(
         self,
         text,
-        language="de",
+        language="fr",
         model="default",
         pipeline_info: dict = None,
         detected_dates: list[str] = None,
         pseudo_emailaddresses=True,
         pseudo_ne=True,
         pseudo_numbers=True,
+        prev_ne_list: list = None,
     ):
         """Function that handles the pseudonymization of an email
         and all its steps
@@ -364,6 +386,8 @@ class Pseudonymize:
                 Defaults to True.
             pseudo_numbers (bool, optional): Whether to pseudonymize numbers.
                 Defaults to True.
+            prev_ne_list (list, optional): List of named entities from previous
+                fields in the email. Defaults to None.
 
         Returns:
             str: Pseudonymized text
@@ -377,7 +401,11 @@ class Pseudonymize:
             if pseudo_ne:
                 ner = self.get_ner(sent, pipeline_info)
                 sent = (
-                    " ".join(self.pseudonymize_ne(ner, sent, language, sent_idx))
+                    " ".join(
+                        self.pseudonymize_ne(
+                            ner, sent, language, sent_idx, prev_ne_list=prev_ne_list
+                        )
+                    )
                     if ner
                     else sent
                 )
@@ -396,11 +424,12 @@ class Pseudonymize:
         self,
         sentences,
         ne_sent_dict: Optional[dict[list[dict]]],
-        language="de",
+        language="fr",
         detected_dates: list[str] = None,
         pseudo_emailaddresses=True,
         pseudo_ne=True,
         pseudo_numbers=True,
+        prev_ne_list: list = None,
     ):
         """Pseudonymizes the email with updated named entities.
         This function is used when the named entities have been updated
@@ -420,6 +449,8 @@ class Pseudonymize:
                 Defaults to True.
             pseudo_numbers (bool, optional): Whether to pseudonymize numbers.
                 Defaults to True.
+            prev_ne_list (list, optional): List of named entities from previous
+                fields in the email. Defaults to None.
 
         Returns:
             str: Pseudonymized text
@@ -438,7 +469,11 @@ class Pseudonymize:
                 sent = (
                     " ".join(
                         self.pseudonymize_ne(
-                            ne_sent_dict[str(sent_idx)], sent, language, sent_idx
+                            ne_sent_dict[str(sent_idx)],
+                            sent,
+                            language,
+                            sent_idx,
+                            prev_ne_list=prev_ne_list,
                         )
                     )
                     if str(sent_idx) in ne_sent_dict

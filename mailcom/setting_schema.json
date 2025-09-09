@@ -35,6 +35,15 @@
     },
     "type": "object",
     "properties": {
+        "pseudo_fields": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "title": "Pseudo Fields",
+            "description": "List of fields to be pseudonymized.",
+            "default": ["subject", "content"]
+        },
         "csv_col_unmatched_keyword": {
             "type": "string",
             "title": "CSV Column Unmatched",

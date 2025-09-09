@@ -21,7 +21,6 @@ def get_pseudo_first_names():
         "fr": [
             "Claude",
             "Dominique",
-            "Claude",
             "Camille",
             "Charlie",
             "Florence",
@@ -323,6 +322,29 @@ def test_pseudonymize_no_entities(get_default_fr):
     assert pseudonymized_text == text["content"]
 
 
+def test_pseudonymize_w_prev_ne_list(get_default_fr):
+    text = {
+        "content": "Claude et Camille sont amis. "
+        "Mon numéro de téléphone est 123-456-7890."  # noqa
+    }
+    prev_ne_list = [
+        {"word": "Claude", "entity_group": "PER", "pseudonym": "Dominique"},
+        {"word": "Camille", "entity_group": "PER", "pseudonym": "Florence"},
+    ]
+    pseudonymized_text, _ = get_default_fr.pseudonymize(
+        text["content"], language="fr", prev_ne_list=prev_ne_list
+    )
+
+    # Check that names are pseudonymized with the provided pseudonyms
+    assert "Claude" not in pseudonymized_text
+    assert "Camille" not in pseudonymized_text
+    assert "Dominique" in pseudonymized_text
+    assert "Florence" in pseudonymized_text
+
+    # Check that numbers are pseudonymized
+    assert "123-456-7890" not in pseudonymized_text
+
+
 def test_pseudonymize_email_addresses(get_default_fr):
     sentence = "My email is example@example.com."
     pseudonymized_sentence = get_default_fr.pseudonymize_email_addresses(sentence)
@@ -387,6 +409,18 @@ def test_choose_per_pseudonym_different_language(get_default_fr):
     assert pseudonym == get_default_fr.pseudo_first_names["es"][0]
 
 
+def test_choose_per_pseudonym_prev_ne_list(get_default_fr):
+    name = "Claude"
+    get_default_fr.ne_list = [
+        {"word": "Jean", "entity_group": "PER", "pseudonym": "Camille"}
+    ]
+    prev_ne_list = [{"word": "Claude", "entity_group": "PER", "pseudonym": "Dominique"}]
+    pseudonym = get_default_fr.choose_per_pseudonym(
+        name, lang="fr", prev_ne_list=prev_ne_list
+    )
+    assert pseudonym == "Dominique"
+
+
 def test_pseudonymize_ne_person(get_default_fr):
     sentence = "Mehdi et Théo sont amis."
     ner = [
@@ -400,6 +434,25 @@ def test_pseudonymize_ne_person(get_default_fr):
         pseudo in pseudonymized_sentence
         for pseudo in get_default_fr.pseudo_first_names["fr"]
     )
+
+
+def test_pseudonymize_ne_person_prev_ne_list(get_default_fr):
+    sentence = "Claude et Camille sont amis."
+    ner = [
+        {"entity_group": "PER", "word": "Claude", "start": 0, "end": 6},
+        {"entity_group": "PER", "word": "Camille", "start": 10, "end": 17},
+    ]
+    prev_ne_list = [
+        {"word": "Claude", "entity_group": "PER", "pseudonym": "Dominique"},
+        {"word": "Camille", "entity_group": "PER", "pseudonym": "Florence"},
+    ]
+    pseudonymized_sentence = " ".join(
+        get_default_fr.pseudonymize_ne(ner, sentence, prev_ne_list=prev_ne_list)
+    )
+    assert "Claude" not in pseudonymized_sentence
+    assert "Camille" not in pseudonymized_sentence
+    assert "Dominique" in pseudonymized_sentence
+    assert "Florence" in pseudonymized_sentence
 
 
 def test_pseudonymize_ne_location(get_default_fr):
@@ -492,6 +545,42 @@ def test_pseudonymize_with_updated_ne(get_default_fr):
     assert "[organization]" in pseudonymized_sentence
     assert "[location]" in pseudonymized_sentence
     assert "[misc]" in pseudonymized_sentence
+
+
+def test_pseudonymize_with_updated_ne_prev_ne_list(get_default_fr):
+    sentences = [
+        "Alex et Tony sont amis.",
+        "Thomas travaille chez Microsoft à Paris.",
+    ]
+    ner_sent_dict = {
+        "0": [
+            {"entity_group": "PER", "word": "Alex", "start": 0, "end": 4},
+            {"entity_group": "PER", "word": "Tony", "start": 8, "end": 12},
+        ],
+        "1": [
+            {"entity_group": "PER", "word": "Thomas", "start": 0, "end": 6},
+            {"entity_group": "ORG", "word": "Microsoft", "start": 18, "end": 27},
+            {"entity_group": "LOC", "word": "Paris", "start": 30, "end": 35},
+        ],
+    }
+    prev_ne_list = [
+        {"word": "Alex", "entity_group": "PER", "pseudonym": "Claude"},
+        {"word": "Tony", "entity_group": "PER", "pseudonym": "Dominique"},
+    ]
+    pseudonymized_sentence, _ = get_default_fr.pseudonymize_with_updated_ne(
+        sentences,
+        ner_sent_dict,
+        language="fr",
+        detected_dates=None,
+        prev_ne_list=prev_ne_list,
+    )
+
+    assert "Alex" not in pseudonymized_sentence
+    assert "Tony" not in pseudonymized_sentence
+    assert "Claude" in pseudonymized_sentence
+    assert "Dominique" in pseudonymized_sentence
+    assert "Thomas" not in pseudonymized_sentence
+    assert "Camille" in pseudonymized_sentence
 
 
 def test_pseudonymize_for_same_pseudo_and_name(get_default_fr):

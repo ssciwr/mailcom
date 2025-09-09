@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from importlib import resources
 import csv
+import copy
 
 
 def get_files(dir_path: Path, name_phrase: str) -> list[Path]:
@@ -48,7 +49,7 @@ def test_get_input_handler_csv_unmatch(tmp_path):
     assert email["content"] == "unmatched"
     assert email["date"] is None
     assert email["attachment"] is None
-    assert email["attachement type"] is None
+    assert email["attachment type"] is None
     assert email["subject"] is None
 
 
@@ -60,6 +61,13 @@ def test_get_input_handler_dir(tmpdir):
 
 
 def test_is_valid_settings():
+    settings = {"pseudo_fields": ["content", "subject"]}
+    assert main.is_valid_settings(settings) is True
+    settings = {"pseudo_fields": "content"}
+    assert main.is_valid_settings(settings) is False
+    settings = {"pseudo_fields": [1, 2]}
+    assert main.is_valid_settings(settings) is False
+
     settings = {"csv_col_unmatched_keyword": True}
     assert main.is_valid_settings(settings) is False
     settings = {"csv_col_unmatched_keyword": "error"}
@@ -302,21 +310,57 @@ def get_data():
             "content": "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30. "
             "Compruébelo en el archivo adjunto",
             "attachment": 1,
-            "attachement type": ["jpg"],
+            "attachment type": ["jpg"],
         },
     ]
+
+
+def _modify_data(base_data: list, updates: list, remove_indices=None):
+    data = copy.deepcopy(base_data)
+
+    for index, field, value in updates:
+        data[index][field] = value
+
+    if remove_indices:
+        for index in sorted(remove_indices, reverse=True):
+            data.pop(index)
+
+    return data
 
 
 @pytest.fixture()
-def get_data_small():
-    return [
-        {
-            "content": "Esta foto fue tomada por Alice e Angel el 28.03.2025 a las 10:30. "  # noqa
-            "Compruébelo en el archivo adjunto",
-            "attachment": 1,
-            "attachement type": ["jpg"],
-        },
-    ]
+def get_data_w_subject(get_data):
+    return _modify_data(
+        get_data,
+        updates=[
+            (0, "subject", "Rendez-vous à 10h00"),
+            (1, "subject", "Foto del 28.03.2025"),
+        ],
+    )
+
+
+@pytest.fixture()
+def get_data_small(get_data):
+    return _modify_data(
+        get_data,
+        updates=[
+            (
+                1,
+                "content",
+                "Esta foto fue tomada por Alice e Angel el 28.03.2025 a las 10:30. "
+                "Compruébelo en el archivo adjunto",
+            )
+        ],
+        remove_indices=[0],
+    )
+
+
+@pytest.fixture()
+def get_data_small_w_subject(get_data_small):
+    return _modify_data(
+        get_data_small,
+        updates=[(0, "subject", "Foto del 28.03.2025 por Angel e Alice")],
+    )
 
 
 @pytest.fixture()
@@ -340,35 +384,35 @@ def test_process_data_default(get_data, get_settings, get_inout_hl):
     email_2 = next(emails)
 
     assert email_1.get("cleaned_content") == email_1.get("content")
-    assert email_1.get("lang") == "fr"
-    assert email_1.get("detected_datetime") == []
+    assert email_1.get("lang").get("content") == "fr"
+    assert email_1.get("detected_datetime").get("content") == []
     assert (
         email_1.get("pseudo_content")
         == "Claude [email] viendra au bâtiment à [number]h[number]. "
         "Nous nous rendrons ensuite au [location]"
     )
-    assert email_1.get("sentences") == [
+    assert email_1.get("sentences").get("content") == [
         "Alice (alice@gmail.com) viendra au bâtiment à 10h00.",
         "Nous nous rendrons ensuite au MeetingPoint",
     ]
-    assert email_1.get("sentences_after_email") == [
+    assert email_1.get("sentences_after_email").get("content") == [
         "Alice [email] viendra au bâtiment à 10h00.",
         "Nous nous rendrons ensuite au MeetingPoint",
     ]
 
     assert email_2.get("cleaned_content") == email_2.get("content")
-    assert email_2.get("lang") == "es"
-    assert email_2.get("detected_datetime") == ["28.03.2025 a las 10:30"]
+    assert email_2.get("lang").get("content") == "es"
+    assert email_2.get("detected_datetime").get("content") == ["28.03.2025 a las 10:30"]
     assert (
         email_2.get("pseudo_content")
         == "Esta foto fue tomada por José el 28.03.2025 a las 10:30. "
         "Compruébelo en el archivo adjunto"
     )
-    assert email_2.get("sentences") == [
+    assert email_2.get("sentences").get("content") == [
         "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30.",
         "Compruébelo en el archivo adjunto",
     ]
-    assert email_2.get("sentences_after_email") == [
+    assert email_2.get("sentences_after_email").get("content") == [
         "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30.",
         "Compruébelo en el archivo adjunto",
     ]
@@ -383,14 +427,14 @@ def test_process_data_no_lang(get_data, get_settings, get_inout_hl):
     email_1 = next(emails)
     email_2 = next(emails)
 
-    assert email_1.get("lang") == "de"
+    assert email_1.get("lang").get("content") == "de"
     assert (
         email_1.get("pseudo_content")
         == "Mika [email] viendra au bâtiment à [number]h[number]. "
         "Nous nous rendrons ensuite au [location]"
     )
 
-    assert email_2.get("lang") == "de"
+    assert email_2.get("lang").get("content") == "de"
     assert (
         email_2.get("pseudo_content")
         == "Esta foto fue tomada por Mika el 28.03.2025 a las 10:30. "
@@ -407,7 +451,7 @@ def test_process_data_no_datetime(get_data, get_settings, get_inout_hl):
     next(emails)
     email_2 = next(emails)
 
-    assert email_2.get("detected_datetime") is None
+    assert email_2.get("detected_datetime").get("content") is None
     assert (
         email_2.get("pseudo_content") == "Esta foto fue tomada por José el "
         "[number].[number].[number] a las [number]:[number]. "
@@ -427,7 +471,7 @@ def test_process_data_no_email(get_data, get_settings, get_inout_hl):
         == "Claude (alice@gmail.com) viendra au bâtiment à [number]h[number]. "
         "Nous nous rendrons ensuite au [location]"
     )
-    assert "sentences_after_email" not in email_1
+    assert email_1.get("sentences_after_email") == {}
 
 
 def test_process_data_no_ne(get_data, get_settings, get_inout_hl):
@@ -470,35 +514,35 @@ def test_process_data_matching_pseudonym(get_data, get_settings, get_inout_hl):
     email_2 = next(emails)
 
     assert email_1.get("cleaned_content") == email_1.get("content")
-    assert email_1.get("lang") == "fr"
-    assert email_1.get("detected_datetime") == []
+    assert email_1.get("lang").get("content") == "fr"
+    assert email_1.get("detected_datetime").get("content") == []
     assert (
         email_1.get("pseudo_content")
         == "Claude [email] viendra au bâtiment à [number]h[number]. "
         "Nous nous rendrons ensuite au [location]"
     )
-    assert email_1.get("sentences") == [
+    assert email_1.get("sentences").get("content") == [
         "Alice (alice@gmail.com) viendra au bâtiment à 10h00.",
         "Nous nous rendrons ensuite au MeetingPoint",
     ]
-    assert email_1.get("sentences_after_email") == [
+    assert email_1.get("sentences_after_email").get("content") == [
         "Alice [email] viendra au bâtiment à 10h00.",
         "Nous nous rendrons ensuite au MeetingPoint",
     ]
 
     assert email_2.get("cleaned_content") == email_2.get("content")
-    assert email_2.get("lang") == "es"
-    assert email_2.get("detected_datetime") == ["28.03.2025 a las 10:30"]
+    assert email_2.get("lang").get("content") == "es"
+    assert email_2.get("detected_datetime").get("content") == ["28.03.2025 a las 10:30"]
     assert (
         email_2.get("pseudo_content")
         == "Esta foto fue tomada por Angel el 28.03.2025 a las 10:30. "
         "Compruébelo en el archivo adjunto"
     )
-    assert email_2.get("sentences") == [
+    assert email_2.get("sentences").get("content") == [
         "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30.",
         "Compruébelo en el archivo adjunto",
     ]
-    assert email_2.get("sentences_after_email") == [
+    assert email_2.get("sentences_after_email").get("content") == [
         "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30.",
         "Compruébelo en el archivo adjunto",
     ]
@@ -526,18 +570,18 @@ def test_process_data_multiple_same_pseudonyms(
     email_2 = next(emails)
 
     assert email_2.get("cleaned_content") == email_2.get("content")
-    assert email_2.get("lang") == "es"
-    assert email_2.get("detected_datetime") == ["28.03.2025 a las 10:30"]
+    assert email_2.get("lang").get("content") == "es"
+    assert email_2.get("detected_datetime").get("content") == ["28.03.2025 a las 10:30"]
     assert (
         email_2.get("pseudo_content")
         == "Esta foto fue tomada por Alaya e Alaya el 28.03.2025 a las 10:30. "
         "Compruébelo en el archivo adjunto"
     )
-    assert email_2.get("sentences") == [
+    assert email_2.get("sentences").get("content") == [
         "Esta foto fue tomada por Alice e Angel el 28.03.2025 a las 10:30.",
         "Compruébelo en el archivo adjunto",
     ]
-    assert email_2.get("sentences_after_email") == [
+    assert email_2.get("sentences_after_email").get("content") == [
         "Esta foto fue tomada por Alice e Angel el 28.03.2025 a las 10:30.",
         "Compruébelo en el archivo adjunto",
     ]
@@ -602,6 +646,94 @@ def test_process_data_empty_email(get_data, get_settings, get_inout_hl):
     next(emails)
     email_3 = next(emails)
     assert "pseudo_content" not in email_3
+
+
+def test_process_data_with_subject(get_data_w_subject, get_settings, get_inout_hl):
+    get_inout_hl.email_list = get_data_w_subject
+    main.process_data(get_inout_hl.get_email_list(), get_settings)
+
+    emails = get_inout_hl.get_email_list()
+    email_1 = next(emails)
+    email_2 = next(emails)
+
+    assert email_1.get("cleaned_subject") == email_1.get("subject")
+    assert email_1.get("pseudo_subject") == "Rendez-vous à [number]h[number]"
+
+    assert email_2.get("cleaned_subject") == email_2.get("subject")
+    assert email_2.get("pseudo_subject") == "Foto del [number].[number].[number]"
+
+
+def test_process_data_with_subject_multiple_same_pseudonyms(
+    get_data_small_w_subject, get_settings, get_inout_hl
+):
+    get_inout_hl.email_list = get_data_small_w_subject
+    new_settings = {
+        "pseudo_first_names": {
+            "es": [
+                "Alice",
+                "Alaya",
+                "Angel",
+                "Alex",
+            ],
+            "it": [
+                "Alice",
+                "Alaya",
+                "Angel",
+                "Alex",
+            ],  # somehow the subject is detected as Italian
+        }
+    }
+    main._update_new_settings(get_settings, new_settings=new_settings)
+    # check that pseudonyms have been updated
+    assert get_settings["pseudo_first_names"] == new_settings["pseudo_first_names"]
+    main.process_data(get_inout_hl.get_email_list(), get_settings)
+
+    emails = get_inout_hl.get_email_list()
+    email = next(emails)
+
+    assert email.get("cleaned_subject") == email.get("subject")
+    assert (
+        email.get("pseudo_subject")
+        == "Foto del [number].[number].[number] por Alaya e Alex"
+    )
+    assert email.get("pseudo_content") == (
+        "Esta foto fue tomada por Alex e Alaya el 28.03.2025 a las 10:30. "
+        "Compruébelo en el archivo adjunto"
+    )
+
+
+def test_process_data_with_subject_with_prev_ne_list(
+    get_data_small_w_subject, get_settings, get_inout_hl
+):
+    # simplify the test without duplicate names
+    data = copy.deepcopy(get_data_small_w_subject)
+    data[0]["content"] = (
+        "Esta foto fue tomada por Alice e Tony el 28.03.2025 a las 10:30. "
+        "Compruébelo en el archivo adjunto"
+    )
+    # switch per name position to check that the prev_ne_list works
+    data[0]["subject"] = "Foto del 28.03.2025 por Tony e Alice"
+
+    get_inout_hl.email_list = data
+
+    # make sure only use es pseudonyms
+    new_settings = copy.deepcopy(get_settings)
+    new_settings["default_lang"] = "es"
+
+    main.process_data(get_inout_hl.get_email_list(), new_settings)
+
+    emails = get_inout_hl.get_email_list()
+    email = next(emails)
+
+    assert (
+        email.get("pseudo_subject")
+        == "Foto del [number].[number].[number] por José e Angel"
+    )
+
+    assert email.get("pseudo_content") == (
+        "Esta foto fue tomada por Angel e José el 28.03.2025 a las 10:30. "
+        "Compruébelo en el archivo adjunto"
+    )
 
 
 def test_write_output_data_csv(get_data, tmp_path, get_inout_hl):

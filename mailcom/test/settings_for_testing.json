@@ -1,6 +1,7 @@
 {
     "csv_col_unmatched_keyword": "unmatched",
     "default_lang": "",
+    "pseudo_fields": ["subject", "content"],
     "datetime_detection": true,
     "time_parsing": "strict",
     "pseudo_emailaddresses": true,
@@ -22,7 +23,6 @@
         "fr": [
             "Claude",
             "Dominique",
-            "Claude",
             "Camille",
             "Charlie",
             "Florence",
