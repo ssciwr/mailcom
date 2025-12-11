@@ -53,7 +53,7 @@ def get_xml_content():
             "content": "This is nothing more than a test",
             "date": "2024-04-17T15:13:56+00:00",
             "attachment": 2,
-            "attachement type": {"jpg", "jpg"},
+            "attachment type": {"jpg", "jpg"},
         }
     ]
 
@@ -82,7 +82,7 @@ def test_extract_email_info(get_instant, tmp_path):
         2024, 4, 17, 15, 13, 56, tzinfo=datetime.timezone.utc
     )
     assert email_info["attachment"] == 2
-    assert email_info["attachement type"] == ["jpg", "jpg"]
+    assert email_info["attachment type"] == ["jpg", "jpg"]
 
     # Test with a non-existing file
     with pytest.raises(OSError):
@@ -136,13 +136,13 @@ def test_write_csv(get_instant, tmp_path):
             "content": "Content of test email 1",
             "date": "2024-04-17T15:13:56+00:00",
             "attachment": 1,
-            "attachement type": ["jpg"],
+            "attachment type": ["jpg"],
         },
         {
             "content": "Content of test email 2",
             "date": "2024-04-18T15:13:56+00:00",
             "attachment": 0,
-            "attachement type": [],
+            "attachment type": [],
         },
     ]
 
@@ -161,11 +161,11 @@ def test_write_csv(get_instant, tmp_path):
         assert rows[0]["content"] == "Content of test email 1"
         assert rows[0]["date"] == "2024-04-17T15:13:56+00:00"
         assert rows[0]["attachment"] == "1"
-        assert rows[0]["attachement type"] == "['jpg']"
+        assert rows[0]["attachment type"] == "['jpg']"
         assert rows[1]["content"] == "Content of test email 2"
         assert rows[1]["date"] == "2024-04-18T15:13:56+00:00"
         assert rows[1]["attachment"] == "0"
-        assert rows[1]["attachement type"] == "[]"
+        assert rows[1]["attachment type"] == "[]"
 
 
 def test_write_csv_empty(get_instant, tmp_path):
@@ -185,13 +185,13 @@ def test_get_email_list(get_instant):
             "content": "Content of test email 1",
             "date": "2024-04-17T15:13:56+00:00",
             "attachment": 1,
-            "attachement type": ["jpg"],
+            "attachment type": ["jpg"],
         },
         {
             "content": "Content of test email 2",
             "date": "2024-04-18T15:13:56+00:00",
             "attachment": 0,
-            "attachement type": [],
+            "attachment type": [],
         },
     ]
     get_instant.email_list = email_data
@@ -270,11 +270,11 @@ def test_load_csv_less_data(get_instant, tmp_path):
     assert email_1["content"] == "Content of test email 1"
     assert email_1["date"] is None
     assert email_1["attachment"] is None
-    assert email_1["attachement type"] is None
+    assert email_1["attachment type"] is None
     assert email_2["content"] == "Content of test email 2"
     assert email_2["date"] is None
     assert email_2["attachment"] is None
-    assert email_2["attachement type"] is None
+    assert email_2["attachment type"] is None
 
 
 def test_load_csv_invalid_col(get_instant, tmp_path):
@@ -296,7 +296,7 @@ def test_load_csv_invalid_col(get_instant, tmp_path):
     assert email["content"] == "unmatched"
     assert email["date"] is None
     assert email["attachment"] is None
-    assert email["attachement type"] is None
+    assert email["attachment type"] is None
 
 
 def test_load_csv_invalid_file(get_instant):
