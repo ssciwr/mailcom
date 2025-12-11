@@ -111,6 +111,12 @@ class Pseudonymize:
         """
         names = []
         exclude_pseudonym = False
+
+        # also take into account that the language may not have defined pseudos
+        # in this case, take the first available language
+        if lang not in self.pseudo_first_names:
+            lang = next(iter(self.pseudo_first_names))
+
         for entity in self.ne_list:
             if entity["entity_group"] == "PER":
                 name = entity["word"]
