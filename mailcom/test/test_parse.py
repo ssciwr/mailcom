@@ -164,6 +164,12 @@ def test_check_pseudonyms_in_content(get_default_fr):
     get_default_fr.ne_list = [{"entity_group": "PER", "word": "Claude"}]
     assert get_default_fr._check_pseudonyms_in_content()
     assert "Claude" not in get_default_fr.pseudo_first_names
+    # test if the language does not have any pseudonyms
+    get_default_fr.ne_list = [{"entity_group": "PER", "word": "John"}]
+    assert not get_default_fr._check_pseudonyms_in_content(lang="de")
+    # check with no pseudonyms at all
+    get_default_fr.pseudo_first_names = {}
+    assert not get_default_fr._check_pseudonyms_in_content()
 
 
 def test_get_sentences_empty_string(get_default_fr):

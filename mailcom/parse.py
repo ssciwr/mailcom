@@ -115,7 +115,13 @@ class Pseudonymize:
         # also take into account that the language may not have defined pseudos
         # in this case, take the first available language
         if lang not in self.pseudo_first_names:
-            lang = next(iter(self.pseudo_first_names))
+            try:
+                lang = next(iter(self.pseudo_first_names))
+            # but, if no language is available at all,
+            # return false to prompt setting of pseudonyms
+            except StopIteration:
+                # we have not found any pseudonyms at all
+                return False
 
         for entity in self.ne_list:
             if entity["entity_group"] == "PER":
