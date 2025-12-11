@@ -109,7 +109,7 @@
   <section id="Demonstration-notebook-for-the-mailcom-package">
 <h1>Demonstration notebook for the mailcom package<a class="headerlink" href="#Demonstration-notebook-for-the-mailcom-package" title="Link to this heading"></a></h1>
 <p><em>Scientific Software Center, University of Heidelberg, May 2025</em></p>
-<p>The <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> package is used to anonymize/pseudonymize textual data, i.e. email content or more general text provided as a tabular input. It takes an <code class="docutils literal notranslate"><span class="pre">eml</span></code>, <code class="docutils literal notranslate"><span class="pre">html</span></code> or <code class="docutils literal notranslate"><span class="pre">csv</span></code> file as input and extracts information about attachements, number of attachements and type, and the content of the email body and subject line. The email body and subject line are then parsed through <code class="docutils literal notranslate"><span class="pre">`spaCy</span></code> &lt;<a class="reference external" href="https://spacy.io/">https://spacy.io/</a>&gt;`__ and divided into sentences. The sentences are fed to a
+<p>The <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> package is used to anonymize/pseudonymize textual data, i.e. email content or more general text provided as a tabular input. It takes an <code class="docutils literal notranslate"><span class="pre">eml</span></code>, <code class="docutils literal notranslate"><span class="pre">html</span></code> or <code class="docutils literal notranslate"><span class="pre">csv</span></code> file as input and extracts information about attachments, number of attachments and type, and the content of the email body and subject line. The email body and subject line are then parsed through <code class="docutils literal notranslate"><span class="pre">`spaCy</span></code> &lt;<a class="reference external" href="https://spacy.io/">https://spacy.io/</a>&gt;`__ and divided into sentences. The sentences are fed to a
 <code class="docutils literal notranslate"><span class="pre">`transformers</span></code> &lt;<a class="reference external" href="https://huggingface.co/docs/transformers/en/index">https://huggingface.co/docs/transformers/en/index</a>&gt;`__ named entity recognition (NER) <a class="reference external" href="https://huggingface.co/docs/transformers/v4.46.3/en/main_classes/pipelines">pipeline</a>, and person names, places, organizations, miscellaneous, are detected in the inference task. Names are replaced by pseudonyms, while locations, organizations and miscellaneous are replaced by <code class="docutils literal notranslate"><span class="pre">[location]</span></code>, <code class="docutils literal notranslate"><span class="pre">[organization]</span></code> and <code class="docutils literal notranslate"><span class="pre">[misc]</span></code>. The text is further parsed using string methods, to replace any
 numbers with <code class="docutils literal notranslate"><span class="pre">[number]</span></code> and email addresses with <code class="docutils literal notranslate"><span class="pre">[email]</span></code>. The processed text and metadata can then be written to an <code class="docutils literal notranslate"><span class="pre">xml</span></code> file or into a pandas dataframe.</p>
 <p><code class="docutils literal notranslate"><span class="pre">mailcom</span></code> can automatically detect the (dominant) text language and also has the capability of preserving dates in the text (so that only numbers are replaced, but not patterns that match dates).</p>
@@ -215,48 +215,52 @@ numbers with <code class="docutils literal notranslate"><span class="pre">[numbe
 <td><p>[“fr”], “es”, “pt”</p></td>
 <td><p>default language of the textual data</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pseudo_emailaddresses</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pseudo_fields</span></code></p></td>
+<td><p>[[“subject”, “content”]], a list of field names</p></td>
+<td><p>fields for pseudonymization</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pseudo_emailaddresses</span></code></p></td>
 <td><p>[true], false</p></td>
 <td><p>replace email addresses by [email]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pseudo_ne</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pseudo_ne</span></code></p></td>
 <td><p>[true], false</p></td>
 <td><p>replace named entities by pseudonyms</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pseudo_numbers</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pseudo_numbers</span></code></p></td>
 <td><p>[true], false</p></td>
 <td><p>replace numbers by [number]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">datetime_detection</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">datetime_detection</span></code></p></td>
 <td><p>[true], false</p></td>
 <td><p>detect datetime objects and protect from replacement as [number]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">time_parsing</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">time_parsing</span></code></p></td>
 <td><p>[“strict”], “non-strict”</p></td>
 <td><p>the pattern matching used to detect date/time patterns in the text</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lang_detection_lib</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lang_detection_lib</span></code></p></td>
 <td><p><a class="reference external" href="https://github.com/saffsd/langid.py">[“langid”]</a>, <a class="reference external" href="https://github.com/Mimino666/langdetect">“langdetect”</a>,
 <a class="reference external" href="https://huggingface.co/papluca/xlm-roberta-base-language-detection">“trans”</a></p></td>
 <td><p>automatically detect language of each input file/<code class="docutils literal notranslate"><span class="pre">csv</span></code> row using the specified library</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ner_pipeline</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ner_pipeline</span></code></p></td>
 <td><p>[null], {valid transformers model name, revision number, and pipeline, aggregation strategy}</p></td>
 <td><p>the transformers pipeline to use for the NER</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">spacy_model</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">spacy_model</span></code></p></td>
 <td><p>[“default”], <a class="reference external" href="https://spacy.io/models">valid spaCy model</a></p></td>
 <td><p>which spaCy model to use for the sentence splitting</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lang_pipeline</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lang_pipeline</span></code></p></td>
 <td><p>[null], {“task”: “text-classification”}, <a class="reference external" href="https://huggingface.co/docs/transformers/en/main_classes/pipelines">for others see here</a></p></td>
 <td><p>the pipeline to use for the language detection, only valid for transformers language detection</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pseudo_first_names</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pseudo_first_names</span></code></p></td>
 <td><p>see below</p></td>
 <td><p>the used names for pseudonymization of person names, per language</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">csv_col_unmatched_keyword</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">csv_col_unmatched_keyword</span></code></p></td>
 <td><p>[“unmatched”], a valid string</p></td>
 <td><p>when reading a <code class="docutils literal notranslate"><span class="pre">csv</span></code> file where a column name has not been defined/is incorrectly defined</p></td>
 </tr>
@@ -269,6 +273,7 @@ numbers with <code class="docutils literal notranslate"><span class="pre">[numbe
 </section>
 <section id="Pseudonymization-settings">
 <h3>Pseudonymization settings<a class="headerlink" href="#Pseudonymization-settings" title="Link to this heading"></a></h3>
+<p>To define which fields should be pseudonymized, the keyword <code class="docutils literal notranslate"><span class="pre">pseudo_fields</span></code> is assigned a list of field names.</p>
 <p>The keywords <code class="docutils literal notranslate"><span class="pre">pseudo_emailaddresses</span></code> and <code class="docutils literal notranslate"><span class="pre">pseudo_numbers</span></code> are by default set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, which triggers the replacement of email addresses such as <a class="reference external" href="mailto:email&#37;&#52;&#48;gmail&#46;com">email<span>&#64;</span>gmail<span>&#46;</span>com</a> by [email], and numbers such as 69120 by [number].</p>
 <p>By using <code class="docutils literal notranslate"><span class="pre">pseudo_ne</span></code>, the replacement of recognized entities by a pseudonym or spaceholder is triggered. A person’s name, i.e. “Michael” is replaced by a pseudonym, for example, “James”, a location like “Paris” is replaced by [location], an organization such as “GitHub” is replaced by [organization], and other entities like “iPhone 15” are replaced by [misc].</p>
 <p>All these three options related to replacement of identifying information can be triggered separately, but are set to <code class="docutils literal notranslate"><span class="pre">true</span></code> by default.</p>
@@ -379,7 +384,7 @@ accordance. The options <code class="docutils literal notranslate"><span class="
 <section id="Reading-input-data">
 <h2>Reading input data<a class="headerlink" href="#Reading-input-data" title="Link to this heading"></a></h2>
 <p>We currently support two types of input data: (1) a <code class="docutils literal notranslate"><span class="pre">csv</span></code>file and (2) a directory of <code class="docutils literal notranslate"><span class="pre">eml</span></code> and/or <code class="docutils literal notranslate"><span class="pre">html</span></code> files.</p>
-<p>Each row of the <code class="docutils literal notranslate"><span class="pre">csv</span></code> file, <code class="docutils literal notranslate"><span class="pre">eml</span></code> file, or <code class="docutils literal notranslate"><span class="pre">html</span></code> file will be stored in a dictionary, with pre-defined keys: <code class="docutils literal notranslate"><span class="pre">content</span></code>, <code class="docutils literal notranslate"><span class="pre">date</span></code>, <code class="docutils literal notranslate"><span class="pre">attachment</span></code>, <code class="docutils literal notranslate"><span class="pre">attachement</span> <span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">subject</span></code>. Dictionaries of <code class="docutils literal notranslate"><span class="pre">eml</span></code> and <code class="docutils literal notranslate"><span class="pre">html</span></code> files have an additional key named <code class="docutils literal notranslate"><span class="pre">file_name</span></code>.</p>
+<p>Each row of the <code class="docutils literal notranslate"><span class="pre">csv</span></code> file, <code class="docutils literal notranslate"><span class="pre">eml</span></code> file, or <code class="docutils literal notranslate"><span class="pre">html</span></code> file will be stored in a dictionary, with pre-defined keys: <code class="docutils literal notranslate"><span class="pre">content</span></code>, <code class="docutils literal notranslate"><span class="pre">date</span></code>, <code class="docutils literal notranslate"><span class="pre">attachment</span></code>, <code class="docutils literal notranslate"><span class="pre">attachment</span> <span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">subject</span></code>. Dictionaries of <code class="docutils literal notranslate"><span class="pre">eml</span></code> and <code class="docutils literal notranslate"><span class="pre">html</span></code> files have an additional key named <code class="docutils literal notranslate"><span class="pre">file_name</span></code>.</p>
 <p><strong>Of these pre-defined keys, only ``content`` and ``subject`` will be processed through the pipeline, all other information is retained as is.</strong></p>
 <p>The dictionary collects all the information and can be converted into a dataframe in the end, to export to <code class="docutils literal notranslate"><span class="pre">csv</span></code>, or for each processed file/<code class="docutils literal notranslate"><span class="pre">csv</span></code> row an <code class="docutils literal notranslate"><span class="pre">xml</span></code> file can be written. Thus, the keys that are used in the processing dictionary should match the final column names of the dataframe / the <code class="docutils literal notranslate"><span class="pre">xml</span></code> keys. These keys can be freely defined, with the exception of <code class="docutils literal notranslate"><span class="pre">content</span></code> and <code class="docutils literal notranslate"><span class="pre">subject</span></code>, which specify data that should be pseudonymized. Additional keys are added to the dictionary in
 the processing.</p>
@@ -395,7 +400,7 @@ the processing.</p>
 <th class="head"><p>message</p></th>
 <th class="head"><p>date</p></th>
 <th class="head"><p>number of attachments</p></th>
-<th class="head"><p>attachement type</p></th>
+<th class="head"><p>attachment type</p></th>
 <th class="head"><p>subject</p></th>
 </tr>
 </thead>
@@ -417,21 +422,21 @@ the processing.</p>
 </tbody>
 </table>
 <p>We then need to pass the column names that should be retained to the processing function; columns that should be dropped should be excluded from this list:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">matching_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;number of attachments&quot;</span><span class="p">,</span> <span class="s2">&quot;attachement type&quot;</span><span class="p">,</span> <span class="s2">&quot;subject&quot;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">matching_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;number of attachments&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment type&quot;</span><span class="p">,</span> <span class="s2">&quot;subject&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>In this example, the “file” column will be dropped and not be included.</p>
 <p>We then need to tell <code class="docutils literal notranslate"><span class="pre">mailcom</span></code>, what the columns should be matched in the processing dictionary, in the correct order:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pre_defined_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment&quot;</span><span class="p">,</span> <span class="s2">&quot;attachement_type&quot;</span><span class="p">,</span> <span class="s2">&quot;subject&quot;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pre_defined_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;subject&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>In this case, the content of the column “message” will be mapped to “content”, “date” to “date”, “number of attachments” to “attachment”, “attachement type” to “attachement_type”, and “subject” to “subject”. Only “content” and “subject” will be pseudonimized. The final data structure will look like this:</p>
+<p>In this case, the content of the column “message” will be mapped to “content”, “date” to “date”, “number of attachments” to “attachment”, “attachment type” to “attachment_type”, and “subject” to “subject”. Only “content” and “subject” will be pseudonimized. The final data structure will look like this:</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>content</p></th>
 <th class="head"><p>date</p></th>
 <th class="head"><p>attachment</p></th>
-<th class="head"><p>attachement_type</p></th>
+<th class="head"><p>attachment_type</p></th>
 <th class="head"><p>subject</p></th>
 <th class="head"><p>cleaned_content</p></th>
 <th class="head"><p>lang</p></th>
@@ -492,9 +497,9 @@ City on April 10, 2021.’]</p></td>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># path to your csv file - change this to your own file</span>
 <span class="n">input_csv</span> <span class="o">=</span> <span class="s2">&quot;sample_data.csv&quot;</span>
 <span class="c1"># the columns of the csv that should be passed through the processing pipeline/retained in the pipeline</span>
-<span class="n">matching_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment&quot;</span><span class="p">,</span> <span class="s2">&quot;attachement_type&quot;</span><span class="p">,</span> <span class="s2">&quot;subject&quot;</span><span class="p">]</span>
+<span class="n">matching_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;subject&quot;</span><span class="p">]</span>
 <span class="c1"># the predefined keys that should be used to match these columns, in the correct order</span>
-<span class="n">pre_defined_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment&quot;</span><span class="p">,</span> <span class="s2">&quot;attachement_type&quot;</span><span class="p">,</span> <span class="s2">&quot;subject&quot;</span><span class="p">]</span>
+<span class="n">pre_defined_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;subject&quot;</span><span class="p">]</span>
 <span class="c1"># what to call any columns that are not matched to pre-defined keys</span>
 <span class="c1"># get this from the workflow settings</span>
 <span class="n">unmatched_keyword</span> <span class="o">=</span> <span class="n">workflow_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;csv_col_unmatched_keyword&quot;</span><span class="p">)</span>
@@ -563,18 +568,21 @@ City on April 10, 2021.’]</p></td>
 <span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">():</span>
     <span class="c1"># get NE for each sentence in the email</span>
     <span class="n">ne_sent_dict</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">ne</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_sent&quot;</span><span class="p">],</span> <span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">]):</span>
-        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ne_sent_dict</span><span class="p">:</span>
-            <span class="n">ne_sent_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">ne_sent_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ne</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">workflow_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pseudo_fields&quot;</span><span class="p">):</span>
+        <span class="n">ne_sent_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">ne</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_sent&quot;</span><span class="p">][</span><span class="n">field</span><span class="p">],</span> <span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">][</span><span class="n">field</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ne_sent_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]:</span>
+                <span class="n">ne_sent_dict</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">ne_sent_dict</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ne</span><span class="p">)</span>
 
     <span class="c1"># display original text and highlight found and replaced NEs</span>
     <span class="n">html_content</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;sentences_after_email&quot;</span><span class="p">]):</span>
-        <span class="n">ne_list</span> <span class="o">=</span> <span class="n">ne_sent_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">),</span> <span class="p">[])</span>
-        <span class="n">highlighted_html</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">highlight_ne_sent</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span>
-        <span class="n">html_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">highlighted_html</span><span class="p">)</span>
-    <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">html_content</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">workflow_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pseudo_fields&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;sentences_after_email&quot;</span><span class="p">][</span><span class="n">field</span><span class="p">]):</span>
+            <span class="n">ne_list</span> <span class="o">=</span> <span class="n">ne_sent_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">),</span> <span class="p">[])</span>
+            <span class="n">highlighted_html</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">highlight_ne_sent</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span>
+            <span class="n">html_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">highlighted_html</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="s2">&quot;&lt;br&gt;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">html_content</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -591,21 +599,24 @@ City on April 10, 2021.’]</p></td>
 <tr class="row-even"><td><p>cleaned_content</p></td>
 <td><p>the content after cleaning of linebreaks and spaces</p></td>
 </tr>
-<tr class="row-odd"><td><p>lang</p></td>
-<td><p>pre-set or detected language for the entry</p></td>
+<tr class="row-odd"><td><p>cleaned_subject</p></td>
+<td><p>the subject after cleaning of linebreaks and spaces (if any)</p></td>
 </tr>
-<tr class="row-even"><td><p>detected_datetime</p></td>
-<td><p>detected datetime objects, if any</p></td>
+<tr class="row-even"><td><p>lang[field]</p></td>
+<td><p>pre-set or detected language for each field of the entry</p></td>
 </tr>
-<tr class="row-odd"><td><p>pseudo_content</p></td>
+<tr class="row-odd"><td><p>detected_datetime[field]</p></td>
+<td><p>detected datetime objects for each field, if any</p></td>
+</tr>
+<tr class="row-even"><td><p>pseudo_content</p></td>
 <td><p>the pseudonymized text of <code class="docutils literal notranslate"><span class="pre">content</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p>pseudo_subject</p></td>
+<tr class="row-odd"><td><p>pseudo_subject</p></td>
 <td><p>the pseudonymized text of <code class="docutils literal notranslate"><span class="pre">subject</span></code></p></td>
 </tr>
 </tbody>
 </table>
-<p>Additional data is saved in the processing dictionary, that is primarily used for the highlighting of the replaced named entities, and can be discarded if it is not needed.</p>
+<p>Additional data is saved in the processing dictionary, that is primarily used for the highlighting of the replaced named entities, and can be discarded if it is not needed. The values of the following keys are themselves dictionaries, where the keys represent field names. Thus, <code class="docutils literal notranslate"><span class="pre">output_key[field]</span></code> represents the value associated with that specific field.</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>output key</p></th>
@@ -613,16 +624,16 @@ City on April 10, 2021.’]</p></td>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>ne_list</p></td>
+<tr class="row-even"><td><p>ne_list[field]</p></td>
 <td><p>the list of recognized named entities and their properties</p></td>
 </tr>
-<tr class="row-odd"><td><p>ne_sent</p></td>
+<tr class="row-odd"><td><p>ne_sent[field]</p></td>
 <td><p>indices of sentences containing named entities</p></td>
 </tr>
-<tr class="row-even"><td><p>sentences</p></td>
-<td><p>a list of sentences as detected by spaCy, of the text data</p></td>
+<tr class="row-even"><td><p>sentences[field]</p></td>
+<td><p>a list of sentences as detected by spaCy, of the field’s text</p></td>
 </tr>
-<tr class="row-odd"><td><p>sentences_after_email</p></td>
+<tr class="row-odd"><td><p>sentences_after_email[field]</p></td>
 <td><p>the list of sentences after replacing email addresses by [email]</p></td>
 </tr>
 </tbody>
@@ -658,14 +669,6 @@ City on April 10, 2021.’]</p></td>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">mailcom</span><span class="o">.</span><span class="n">write_output_data</span><span class="p">(</span><span class="n">input_handler</span><span class="p">,</span> <span class="s2">&quot;out_demo.xml&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>
