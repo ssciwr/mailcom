@@ -130,15 +130,15 @@ numbers with <code class="docutils literal notranslate"><span class="pre">[numbe
 
 <span class="k">if</span> <span class="s2">&quot;google.colab&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_ipython</span><span class="p">()):</span>
     <span class="c1"># install this from pypi</span>
-    <span class="o">%</span><span class="k">pip</span> install git+https://github.com/ssciwr/mailcom.git@update-demo-nb -qqq
+    <span class="o">%</span><span class="k">pip</span> install git+https://github.com/ssciwr/mailcom.git -qqq
     <span class="c1"># download the sample data</span>
     <span class="o">!</span>wget<span class="w"> </span>-O<span class="w"> </span>sample_data.csv<span class="w"> </span>https://raw.githubusercontent.com/ssciwr/mailcom/main/data/in/sample_data.csv
     <span class="c1"># download default settings file</span>
     <span class="o">!</span>wget<span class="w"> </span>-O<span class="w"> </span>default_settings.json<span class="w"> </span>https://raw.githubusercontent.com/ssciwr/mailcom/main/mailcom/default_settings.json
     <span class="c1"># download the sample eml/html files</span>
     <span class="c1"># optional: download the sample data</span>
-    <span class="o">!</span>wget<span class="w"> </span>https://github.com/ssciwr/mailcom/blob/main/mailcom/test/data/Bonjour%20Agathe.eml
-    <span class="o">!</span>wget<span class="w"> </span>https://github.com/ssciwr/mailcom/blob/main/mailcom/test/data/only_html.eml
+    <span class="o">!</span>wget<span class="w"> </span>-O<span class="w"> </span><span class="s2">&quot;Bonjour_Agathe.eml&quot;</span><span class="w"> </span><span class="s2">&quot;https://raw.githubusercontent.com/ssciwr/mailcom/main/mailcom/test/data/Bonjour%20Agathe.eml&quot;</span>
+    <span class="o">!</span>wget<span class="w"> </span>-O<span class="w"> </span>only_html.eml<span class="w"> </span>https://raw.githubusercontent.com/ssciwr/mailcom/main/mailcom/test/data/only_html.eml
 </pre></div>
 </div>
 </div>
@@ -669,6 +669,14 @@ City on April 10, 2021.’]</p></td>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">mailcom</span><span class="o">.</span><span class="n">write_output_data</span><span class="p">(</span><span class="n">input_handler</span><span class="p">,</span> <span class="s2">&quot;out_demo.xml&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>

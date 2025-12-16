@@ -131,7 +131,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">source_dir</span> <span class="o">=</span> <span class="s2">&quot;../../../../eval_data_mailcom&quot;</span>
-<span class="n">input_dir</span> <span class="o">=</span> <span class="s2">&quot;../../../mailcom/test/data_extended/200_eml&quot;</span>
+<span class="n">input_dir</span> <span class="o">=</span> <span class="s2">&quot;../../../data/200_eml/&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -221,6 +221,22 @@
 </pre></div>
 </div>
 </div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># write filename, subject, pseudo_subject, content, pseudo_content to txt files for manual evaluation</span>
+<span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">email</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;file_name&quot;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;lang&quot;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;pseudo_subject&quot;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;pseudocontent&quot;</span><span class="p">])</span>
+<br/><br/><br/></pre></div>
+</div>
+</div>
 </section>
 <section id="Manually-check-and-modify-each-email">
 <h2>Manually check and modify each email<a class="headerlink" href="#Manually-check-and-modify-each-email" title="Link to this heading"></a></h2>
@@ -249,16 +265,29 @@
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;= Email cleaned content =======</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">email</span><span class="p">[</span><span class="s2">&quot;cleaned_content&quot;</span><span class="p">])</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;= Email language =======</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">email</span><span class="p">[</span><span class="s2">&quot;lang&quot;</span><span class="p">])</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;= Detected dates =======</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">email</span><span class="p">[</span><span class="s2">&quot;detected_datetime&quot;</span><span class="p">])</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;= NE list =======&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">sent_idx</span><span class="p">,</span> <span class="n">ne</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_sent&quot;</span><span class="p">]),</span> <span class="nb">eval</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">]))):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">- sentence </span><span class="si">{</span><span class="n">sent_idx</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s2">&quot;word&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s2">&quot;entity_group&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s2">&quot;pseudonym&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;= NE list: subject =======&quot;</span><span class="p">)</span>
+    <span class="n">ne_sent</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_sent&quot;</span><span class="p">])</span>
+    <span class="n">ne_list</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">])</span>
+    <span class="n">sentences</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">sent_idx</span><span class="p">,</span> <span class="n">ne</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ne_sent</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">],</span> <span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">])):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">- sentence </span><span class="si">{</span><span class="n">sent_idx</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s1">&#39;word&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s1">&#39;entity_group&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s1">&#39;pseudonym&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;= Sentences =======</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">])):</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sentences</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">]):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">- </span><span class="si">{</span><span class="n">sent</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;= Pseudo subject =======</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">email</span><span class="p">[</span><span class="s2">&quot;pseudo_subject&quot;</span><span class="p">])</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;= NE list: content =======&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">sent_idx</span><span class="p">,</span> <span class="n">ne</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ne_sent</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">- sentence </span><span class="si">{</span><span class="n">sent_idx</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s1">&#39;word&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s1">&#39;entity_group&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ne</span><span class="p">[</span><span class="s1">&#39;pseudonym&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;= Sentences =======</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sentences</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">- </span><span class="si">{</span><span class="n">sent</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;= Pseudo content =======</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">email</span><span class="p">[</span><span class="s2">&quot;pseudo_content&quot;</span><span class="p">])</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">check_email_lang</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">lang</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="n">lang</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">lang</span><span class="p">)</span>
+    <span class="n">lang</span> <span class="o">=</span> <span class="n">lang</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">gl_files</span> <span class="ow">and</span> <span class="n">lang</span> <span class="o">==</span> <span class="s2">&quot;gl&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">elif</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">pt_files</span> <span class="ow">and</span> <span class="n">lang</span> <span class="o">==</span> <span class="s2">&quot;pt&quot;</span><span class="p">:</span>
@@ -269,6 +298,7 @@
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Incorrect detected language for file:&quot;</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Detected language:&quot;</span><span class="p">,</span> <span class="n">lang</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
 
@@ -293,6 +323,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">update_ne_group</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">new_group</span><span class="p">,</span> <span class="n">new_pseudo</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">new_group</span><span class="p">,</span> <span class="n">new_pseudo</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">)</span>
     <span class="n">ne_list</span><span class="p">[</span><span class="n">item_idx</span><span class="p">][</span><span class="s2">&quot;entity_group&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_group</span>
     <span class="n">ne_list</span><span class="p">[</span><span class="n">item_idx</span><span class="p">][</span><span class="s2">&quot;pseudonym&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_pseudo</span>
 
@@ -477,7 +508,8 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># update incorrect ne</span>
 <span class="n">item_idx</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">new_word</span> <span class="o">=</span> <span class="s2">&quot;Galiza&quot;</span>
-<span class="n">update_ne_word</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">new_word</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">)</span>
+
+<span class="n">update_ne_word</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">new_word</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
 
 <span class="c1"># remove incorrect indices from ne_list and ne_sent of email</span>
 
@@ -566,10 +598,10 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># update incorrect ne</span>
 <span class="n">item_idx</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="n">new_word</span> <span class="o">=</span> <span class="s2">&quot;Proxecto Fin de Carreira&quot;</span>
-<span class="n">update_ne_word</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">new_word</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">)</span>
+<span class="n">update_ne_word</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">new_word</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
 
 <span class="c1"># remove incorrect indices from ne_list and ne_sent of email</span>
-<span class="n">ne_list</span><span class="p">,</span> <span class="n">ne_sent</span> <span class="o">=</span> <span class="n">remove_incorrect_ne_indices</span><span class="p">(</span><span class="n">ne_list</span><span class="p">,</span> <span class="n">ne_sent</span><span class="p">,</span> <span class="n">incorrect_ne_indices</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">row_idx</span><span class="p">)][</span><span class="s2">&quot;r&quot;</span><span class="p">])</span>
+<span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">ne_sent</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">remove_incorrect_ne_indices</span><span class="p">(</span><span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">ne_sent</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">incorrect_ne_indices</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">row_idx</span><span class="p">)][</span><span class="s2">&quot;r&quot;</span><span class="p">])</span>
 
 <span class="c1"># add new ne, if any</span>
 <span class="n">insert_idx</span> <span class="o">=</span> <span class="mi">2</span>
@@ -579,7 +611,7 @@
 <span class="n">n_entity_group</span> <span class="o">=</span> <span class="n">loc_group</span>
 <span class="n">occurrence</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">add_new_ne</span><span class="p">(</span><span class="n">insert_idx</span><span class="p">,</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">n_word</span><span class="p">,</span> <span class="n">n_pseudonym</span><span class="p">,</span> <span class="n">n_entity_group</span><span class="p">,</span>
-            <span class="nb">eval</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">])[</span><span class="n">sent_idx</span><span class="p">],</span> <span class="n">occurrence</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">,</span> <span class="n">ne_sent</span><span class="p">)</span>
+            <span class="nb">eval</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">])[</span><span class="s2">&quot;content&quot;</span><span class="p">][</span><span class="n">sent_idx</span><span class="p">],</span> <span class="n">occurrence</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">ne_sent</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
 
 <span class="c1"># continue removing, if any</span>
 </pre></div>
@@ -663,7 +695,7 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># update incorrect ne</span>
 <span class="n">item_idx</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">update_ne_group</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">org_group</span><span class="p">,</span> <span class="n">org_pseudo</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">)</span>
+<span class="n">update_ne_group</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">org_group</span><span class="p">,</span> <span class="n">org_pseudo</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
 
 <span class="c1"># remove incorrect indices from ne_list and ne_sent of email</span>
 
@@ -751,10 +783,10 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># update incorrect ne</span>
 <span class="n">item_idx</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">update_ne_group</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">org_group</span><span class="p">,</span> <span class="n">org_pseudo</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">)</span>
+<span class="n">update_ne_group</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">org_group</span><span class="p">,</span> <span class="n">org_pseudo</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
 
 <span class="c1"># remove incorrect indices from ne_list and ne_sent of email</span>
-<span class="n">ne_list</span><span class="p">,</span> <span class="n">ne_sent</span> <span class="o">=</span> <span class="n">remove_incorrect_ne_indices</span><span class="p">(</span><span class="n">ne_list</span><span class="p">,</span> <span class="n">ne_sent</span><span class="p">,</span> <span class="n">incorrect_ne_indices</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">row_idx</span><span class="p">)][</span><span class="s2">&quot;r&quot;</span><span class="p">])</span>
+<span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">ne_sent</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">remove_incorrect_ne_indices</span><span class="p">(</span><span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">ne_sent</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">incorrect_ne_indices</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">row_idx</span><span class="p">)][</span><span class="s2">&quot;r&quot;</span><span class="p">])</span>
 
 <span class="c1"># add new ne, if any</span>
 
@@ -841,19 +873,18 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># update incorrect ne</span>
 <span class="n">item_idx</span> <span class="o">=</span> <span class="mi">6</span>
 <span class="n">new_word</span> <span class="o">=</span> <span class="s2">&quot;SPEA&quot;</span>
-<span class="n">update_ne_word</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">new_word</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">)</span>
+<span class="n">update_ne_word</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">new_word</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
 
 <span class="n">item_idx</span> <span class="o">=</span> <span class="mi">8</span>
 <span class="n">update_ne_group</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">misc_group</span><span class="p">,</span> <span class="n">misc_pseudo</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">)</span>
 
 <span class="n">item_idx</span> <span class="o">=</span> <span class="mi">9</span>
 <span class="n">new_word</span> <span class="o">=</span> <span class="s2">&quot;SPEA2&quot;</span>
-<span class="n">update_ne_word</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">new_word</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">)</span>
-<span class="n">update_ne_group</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">misc_group</span><span class="p">,</span> <span class="n">misc_pseudo</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">)</span>
+<span class="n">update_ne_word</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">new_word</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
+<span class="n">update_ne_group</span><span class="p">(</span><span class="n">item_idx</span><span class="p">,</span> <span class="n">misc_group</span><span class="p">,</span> <span class="n">misc_pseudo</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
 
 <span class="c1"># remove incorrect indices from ne_list and ne_sent of email</span>
-<span class="n">ne_list</span><span class="p">,</span> <span class="n">ne_sent</span> <span class="o">=</span> <span class="n">remove_incorrect_ne_indices</span><span class="p">(</span><span class="n">ne_list</span><span class="p">,</span> <span class="n">ne_sent</span><span class="p">,</span> <span class="n">incorrect_ne_indices</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">row_idx</span><span class="p">)][</span><span class="s2">&quot;r&quot;</span><span class="p">])</span>
-
+<span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">ne_sent</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">remove_incorrect_ne_indices</span><span class="p">(</span><span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">ne_sent</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">incorrect_ne_indices</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">row_idx</span><span class="p">)][</span><span class="s2">&quot;r&quot;</span><span class="p">])</span>
 <span class="c1"># add new ne, if any</span>
 <span class="n">insert_idx</span> <span class="o">=</span> <span class="mi">6</span>
 <span class="n">sent_idx</span> <span class="o">=</span> <span class="mi">4</span>
@@ -862,7 +893,7 @@
 <span class="n">n_entity_group</span> <span class="o">=</span> <span class="n">misc_group</span>
 <span class="n">occurrence</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">add_new_ne</span><span class="p">(</span><span class="n">insert_idx</span><span class="p">,</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">n_word</span><span class="p">,</span> <span class="n">n_pseudonym</span><span class="p">,</span> <span class="n">n_entity_group</span><span class="p">,</span>
-            <span class="nb">eval</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">])[</span><span class="n">sent_idx</span><span class="p">],</span> <span class="n">occurrence</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">,</span> <span class="n">ne_sent</span><span class="p">)</span>
+            <span class="nb">eval</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">])[</span><span class="s2">&quot;content&quot;</span><span class="p">][</span><span class="n">sent_idx</span><span class="p">],</span> <span class="n">occurrence</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">ne_sent</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
 
 <span class="n">insert_idx</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="n">sent_idx</span> <span class="o">=</span> <span class="mi">2</span>
@@ -871,8 +902,7 @@
 <span class="n">n_entity_group</span> <span class="o">=</span> <span class="n">misc_group</span>
 <span class="n">occurrence</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">add_new_ne</span><span class="p">(</span><span class="n">insert_idx</span><span class="p">,</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">n_word</span><span class="p">,</span> <span class="n">n_pseudonym</span><span class="p">,</span> <span class="n">n_entity_group</span><span class="p">,</span>
-            <span class="nb">eval</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">])[</span><span class="n">sent_idx</span><span class="p">],</span> <span class="n">occurrence</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">,</span> <span class="n">ne_sent</span><span class="p">)</span>
-
+            <span class="nb">eval</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">])[</span><span class="s2">&quot;content&quot;</span><span class="p">][</span><span class="n">sent_idx</span><span class="p">],</span> <span class="n">occurrence</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">ne_sent</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
 <span class="n">insert_idx</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="n">sent_idx</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">n_word</span> <span class="o">=</span> <span class="s2">&quot;SPEA2&quot;</span>
@@ -880,7 +910,7 @@
 <span class="n">n_entity_group</span> <span class="o">=</span> <span class="n">misc_group</span>
 <span class="n">occurrence</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">add_new_ne</span><span class="p">(</span><span class="n">insert_idx</span><span class="p">,</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">n_word</span><span class="p">,</span> <span class="n">n_pseudonym</span><span class="p">,</span> <span class="n">n_entity_group</span><span class="p">,</span>
-            <span class="nb">eval</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">])[</span><span class="n">sent_idx</span><span class="p">],</span> <span class="n">occurrence</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">,</span> <span class="n">ne_sent</span><span class="p">)</span>
+            <span class="nb">eval</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">])[</span><span class="s2">&quot;content&quot;</span><span class="p">][</span><span class="n">sent_idx</span><span class="p">],</span> <span class="n">occurrence</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">ne_sent</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
 
 <span class="c1"># continue removing, if any</span>
 </pre></div>

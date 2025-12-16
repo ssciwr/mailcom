@@ -36,15 +36,15 @@
     "\n",
     "if \"google.colab\" in str(get_ipython()):\n",
     "    # install this from pypi\n",
-    "    %pip install git+https://github.com/ssciwr/mailcom.git@update-demo-nb -qqq\n",
+    "    %pip install git+https://github.com/ssciwr/mailcom.git -qqq\n",
     "    # download the sample data\n",
     "    !wget -O sample_data.csv https://raw.githubusercontent.com/ssciwr/mailcom/main/data/in/sample_data.csv\n",
     "    # download default settings file\n",
     "    !wget -O default_settings.json https://raw.githubusercontent.com/ssciwr/mailcom/main/mailcom/default_settings.json\n",
     "    # download the sample eml/html files\n",
     "    # optional: download the sample data\n",
-    "    !wget https://github.com/ssciwr/mailcom/blob/main/mailcom/test/data/Bonjour%20Agathe.eml\n",
-    "    !wget https://github.com/ssciwr/mailcom/blob/main/mailcom/test/data/only_html.eml"
+    "    !wget -O \"Bonjour_Agathe.eml\" \"https://raw.githubusercontent.com/ssciwr/mailcom/main/mailcom/test/data/Bonjour%20Agathe.eml\"\n",
+    "    !wget -O only_html.eml https://raw.githubusercontent.com/ssciwr/mailcom/main/mailcom/test/data/only_html.eml"
    ]
   },
   {
@@ -555,6 +555,13 @@
     "\n",
     "mailcom.write_output_data(input_handler, \"out_demo.xml\", overwrite=True)"
    ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
   }
  ],
  "metadata": {
@@ -573,7 +580,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.12.9"
+   "version": "3.11.10"
   }
  },
  "nbformat": 4,
