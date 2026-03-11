@@ -1,5 +1,4 @@
 import dateparser
-import datefinder
 from datetime import datetime
 import dateparser.search
 from spacy.matcher import Matcher
@@ -141,16 +140,6 @@ class TimeDetector:
         """
         return dateparser.search.search_dates(text, languages=langs)
 
-    def find_dates(self, text: str) -> list[datetime]:
-        """Find dates in a given text.
-
-        Args:
-            text (str): The text to find dates in.
-
-        Returns:
-            list[datetime]: A list of dates found in the text.
-        """
-        return list(datefinder.find_dates(text))
 
     def unite_overlapping_words(
         self, multi_word_date_time: list, marked_locations: list, doc: Doc
