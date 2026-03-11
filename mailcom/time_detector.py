@@ -140,7 +140,6 @@ class TimeDetector:
         """
         return dateparser.search.search_dates(text, languages=langs)
 
-
     def unite_overlapping_words(
         self, multi_word_date_time: list, marked_locations: list, doc: Doc
     ) -> tuple[list, list]:
