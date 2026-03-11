@@ -128,14 +128,14 @@ class TimeDetector:
         strict = False if self.strict_parsing == "non-strict" else True
         return dateparser.parse(text, settings={"STRICT_PARSING": strict})
 
-    def search_dates(self, text: str, langs=["es", "fr"]) -> list[(str, datetime)]:
+    def search_dates(self, text: str, langs=["es", "fr"]) -> list[tuple[str, datetime]]:
         """Search for dates in a given text.
 
         Args:
             text (str): The text to search for dates in.
 
         Returns:
-            list[(str, datetime)]: A list of tuples containing the date string
+            list[tuple[str, datetime]]: A list of tuples containing the date string
                 and the datetime object.
         """
         return dateparser.search.search_dates(text, languages=langs)
@@ -381,7 +381,7 @@ class TimeDetector:
 
     def merge_date_time(
         self, extracted_datetime: list, doc: Doc
-    ) -> list[(str, datetime, int, int)]:
+    ) -> list[tuple[str, datetime, int, int]]:
         """Merge the extracted date and time if they are mergeable.
 
         Args:
@@ -389,7 +389,7 @@ class TimeDetector:
             doc (Doc): The spacy doc object.
 
         Returns:
-            list[(str, datetime, int, int)]: A list of tuples containing
+            list[tuple[str, datetime, int, int]]: A list of tuples containing
                 the date string, the datetime object, the start index and the end index
         """
         merged_datetime = []
@@ -488,15 +488,15 @@ class TimeDetector:
         return merged_datetime
 
     def filter_non_numbers(
-        self, date_time: list[(str, datetime, int, int)]
-    ) -> list[(str, datetime, int, int)]:
+        self, date_time: list[tuple[str, datetime, int, int]]
+    ) -> list[tuple[str, datetime, int, int]]:
         """Filter out the date time phrases that do not contain numbers.
 
         Args:
-            date_time (list[(str, datetime, int, int)]): The original list.
+            date_time (list[tuple[str, datetime, int, int]]): The original list.
 
         Returns:
-            list[(str, datetime, int, int)]: The filtered list.
+            list[tuple[str, datetime, int, int]]: The filtered list.
         """
         updated_date_time = []
         for dt in date_time:
@@ -507,7 +507,7 @@ class TimeDetector:
 
     def get_date_time(
         self, text: str, language: str, model="default"
-    ) -> list[(str, datetime, int, int)]:
+    ) -> list[tuple[str, datetime, int, int]]:
         """Get the date and time from a given text.
 
         Args:
@@ -517,7 +517,7 @@ class TimeDetector:
                 Defaults to "default
 
         Returns:
-            list[(str, datetime, int, int)]: A list of tuples containing
+            list[tuple[str, datetime, int, int]]: A list of tuples containing
                 the date string, the datetime object, the start index and the end index
         """
         if not hasattr(self, "nlp_spacy"):
