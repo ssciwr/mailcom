@@ -2,13 +2,16 @@ import dateparser
 from datetime import datetime
 import dateparser.search
 from spacy.matcher import Matcher
-from spacy.tokens import Token, Doc
+from spacy.tokens import Token, Doc, Span
 from mailcom.utils import SpacyLoader, get_spacy_instance
+from typing import List, Tuple, Dict, Any
 
 
 class TimeDetector:
 
-    def __init__(self, strict_parsing="non-strict", spacy_loader: SpacyLoader = None):
+    def __init__(
+        self, strict_parsing: str = "non-strict", spacy_loader: SpacyLoader = None
+    ):
         self.spacy_loader = spacy_loader
         # parse incomplete dates or not
         self.strict_parsing = strict_parsing
@@ -85,12 +88,12 @@ class TimeDetector:
 
         self.patterns["strict"] = strict_patterns
 
-    def add_pattern(self, pattern: list[dict], mode: str) -> None:
+    def add_pattern(self, pattern: List[Dict[str:Any]], mode: str) -> None:
         """Add a new pattern to the matcher
         if it's a non-empty list of dictionaries and not already present.
 
         Args:
-            pattern (list[dict]): The pattern to add to the matcher.
+            pattern (List[Dict[str: Any]]): The pattern to add to the matcher.
             mode (str): The mode of the pattern, either "strict" or "non-strict".
         """
         incorrect_format = (
@@ -104,11 +107,11 @@ class TimeDetector:
             raise ValueError("Pattern is already present in the matcher.")
         self.patterns[mode].append(pattern)
 
-    def remove_pattern(self, pattern: list, mode: str) -> None:
+    def remove_pattern(self, pattern: List[Dict[str:Any]], mode: str) -> None:
         """Remove pattern from the matcher if it's present.
 
         Args:
-            pattern (list): The pattern to remove from the matcher.
+            pattern (List[Dict[str: Any]]): The pattern to remove from the matcher.
             mode (str): The mode of the pattern, either "strict" or "non-strict".
         """
         try:
@@ -128,32 +131,41 @@ class TimeDetector:
         strict = False if self.strict_parsing == "non-strict" else True
         return dateparser.parse(text, settings={"STRICT_PARSING": strict})
 
-    def search_dates(self, text: str, langs=["es", "fr"]) -> list[tuple[str, datetime]]:
+    def search_dates(
+        self, text: str, langs: List[str] = ["es", "fr"]
+    ) -> List[Tuple[str, datetime]]:
         """Search for dates in a given text.
 
         Args:
             text (str): The text to search for dates in.
+            langs (List[str], optional): The list of languages to consider
+                when searching for dates.
+                Defaults to ["es", "fr"].
 
         Returns:
-            list[tuple[str, datetime]]: A list of tuples containing the date string
+            List[Tuple[str, datetime]]: A list of tuples containing the date string
                 and the datetime object.
         """
         return dateparser.search.search_dates(text, languages=langs)
 
     def unite_overlapping_words(
-        self, multi_word_date_time: list, marked_locations: list, doc: Doc
-    ) -> tuple[list, list]:
+        self,
+        multi_word_date_time: List[Tuple[Span, datetime]],
+        marked_locations: List[Tuple[int, int]],
+        doc: Doc,
+    ) -> Tuple[List[Tuple[Span, datetime]], List[Tuple[int, int]]]:
         """Unite overlapping words between two items in the matched multi-word date time.
 
         Args:
-            multi_word_date_time (list): A list of multi-word date time.
-            marked_locations (list): A list of marked locations of dates
+            multi_word_date_time (List[Tuple[Span, datetime]]): A list of multi-word spans
+                and their corresponding date time.
+            marked_locations (List[Tuple[int, int]]): A list of marked locations of dates
                 in multiple word format.
             doc (Doc): The spacy doc object.
 
         Returns:
-            tuple[list, list]: A list of updated multi-word date time and
-                a list of marked locations.
+            Tuple[List[Tuple[Span, datetime]], List[Tuple[int, int]]]:
+                A list of updated multi-word date time and a list of marked locations.
         """
         updated_multi_word_date_time = []
         updated_marked_locations = []
