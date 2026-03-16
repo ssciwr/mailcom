@@ -4,7 +4,7 @@ import dateparser.search
 from spacy.matcher import Matcher
 from spacy.tokens import Token, Doc, Span
 from mailcom.utils import SpacyLoader, get_spacy_instance
-from typing import List, Tuple, Dict, Any
+from typing import Any
 
 
 class TimeDetector:
@@ -88,12 +88,12 @@ class TimeDetector:
 
         self.patterns["strict"] = strict_patterns
 
-    def add_pattern(self, pattern: List[Dict[str:Any]], mode: str) -> None:
+    def add_pattern(self, pattern: list[dict[str, Any]], mode: str) -> None:
         """Add a new pattern to the matcher
         if it's a non-empty list of dictionaries and not already present.
 
         Args:
-            pattern (List[Dict[str: Any]]): The pattern to add to the matcher.
+            pattern (list[dict[str, Any]]): The pattern to add to the matcher.
             mode (str): The mode of the pattern, either "strict" or "non-strict".
         """
         incorrect_format = (
@@ -107,11 +107,11 @@ class TimeDetector:
             raise ValueError("Pattern is already present in the matcher.")
         self.patterns[mode].append(pattern)
 
-    def remove_pattern(self, pattern: List[Dict[str:Any]], mode: str) -> None:
+    def remove_pattern(self, pattern: list[dict[str, Any]], mode: str) -> None:
         """Remove pattern from the matcher if it's present.
 
         Args:
-            pattern (List[Dict[str: Any]]): The pattern to remove from the matcher.
+            pattern (list[dict[str, Any]]): The pattern to remove from the matcher.
             mode (str): The mode of the pattern, either "strict" or "non-strict".
         """
         try:
@@ -132,39 +132,39 @@ class TimeDetector:
         return dateparser.parse(text, settings={"STRICT_PARSING": strict})
 
     def search_dates(
-        self, text: str, langs: List[str] = ["es", "fr"]
-    ) -> List[Tuple[str, datetime]]:
+        self, text: str, langs: list[str] = ["es", "fr"]
+    ) -> list[tuple[str, datetime]]:
         """Search for dates in a given text.
 
         Args:
             text (str): The text to search for dates in.
-            langs (List[str], optional): The list of languages to consider
+            langs (list[str], optional): The list of languages to consider
                 when searching for dates.
                 Defaults to ["es", "fr"].
 
         Returns:
-            List[Tuple[str, datetime]]: A list of tuples containing the date string
+            list[tuple[str, datetime]]: A list of tuples containing the date string
                 and the datetime object.
         """
         return dateparser.search.search_dates(text, languages=langs)
 
     def unite_overlapping_words(
         self,
-        multi_word_date_time: List[Tuple[Span, datetime]],
-        marked_locations: List[Tuple[int, int]],
+        multi_word_date_time: list[tuple[Span, datetime]],
+        marked_locations: list[tuple[int, int]],
         doc: Doc,
-    ) -> Tuple[List[Tuple[Span, datetime]], List[Tuple[int, int]]]:
+    ) -> tuple[list[tuple[Span, datetime]], list[tuple[int, int]]]:
         """Unite overlapping words between two items in the matched multi-word date time.
 
         Args:
-            multi_word_date_time (List[Tuple[Span, datetime]]): A list of multi-word spans
+            multi_word_date_time (list[tuple[Span, datetime]]): A list of multi-word spans
                 and their corresponding date time.
-            marked_locations (List[Tuple[int, int]]): A list of marked locations of dates
+            marked_locations (list[tuple[int, int]]): A list of marked locations of dates
                 in multiple word format.
             doc (Doc): The spacy doc object.
 
         Returns:
-            Tuple[List[Tuple[Span, datetime]], List[Tuple[int, int]]]:
+            tuple[list[tuple[Span, datetime]], list[tuple[int, int]]]:
                 A list of updated multi-word date time and a list of marked locations.
         """
         updated_multi_word_date_time = []
@@ -201,8 +201,8 @@ class TimeDetector:
         return updated_multi_word_date_time, updated_marked_locations
 
     def extract_date_time_multi_words(
-        self, doc: Doc, language: str, model="default"
-    ) -> tuple[list, list]:
+        self, doc: Doc, language: str, model: str = "default"
+    ) -> tuple[list[tuple[Span, datetime]], list[tuple[int, int]]]:
         """Extract time from a given text when it is multiple words.
         E.g. 12 mars 2025, 17. April 2024
 
@@ -213,7 +213,8 @@ class TimeDetector:
                 Defaults to "default".
 
         Returns:
-            tuple[list, list]: A list of extracted dates and
+            tuple[list[tuple[Span, datetime]], list[tuple[int, int]]]:
+                A list of extracted dates and
                 marks of locations in the doc.
         """
         # add the strict patterns if needed
@@ -241,17 +242,19 @@ class TimeDetector:
             )
         return multi_word_date_time, marked_locations
 
-    def extract_date_time_single_word(self, doc: Doc, marked_locations: list) -> list:
+    def extract_date_time_single_word(
+        self, doc: Doc, marked_locations: list[tuple[int, int]]
+    ) -> list[tuple[Token, datetime]]:
         """Extract time from a given text when it is only one word.
         E.g. 2009/02/17, 17:23
 
         Args:
             doc (Doc): The spacy doc object.
-            marked_locations (list): A list of marked locations of dates
+            marked_locations (list[tuple[int, int]]): A list of marked locations of dates
                 in multiple word format.
 
         Returns:
-            list: A list of extracted dates.
+            list[tuple[Token, datetime]]: A list of extracted dates.
         """
         word_date_time = []
         for token in doc:
@@ -280,7 +283,9 @@ class TimeDetector:
             token_span.end - 1,
         )  # the last token also belongs to the span
 
-    def extract_date_time(self, doc: Doc, language: str, model="default") -> list:
+    def extract_date_time(
+        self, doc: Doc, language: str, model: str = "default"
+    ) -> list:
         """Extract dates from a given text.
 
         Args:
@@ -364,17 +369,22 @@ class TimeDetector:
 
         return False
 
-    def add_merged_datetime(self, merged_datetime: list, new_item: tuple) -> list:
+    def add_merged_datetime(
+        self,
+        merged_datetime: list[tuple[str, datetime, int, int]],
+        new_item: tuple[str, datetime, int, int],
+    ) -> list[tuple[str, datetime, int, int]]:
         """Add a new item to the merged datetime list.
 
         Args:
-            merged_datetime (list): The list of merged datetime.
-            new_item (tuple): The new item to add.
+            merged_datetime (list[tuple[str, datetime, int, int]]):
+                The list of merged datetime.
+            new_item (tuple[str, datetime, int, int]): The new item to add.
                 It contains the date string, the datetime object,
                 the start index and the end index.
 
         Returns:
-            list: The updated list of merged datetime.
+            list[tuple[str, datetime, int, int]]: The updated list of merged datetime.
         """
         if not merged_datetime:
             merged_datetime.append(new_item)
@@ -392,12 +402,13 @@ class TimeDetector:
         return merged_datetime
 
     def merge_date_time(
-        self, extracted_datetime: list, doc: Doc
+        self, extracted_datetime: list[tuple[Token | Span, datetime]], doc: Doc
     ) -> list[tuple[str, datetime, int, int]]:
         """Merge the extracted date and time if they are mergeable.
 
         Args:
-            extracted_datetime (list): The extracted date and time.
+            extracted_datetime (list[tuple[Token | Span, datetime]]):
+                The extracted date and time.
             doc (Doc): The spacy doc object.
 
         Returns:
@@ -518,7 +529,7 @@ class TimeDetector:
         return updated_date_time
 
     def get_date_time(
-        self, text: str, language: str, model="default"
+        self, text: str, language: str, model: str = "default"
     ) -> list[tuple[str, datetime, int, int]]:
         """Get the date and time from a given text.
 
