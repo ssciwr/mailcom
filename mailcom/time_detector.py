@@ -4,7 +4,7 @@ import dateparser.search
 from spacy.matcher import Matcher
 from spacy.tokens import Token, Doc, Span
 from mailcom.utils import SpacyLoader, get_spacy_instance
-from typing import Any
+from typing import Any, Union
 
 
 class TimeDetector:
@@ -402,12 +402,12 @@ class TimeDetector:
         return merged_datetime
 
     def merge_date_time(
-        self, extracted_datetime: list[tuple[Token | Span, datetime]], doc: Doc
+        self, extracted_datetime: list[tuple[Union[Token, Span], datetime]], doc: Doc
     ) -> list[tuple[str, datetime, int, int]]:
         """Merge the extracted date and time if they are mergeable.
 
         Args:
-            extracted_datetime (list[tuple[Token | Span, datetime]]):
+            extracted_datetime (list[tuple[Union[Token, Span], datetime]]):
                 The extracted date and time.
             doc (Doc): The spacy doc object.
 
