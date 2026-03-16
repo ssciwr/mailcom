@@ -150,12 +150,10 @@ class Pseudonymize:
         # raise an exception for the user to restart with other pseudonyms if there are
         # no pseudonyms left in the list
         if not self.pseudo_first_names.get(lang, []):
-            raise ValueError(
-                """Please provide a different list of pseudonyms via the
+            raise ValueError("""Please provide a different list of pseudonyms via the
                              workflow settings file. The current list of pseudonyms
                              is empty or too short and contains only names that already
-                             exist in the actual data."""
-            )
+                             exist in the actual data.""")
         return exclude_pseudonym
 
     def choose_per_pseudonym(self, name, lang="fr", prev_ne_list: list = None):
