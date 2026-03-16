@@ -1,15 +1,17 @@
 import dateparser
-import datefinder
 from datetime import datetime
 import dateparser.search
 from spacy.matcher import Matcher
-from spacy.tokens import Token, Doc
+from spacy.tokens import Token, Doc, Span
 from mailcom.utils import SpacyLoader, get_spacy_instance
+from typing import Any, Union
 
 
 class TimeDetector:
 
-    def __init__(self, strict_parsing="non-strict", spacy_loader: SpacyLoader = None):
+    def __init__(
+        self, strict_parsing: str = "non-strict", spacy_loader: SpacyLoader = None
+    ):
         self.spacy_loader = spacy_loader
         # parse incomplete dates or not
         self.strict_parsing = strict_parsing
@@ -86,12 +88,12 @@ class TimeDetector:
 
         self.patterns["strict"] = strict_patterns
 
-    def add_pattern(self, pattern: list[dict], mode: str) -> None:
+    def add_pattern(self, pattern: list[dict[str, Any]], mode: str) -> None:
         """Add a new pattern to the matcher
         if it's a non-empty list of dictionaries and not already present.
 
         Args:
-            pattern (list[dict]): The pattern to add to the matcher.
+            pattern (list[dict[str, Any]]): The pattern to add to the matcher.
             mode (str): The mode of the pattern, either "strict" or "non-strict".
         """
         incorrect_format = (
@@ -105,11 +107,11 @@ class TimeDetector:
             raise ValueError("Pattern is already present in the matcher.")
         self.patterns[mode].append(pattern)
 
-    def remove_pattern(self, pattern: list, mode: str) -> None:
+    def remove_pattern(self, pattern: list[dict[str, Any]], mode: str) -> None:
         """Remove pattern from the matcher if it's present.
 
         Args:
-            pattern (list): The pattern to remove from the matcher.
+            pattern (list[dict[str, Any]]): The pattern to remove from the matcher.
             mode (str): The mode of the pattern, either "strict" or "non-strict".
         """
         try:
@@ -129,43 +131,41 @@ class TimeDetector:
         strict = False if self.strict_parsing == "non-strict" else True
         return dateparser.parse(text, settings={"STRICT_PARSING": strict})
 
-    def search_dates(self, text: str, langs=["es", "fr"]) -> list[(str, datetime)]:
+    def search_dates(
+        self, text: str, langs: list[str] = ["es", "fr"]
+    ) -> list[tuple[str, datetime]]:
         """Search for dates in a given text.
 
         Args:
             text (str): The text to search for dates in.
+            langs (list[str], optional): The list of languages to consider
+                when searching for dates.
+                Defaults to ["es", "fr"].
 
         Returns:
-            list[(str, datetime)]: A list of tuples containing the date string
+            list[tuple[str, datetime]]: A list of tuples containing the date string
                 and the datetime object.
         """
         return dateparser.search.search_dates(text, languages=langs)
 
-    def find_dates(self, text: str) -> list[datetime]:
-        """Find dates in a given text.
-
-        Args:
-            text (str): The text to find dates in.
-
-        Returns:
-            list[datetime]: A list of dates found in the text.
-        """
-        return list(datefinder.find_dates(text))
-
     def unite_overlapping_words(
-        self, multi_word_date_time: list, marked_locations: list, doc: Doc
-    ) -> tuple[list, list]:
+        self,
+        multi_word_date_time: list[tuple[Span, datetime]],
+        marked_locations: list[tuple[int, int]],
+        doc: Doc,
+    ) -> tuple[list[tuple[Span, datetime]], list[tuple[int, int]]]:
         """Unite overlapping words between two items in the matched multi-word date time.
 
         Args:
-            multi_word_date_time (list): A list of multi-word date time.
-            marked_locations (list): A list of marked locations of dates
+            multi_word_date_time (list[tuple[Span, datetime]]): A list of multi-word spans
+                and their corresponding date time.
+            marked_locations (list[tuple[int, int]]): A list of marked locations of dates
                 in multiple word format.
             doc (Doc): The spacy doc object.
 
         Returns:
-            tuple[list, list]: A list of updated multi-word date time and
-                a list of marked locations.
+            tuple[list[tuple[Span, datetime]], list[tuple[int, int]]]:
+                A list of updated multi-word date time and a list of marked locations.
         """
         updated_multi_word_date_time = []
         updated_marked_locations = []
@@ -201,8 +201,8 @@ class TimeDetector:
         return updated_multi_word_date_time, updated_marked_locations
 
     def extract_date_time_multi_words(
-        self, doc: Doc, language: str, model="default"
-    ) -> tuple[list, list]:
+        self, doc: Doc, language: str, model: str = "default"
+    ) -> tuple[list[tuple[Span, datetime]], list[tuple[int, int]]]:
         """Extract time from a given text when it is multiple words.
         E.g. 12 mars 2025, 17. April 2024
 
@@ -213,7 +213,8 @@ class TimeDetector:
                 Defaults to "default".
 
         Returns:
-            tuple[list, list]: A list of extracted dates and
+            tuple[list[tuple[Span, datetime]], list[tuple[int, int]]]:
+                A list of extracted dates and
                 marks of locations in the doc.
         """
         # add the strict patterns if needed
@@ -241,17 +242,19 @@ class TimeDetector:
             )
         return multi_word_date_time, marked_locations
 
-    def extract_date_time_single_word(self, doc: Doc, marked_locations: list) -> list:
+    def extract_date_time_single_word(
+        self, doc: Doc, marked_locations: list[tuple[int, int]]
+    ) -> list[tuple[Token, datetime]]:
         """Extract time from a given text when it is only one word.
         E.g. 2009/02/17, 17:23
 
         Args:
             doc (Doc): The spacy doc object.
-            marked_locations (list): A list of marked locations of dates
+            marked_locations (list[tuple[int, int]]): A list of marked locations of dates
                 in multiple word format.
 
         Returns:
-            list: A list of extracted dates.
+            list[tuple[Token, datetime]]: A list of extracted dates.
         """
         word_date_time = []
         for token in doc:
@@ -280,7 +283,9 @@ class TimeDetector:
             token_span.end - 1,
         )  # the last token also belongs to the span
 
-    def extract_date_time(self, doc: Doc, language: str, model="default") -> list:
+    def extract_date_time(
+        self, doc: Doc, language: str, model: str = "default"
+    ) -> list:
         """Extract dates from a given text.
 
         Args:
@@ -364,17 +369,22 @@ class TimeDetector:
 
         return False
 
-    def add_merged_datetime(self, merged_datetime: list, new_item: tuple) -> list:
+    def add_merged_datetime(
+        self,
+        merged_datetime: list[tuple[str, datetime, int, int]],
+        new_item: tuple[str, datetime, int, int],
+    ) -> list[tuple[str, datetime, int, int]]:
         """Add a new item to the merged datetime list.
 
         Args:
-            merged_datetime (list): The list of merged datetime.
-            new_item (tuple): The new item to add.
+            merged_datetime (list[tuple[str, datetime, int, int]]):
+                The list of merged datetime.
+            new_item (tuple[str, datetime, int, int]): The new item to add.
                 It contains the date string, the datetime object,
                 the start index and the end index.
 
         Returns:
-            list: The updated list of merged datetime.
+            list[tuple[str, datetime, int, int]]: The updated list of merged datetime.
         """
         if not merged_datetime:
             merged_datetime.append(new_item)
@@ -392,16 +402,17 @@ class TimeDetector:
         return merged_datetime
 
     def merge_date_time(
-        self, extracted_datetime: list, doc: Doc
-    ) -> list[(str, datetime, int, int)]:
+        self, extracted_datetime: list[tuple[Union[Token, Span], datetime]], doc: Doc
+    ) -> list[tuple[str, datetime, int, int]]:
         """Merge the extracted date and time if they are mergeable.
 
         Args:
-            extracted_datetime (list): The extracted date and time.
+            extracted_datetime (list[tuple[Union[Token, Span], datetime]]):
+                The extracted date and time.
             doc (Doc): The spacy doc object.
 
         Returns:
-            list[(str, datetime, int, int)]: A list of tuples containing
+            list[tuple[str, datetime, int, int]]: A list of tuples containing
                 the date string, the datetime object, the start index and the end index
         """
         merged_datetime = []
@@ -500,15 +511,15 @@ class TimeDetector:
         return merged_datetime
 
     def filter_non_numbers(
-        self, date_time: list[(str, datetime, int, int)]
-    ) -> list[(str, datetime, int, int)]:
+        self, date_time: list[tuple[str, datetime, int, int]]
+    ) -> list[tuple[str, datetime, int, int]]:
         """Filter out the date time phrases that do not contain numbers.
 
         Args:
-            date_time (list[(str, datetime, int, int)]): The original list.
+            date_time (list[tuple[str, datetime, int, int]]): The original list.
 
         Returns:
-            list[(str, datetime, int, int)]: The filtered list.
+            list[tuple[str, datetime, int, int]]: The filtered list.
         """
         updated_date_time = []
         for dt in date_time:
@@ -518,8 +529,8 @@ class TimeDetector:
         return updated_date_time
 
     def get_date_time(
-        self, text: str, language: str, model="default"
-    ) -> list[(str, datetime, int, int)]:
+        self, text: str, language: str, model: str = "default"
+    ) -> list[tuple[str, datetime, int, int]]:
         """Get the date and time from a given text.
 
         Args:
@@ -529,7 +540,7 @@ class TimeDetector:
                 Defaults to "default
 
         Returns:
-            list[(str, datetime, int, int)]: A list of tuples containing
+            list[tuple[str, datetime, int, int]]: A list of tuples containing
                 the date string, the datetime object, the start index and the end index
         """
         if not hasattr(self, "nlp_spacy"):

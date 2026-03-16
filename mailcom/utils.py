@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import spacy as sp
 from transformers import pipeline
+from typing import Any
 
 
 def check_dir(path: Path) -> bool:
@@ -28,14 +29,14 @@ def make_dir(path: Path) -> None:
     os.makedirs(path + "/")
 
 
-def clean_up_content(content: str) -> tuple[str, list]:
+def clean_up_content(content: str) -> tuple[str, list[str]]:
     """Clean up the content of an email.
 
     Args:
         content (str): The content of the email.
 
     Returns:
-        tuple[str, list]: The cleaned up content and a list of cleaned up sentences.
+        tuple[str, list[str]]: The cleaned up content and a list of cleaned up sentences.
     """
     # remove extra newlines and extra heading and trailing whitespaces
     sentences = content.split("\n")
@@ -65,7 +66,7 @@ class SpacyLoader:
             return "de", self.spacy_default_model["de"]
         return language, self.spacy_default_model[language]
 
-    def init_spacy(self, language: str, model="default"):
+    def init_spacy(self, language: str, model: str = "default"):
         if model == "default":
             language, model = self.get_default_model(language)
         if language not in self.spacy_instances:
@@ -137,7 +138,7 @@ class TransformerLoader:
 
         self.trans_instances = {}
 
-    def init_transformers(self, feature: str, pipeline_info: dict = None):
+    def init_transformers(self, feature: str, pipeline_info: dict[str, str] = None):
         if not pipeline_info:
             pipeline_info = self.trans_default_model.get(feature)
         if not pipeline_info:
@@ -156,14 +157,15 @@ class TransformerLoader:
 
 
 def get_trans_instance(
-    trans_loader: TransformerLoader, feature: str, pipeline_info: dict = None
-):
+    trans_loader: TransformerLoader, feature: str, pipeline_info: dict[str, str] = None
+) -> pipeline:
     """Get the transformer instance for a given feature.
 
     Args:
         trans_loader (TransformerLoader): The transformer loader.
         feature (str): The feature to get the transformer instance.
-        pipeline_info (dict): The setting info for the transformer, defaults to None.
+        pipeline_info (dict[str, str]): The setting info for the transformer,
+            defaults to None.
 
     Returns:
         pipeline: The transformer instance.
@@ -179,13 +181,15 @@ def get_trans_instance(
 
 
 # function for displaying the result using HTML
-def highlight_ne_sent(text: str, ne_list: list, colors: dict):
+def highlight_ne_sent(
+    text: str, ne_list: list[dict[str, Any]], colors: dict[str, str]
+) -> str:
     """Highlight named entities in the text using HTML spans.
 
     Args:
         text (str): The text to highlight entities in.
-        ne_list (list): A list of named entities to highlight.
-        colors (dict): A dictionary mapping entity groups to colors.
+        ne_list (list[dict[str, Any]]): A list of named entities to highlight.
+        colors (dict[str, str]): A dictionary mapping entity groups to colors.
 
     Returns:
         str: The text with highlighted entities.

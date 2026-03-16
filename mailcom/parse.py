@@ -1,12 +1,12 @@
 from mailcom import utils
 import re
-from typing import Optional
+from typing import Optional, Any
 
 
 class Pseudonymize:
     def __init__(
         self,
-        pseudo_first_names: dict,
+        pseudo_first_names: dict[str, list[str]],
         trans_loader: utils.TransformerLoader = None,
         spacy_loader: utils.SpacyLoader = None,
     ):
@@ -32,11 +32,11 @@ class Pseudonymize:
         """
         self.nlp_spacy = utils.get_spacy_instance(self.spacy_loader, language, model)
 
-    def init_transformers(self, pipeline_info: dict = None):
+    def init_transformers(self, pipeline_info: dict[str, str] = None):
         """Initializes transformers NER model.
 
         Args:
-            pipeline_info (dict, optional): Transformers pipeline info.
+            pipeline_info (dict[str, str], optional): Transformers pipeline info.
         """
         self.ner_recognizer = utils.get_trans_instance(
             self.trans_loader, self.feature, pipeline_info
@@ -61,7 +61,7 @@ class Pseudonymize:
             ne_sent_dict[str(sent_idx)].append(ne)
         return ne_sent_dict
 
-    def get_sentences(self, input_text, language, model="default"):
+    def get_sentences(self, input_text: str, language: str, model="default"):
         """Splits a text into sentences using spacy.
 
         Args:
@@ -87,12 +87,12 @@ class Pseudonymize:
             text_as_sents.append(str(sent))
         return text_as_sents
 
-    def get_ner(self, sentence, pipeline_info: dict = None):
+    def get_ner(self, sentence: str, pipeline_info: dict[str, str] = None):
         """Retrieves named entities in a String from transformers model.
 
         Args:
             sentence (str): Input text to search for named entities.
-            pipeline_info (dict, optional): Transformers pipeline info.
+            pipeline_info (dict[str, str], optional): Transformers pipeline info.
                 Defaults to None.
 
         Returns:
@@ -156,7 +156,9 @@ class Pseudonymize:
                              exist in the actual data.""")
         return exclude_pseudonym
 
-    def choose_per_pseudonym(self, name, lang="fr", prev_ne_list: list = None):
+    def choose_per_pseudonym(
+        self, name: str, lang="fr", prev_ne_list: list[dict[str, Any]] = None
+    ):
         """Chooses a pseudonym for a PER named entity based on previously used pseudonyms.
         If the name has previously been replaced, the same pseudonym is used again.
         If not, a new pseudonym is taken from the list of available pseudonyms.
@@ -165,9 +167,8 @@ class Pseudonymize:
             name (str): Word of the named entity.
             lang (str, optional): Language to choose pseudonyms from.
                 Defaults to "fr".
-            prev_ne_list (list, optional): List of named entities from previous fields
-                in the email.
-                Defaults to None.
+            prev_ne_list (list[dict[str, Any]], optional): List of named entities
+                from previous fields in the email. Defaults to None.
 
         Returns:
             str: Chosen pseudonym.
@@ -222,7 +223,12 @@ class Pseudonymize:
         return pseudonym
 
     def pseudonymize_ne(
-        self, ner, sentence, lang="fr", sent_idx=0, prev_ne_list: list = None
+        self,
+        ner: list[dict[str, Any]],
+        sentence: str,
+        lang: str = "fr",
+        sent_idx: int = 0,
+        prev_ne_list: list[dict[str, Any]] = None,
     ):
         """Pseudonymizes all found named entities in a String.
         Named entities categorized as persons are replaced with a pseudonym.
@@ -231,14 +237,15 @@ class Pseudonymize:
         for reuse in case of multiple occurrences.
 
         Args:
-            ner (list[dict]): List of named entities found by the transformers model.
+            ner (list[dict[str, Any]]): List of named entities found by
+                the transformers model.
             sentence (str): Input String to replace all named entities in.
             lang (str, optional): Language to choose pseudonyms from.
                 Defaults to "fr".
             sent_idx (int, optional): Index of the sentence in the email.
                 Defaults to 0.
-            prev_ne_list (list, optional): List of named entities from previous
-                fields in the email. Defaults to None.
+            prev_ne_list (list[dict[str, Any]], optional): List of named entities
+                from previous fields in the email. Defaults to None.
 
         Returns:
             list[str]: Pseudonymized sentence as list.
@@ -311,7 +318,7 @@ class Pseudonymize:
 
         return date_indices
 
-    def pseudonymize_numbers(self, sentence, detected_dates: list[str] = None):
+    def pseudonymize_numbers(self, sentence: str, detected_dates: list[str] = None):
         """Replaces numbers that are not dates in a sentence with placeholder.
 
         Args:
@@ -338,7 +345,7 @@ class Pseudonymize:
 
         return "".join(new_list)
 
-    def pseudonymize_email_addresses(self, sentence):
+    def pseudonymize_email_addresses(self, sentence: str):
         """Replaces words containing @ in a String with placeholder.
 
         Args:
@@ -356,7 +363,7 @@ class Pseudonymize:
                 new_list.append(word)
         return " ".join(new_list)
 
-    def concatenate(self, sentences):
+    def concatenate(self, sentences: list[str]):
         """Concatenates a list of sentences to a coherent text.
 
         Args:
@@ -369,15 +376,15 @@ class Pseudonymize:
 
     def pseudonymize(
         self,
-        text,
-        language="fr",
-        model="default",
-        pipeline_info: dict = None,
+        text: str,
+        language: str = "fr",
+        model: str = "default",
+        pipeline_info: dict[str, Any] = None,
         detected_dates: list[str] = None,
-        pseudo_emailaddresses=True,
-        pseudo_ne=True,
-        pseudo_numbers=True,
-        prev_ne_list: list = None,
+        pseudo_emailaddresses: bool = True,
+        pseudo_ne: bool = True,
+        pseudo_numbers: bool = True,
+        prev_ne_list: list[dict[str, Any]] = None,
     ):
         """Function that handles the pseudonymization of an email
         and all its steps
@@ -386,7 +393,7 @@ class Pseudonymize:
             text (str): Text to pseudonymize.
             language (str, optional): Language of the email. Defaults to "de".
             model (str, optional): Model to use for NER. Defaults to "default".
-            pipeline_info (dict, optional): Pipeline information for NER.
+            pipeline_info (dict[str, Any], optional): Pipeline information for NER.
                 Defaults to None.
             detected_dates (list[str], optional): Detected dates in the email.
                 Defaults to None.
@@ -396,8 +403,8 @@ class Pseudonymize:
                 Defaults to True.
             pseudo_numbers (bool, optional): Whether to pseudonymize numbers.
                 Defaults to True.
-            prev_ne_list (list, optional): List of named entities from previous
-                fields in the email. Defaults to None.
+            prev_ne_list (list[dict[str, Any]], optional): List of named entities
+                from previous fields in the email. Defaults to None.
 
         Returns:
             str: Pseudonymized text
@@ -432,14 +439,14 @@ class Pseudonymize:
 
     def pseudonymize_with_updated_ne(
         self,
-        sentences,
-        ne_sent_dict: Optional[dict[list[dict]]],
-        language="fr",
+        sentences: list[str],
+        ne_sent_dict: Optional[dict[list[dict[str, Any]]]],
+        language: str = "fr",
         detected_dates: list[str] = None,
-        pseudo_emailaddresses=True,
-        pseudo_ne=True,
-        pseudo_numbers=True,
-        prev_ne_list: list = None,
+        pseudo_emailaddresses: bool = True,
+        pseudo_ne: bool = True,
+        pseudo_numbers: bool = True,
+        prev_ne_list: list[dict[str, Any]] = None,
     ):
         """Pseudonymizes the email with updated named entities.
         This function is used when the named entities have been updated
@@ -447,9 +454,9 @@ class Pseudonymize:
 
         Args:
             sentences (list[str]): List of sentences to pseudonymize.
-            ne_sent_dict (dict[list[dict]]|None): Dictionary containing named entities.
-                If set to none, the previous named entities will be used. This is the case
-                for reprocessing emails with new pseudonyms.
+            ne_sent_dict (dict[list[dict[str, Any]]]|None): Dictionary containing
+                named entities. If set to none, the previous named entities will be used.
+                This is the case for reprocessing emails with new pseudonyms.
             language (str, optional): Language of the email. Defaults to "de".
             detected_dates (list[str], optional): Detected dates in the email.
                 Defaults to None.
@@ -459,8 +466,8 @@ class Pseudonymize:
                 Defaults to True.
             pseudo_numbers (bool, optional): Whether to pseudonymize numbers.
                 Defaults to True.
-            prev_ne_list (list, optional): List of named entities from previous
-                fields in the email. Defaults to None.
+            prev_ne_list (list[dict[str, Any]], optional): List of named entities
+                from previous fields in the email. Defaults to None.
 
         Returns:
             str: Pseudonymized text
