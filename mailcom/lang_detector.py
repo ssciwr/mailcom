@@ -12,7 +12,7 @@ class LangDetector:
         self.trans_loader = trans_loader
         self.feature = "lang_detector"
 
-    def init_transformers(self, pipeline_info: dict = None):
+    def init_transformers(self, pipeline_info: dict[str, str] = None):
         """Initialize transformers for language detection."""
         self.lang_detector_trans = get_trans_instance(
             self.trans_loader, self.feature, pipeline_info
@@ -89,7 +89,7 @@ class LangDetector:
 
         return all(url_regex.match(word) for word in text_as_list)
 
-    def constrain_langid(self, lang_set=[]):
+    def constrain_langid(self, lang_set: list[str] = []):
         """Set constraint for language set of langid.
         Default is no constrained languages."""
         if lang_set:
@@ -107,16 +107,16 @@ class LangDetector:
         DetectorFactory.seed = 0
 
     def detect_with_transformers(
-        self, sentence: str, pipeline_info: dict = None
+        self, sentence: str, pipeline_info: dict[str, str] = None
     ) -> list[tuple[str, float]]:
         """Dectect language of a given text using transformers library.
 
         Args:
             sentence (str): The text to detect the language of.
-            pipeline_info (dict, optional): The pipeline information
+            pipeline_info (dict[str, str], optional): The pipeline information
 
         Returns:
-            list(str, float): The possible language and their probabilities.
+            list[tuple[str, float]]: The possible language and their probabilities.
         """
         # checking for attribute first instead of catching exception
         # to avoid repetition of code
@@ -138,7 +138,7 @@ class LangDetector:
             sentence (str): The text to detect the language of.
 
         Returns:
-            [(str, float)]: The detected language and its probability.
+            list[tuple[str, float]]: The detected language and its probability.
         """
         try:
             lang, prob = self.lang_id.classify(sentence)
@@ -158,7 +158,7 @@ class LangDetector:
             text (str): The text to detect the language of.
 
         Returns:
-            list(str, float): The possible language and their probabilities.
+            list[tuple[str, float]]: The possible language and their probabilities.
         """
         try:
             detections = self.detect_langs(sentence)
@@ -171,7 +171,7 @@ class LangDetector:
         return results
 
     def get_detections(
-        self, text: str, lang_lib="langid", pipeline_info: dict = None
+        self, text: str, lang_lib: str = "langid", pipeline_info: dict[str, str] = None
     ) -> list[tuple[str, float]]:
         """Get detections for a given text using a specified lang_lib or model.
 
@@ -180,11 +180,11 @@ class LangDetector:
             lang_lib (str): The lang_lib to use for detection.
                 Options are "langid", "langdetect" and "trans".
                 The default is "langid".
-            pipeline_info (dict, optional): The pipeline information,
+            pipeline_info (dict[str, str], optional): The pipeline information,
                 used for detecting with "trans" option.
 
         Returns:
-            list(str, float): A list of detected languages and their probabilities.
+            list[tuple[str, float]]: A list of detected languages and their probabilities.
         """
         # make sure that the text is not empty,
         # not just whitespace or newline,
@@ -211,7 +211,10 @@ class LangDetector:
             return [(None, 0.0)]
 
     def detect_lang_sentences(
-        self, sentences: list[str], lang_lib="langid", pipeline_info: dict = None
+        self,
+        sentences: list[str],
+        lang_lib: str = "langid",
+        pipeline_info: dict[str, str] = None,
     ) -> IntervalTree:
         """Detect languages of a list of sentences using a specified language library.
 
@@ -219,7 +222,7 @@ class LangDetector:
             sentences (str): The document to detect the languages of.
             lang_lib (str): The lang_lib to use for detection.
                 Options are "langid", "langdetect" and "trans".
-            pipeline_info (dict, optional): The pipeline information,
+            pipeline_info (dict[str, str], optional): The pipeline information,
                 used for detecting with "trans" option.
 
         Returns:
