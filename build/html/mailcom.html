@@ -8,14 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>inout module &mdash; mailcom  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -118,7 +118,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#time_detector.TimeDetector.extract_date_time_multi_words"><code class="docutils literal notranslate"><span class="pre">TimeDetector.extract_date_time_multi_words()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#time_detector.TimeDetector.extract_date_time_single_word"><code class="docutils literal notranslate"><span class="pre">TimeDetector.extract_date_time_single_word()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#time_detector.TimeDetector.filter_non_numbers"><code class="docutils literal notranslate"><span class="pre">TimeDetector.filter_non_numbers()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#time_detector.TimeDetector.find_dates"><code class="docutils literal notranslate"><span class="pre">TimeDetector.find_dates()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#time_detector.TimeDetector.get_date_time"><code class="docutils literal notranslate"><span class="pre">TimeDetector.get_date_time()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#time_detector.TimeDetector.init_strict_patterns"><code class="docutils literal notranslate"><span class="pre">TimeDetector.init_strict_patterns()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#time_detector.TimeDetector.is_time_mergeable"><code class="docutils literal notranslate"><span class="pre">TimeDetector.is_time_mergeable()</span></code></a></li>
@@ -183,7 +182,7 @@
 <span id="inout-module"></span><h1>inout module<a class="headerlink" href="#module-inout" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="inout.InoutHandler">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inout.</span></span><span class="sig-name descname"><span class="pre">InoutHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_data_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inout.InoutHandler" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inout.</span></span><span class="sig-name descname"><span class="pre">InoutHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_data_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inout.InoutHandler" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="inout.InoutHandler.data_to_xml">
@@ -240,14 +239,14 @@ from a single email file.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inout.InoutHandler.list_of_files">
-<span class="sig-name descname"><span class="pre">list_of_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['.eml',</span> <span class="pre">'.html']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inout.InoutHandler.list_of_files" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">list_of_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['.eml',</span> <span class="pre">'.html']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inout.InoutHandler.list_of_files" title="Link to this definition"></a></dt>
 <dd><p>Method to create a list of Path objects (files) that are present
 in a directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>directory_name</strong> (<em>str</em>) – The directory where the files are located.</p></li>
-<li><p><strong>file_types</strong> (<em>list</em><em>, </em><em>optional</em>) – The list of file types to be processed.
+<li><p><strong>file_types</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The list of file types to be processed.
 Defaults to [“.eml”, “.html”].</p></li>
 </ul>
 </dd>
@@ -256,7 +255,7 @@ Defaults to [“.eml”, “.html”].</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inout.InoutHandler.load_csv">
-<span class="sig-name descname"><span class="pre">load_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['message']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unmatched_keyword</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'unmatched'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inout.InoutHandler.load_csv" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">load_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['message']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unmatched_keyword</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'unmatched'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inout.InoutHandler.load_csv" title="Link to this definition"></a></dt>
 <dd><p>Load the email list from a csv file.
 The col_names should map the init_data_fields by order.
 + If col_names is empty, the email dict will be created with
@@ -269,7 +268,7 @@ the rest of the col_names will be used as keys in the email dict.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>infile</strong> (<em>str</em>) – The path of the file to be read.</p></li>
-<li><p><strong>col_names</strong> (<em>list</em>) – The list of column names that map the init_data_fields.
+<li><p><strong>col_names</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – The list of column names that map the init_data_fields.
 Defaults to [“message”].</p></li>
 <li><p><strong>unmatched_keyword</strong> (<em>str</em>) – The keyword for marking unmatched columns.</p></li>
 </ul>
@@ -286,7 +285,7 @@ and saves their contents in email_list</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="inout.InoutHandler.validate_data">
-<span class="sig-name descname"><span class="pre">validate_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inout.InoutHandler.validate_data" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inout.InoutHandler.validate_data" title="Link to this definition"></a></dt>
 <dd><p>Check if all fields in init_data_fields are present.
 If not, set them to None.</p>
 </dd></dl>
@@ -323,11 +322,11 @@ If not, set them to None.</p>
 <span id="lang-detector-module"></span><h1>lang_detector module<a class="headerlink" href="#module-lang_detector" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="lang_detector.LangDetector">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lang_detector.</span></span><span class="sig-name descname"><span class="pre">LangDetector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trans_loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TransformerLoader</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lang_detector.LangDetector" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">lang_detector.</span></span><span class="sig-name descname"><span class="pre">LangDetector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trans_loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TransformerLoader</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lang_detector.LangDetector" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="lang_detector.LangDetector.constrain_langid">
-<span class="sig-name descname"><span class="pre">constrain_langid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lang_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lang_detector.LangDetector.constrain_langid" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">constrain_langid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lang_set</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lang_detector.LangDetector.constrain_langid" title="Link to this definition"></a></dt>
 <dd><p>Set constraint for language set of langid.
 Default is no constrained languages.</p>
 </dd></dl>
@@ -402,7 +401,7 @@ Default is no constrained languages.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lang_detector.LangDetector.detect_lang_sentences">
-<span class="sig-name descname"><span class="pre">detect_lang_sentences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentences</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang_lib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'langid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IntervalTree</span></span></span><a class="headerlink" href="#lang_detector.LangDetector.detect_lang_sentences" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">detect_lang_sentences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentences</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang_lib</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'langid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IntervalTree</span></span></span><a class="headerlink" href="#lang_detector.LangDetector.detect_lang_sentences" title="Link to this definition"></a></dt>
 <dd><p>Detect languages of a list of sentences using a specified language library.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -410,7 +409,7 @@ Default is no constrained languages.</p>
 <li><p><strong>sentences</strong> (<em>str</em>) – The document to detect the languages of.</p></li>
 <li><p><strong>lang_lib</strong> (<em>str</em>) – The lang_lib to use for detection.
 Options are “langid”, “langdetect” and “trans”.</p></li>
-<li><p><strong>pipeline_info</strong> (<em>dict</em><em>, </em><em>optional</em>) – The pipeline information,
+<li><p><strong>pipeline_info</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The pipeline information,
 used for detecting with “trans” option.</p></li>
 </ul>
 </dd>
@@ -436,7 +435,7 @@ Recommended for a single language detection.</p>
 <dd class="field-even"><p>The possible language and their probabilities.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list(str, float)</p>
+<dd class="field-odd"><p>list[tuple[str, float]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -454,27 +453,27 @@ Recommended for a single language detection.</p>
 <dd class="field-even"><p>The detected language and its probability.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>[(str, float)]</p>
+<dd class="field-odd"><p>list[tuple[str, float]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lang_detector.LangDetector.detect_with_transformers">
-<span class="sig-name descname"><span class="pre">detect_with_transformers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#lang_detector.LangDetector.detect_with_transformers" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">detect_with_transformers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#lang_detector.LangDetector.detect_with_transformers" title="Link to this definition"></a></dt>
 <dd><p>Dectect language of a given text using transformers library.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sentence</strong> (<em>str</em>) – The text to detect the language of.</p></li>
-<li><p><strong>pipeline_info</strong> (<em>dict</em><em>, </em><em>optional</em>) – The pipeline information</p></li>
+<li><p><strong>pipeline_info</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The pipeline information</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The possible language and their probabilities.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list(str, float)</p>
+<dd class="field-odd"><p>list[tuple[str, float]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -487,7 +486,7 @@ Recommended for a single language detection.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lang_detector.LangDetector.get_detections">
-<span class="sig-name descname"><span class="pre">get_detections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang_lib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'langid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#lang_detector.LangDetector.get_detections" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_detections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang_lib</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'langid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#lang_detector.LangDetector.get_detections" title="Link to this definition"></a></dt>
 <dd><p>Get detections for a given text using a specified lang_lib or model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -496,7 +495,7 @@ Recommended for a single language detection.</p>
 <li><p><strong>lang_lib</strong> (<em>str</em>) – The lang_lib to use for detection.
 Options are “langid”, “langdetect” and “trans”.
 The default is “langid”.</p></li>
-<li><p><strong>pipeline_info</strong> (<em>dict</em><em>, </em><em>optional</em>) – The pipeline information,
+<li><p><strong>pipeline_info</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The pipeline information,
 used for detecting with “trans” option.</p></li>
 </ul>
 </dd>
@@ -504,14 +503,14 @@ used for detecting with “trans” option.</p></li>
 <dd class="field-even"><p>A list of detected languages and their probabilities.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list(str, float)</p>
+<dd class="field-odd"><p>list[tuple[str, float]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lang_detector.LangDetector.init_transformers">
-<span class="sig-name descname"><span class="pre">init_transformers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lang_detector.LangDetector.init_transformers" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">init_transformers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lang_detector.LangDetector.init_transformers" title="Link to this definition"></a></dt>
 <dd><p>Initialize transformers for language detection.</p>
 </dd></dl>
 
@@ -539,7 +538,7 @@ used for detecting with “trans” option.</p></li>
 <span id="main-module"></span><h1>main module<a class="headerlink" href="#module-main" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="main.get_input_handler">
-<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">get_input_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dir'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['message']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_data_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['content',</span> <span class="pre">'date',</span> <span class="pre">'attachment',</span> <span class="pre">'attachment</span> <span class="pre">type',</span> <span class="pre">'subject']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unmatched_keyword</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'unmatched'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['.eml',</span> <span class="pre">'.html']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">InoutHandler</span></span></span><a class="headerlink" href="#main.get_input_handler" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">get_input_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dir'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['message']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_data_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['content',</span> <span class="pre">'date',</span> <span class="pre">'attachment',</span> <span class="pre">'attachment</span> <span class="pre">type',</span> <span class="pre">'subject']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unmatched_keyword</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'unmatched'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['.eml',</span> <span class="pre">'.html']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">InoutHandler</span></span></span><a class="headerlink" href="#main.get_input_handler" title="Link to this definition"></a></dt>
 <dd><p>Get input handler for a file or directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -547,14 +546,14 @@ used for detecting with “trans” option.</p></li>
 <li><p><strong>in_path</strong> (<em>str</em>) – The path to the input data.</p></li>
 <li><p><strong>in_type</strong> (<em>str</em><em>, </em><em>optional</em>) – The type of input data. Defaults to “dir”.
 Possible values are [“dir”, “csv”].</p></li>
-<li><p><strong>col_names</strong> (<em>list</em><em>, </em><em>optional</em>) – The list of column names that
+<li><p><strong>col_names</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The list of column names that
 map the init_data_fields.</p></li>
-<li><p><strong>init_data_fields</strong> (<em>list</em><em>, </em><em>optional</em>) – The list of fields
+<li><p><strong>init_data_fields</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The list of fields
 should be present in the data dict.</p></li>
 <li><p><strong>unmatched_keyword</strong> (<em>str</em><em>, </em><em>optional</em>) – The keyword for
 marking unmatch columns in csv files.
 Defaults to “unmatched”.</p></li>
-<li><p><strong>file_types</strong> (<em>list</em><em>, </em><em>optional</em>) – The list of file types
+<li><p><strong>file_types</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The list of file types
 to be processed in the directory.</p></li>
 </ul>
 </dd>
@@ -569,7 +568,7 @@ to be processed in the directory.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="main.get_workflow_settings">
-<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">get_workflow_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">setting_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated_setting_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_updated_settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#main.get_workflow_settings" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">get_workflow_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">setting_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated_setting_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_updated_settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#main.get_workflow_settings" title="Link to this definition"></a></dt>
 <dd><p>Get the workflow settings.
 If the setting path is “default”, return the default settings.
 If the setting path is not default, read the settings from the file.
@@ -579,7 +578,7 @@ If the new settings are provided, overwrite the default/loaded settings.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>setting_path</strong> (<em>str</em>) – Path to the workflow settings file.
 Defaults to “default”.</p></li>
-<li><p><strong>new_settings</strong> (<em>dict</em>) – New settings to overwrite the existing settings.
+<li><p><strong>new_settings</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – New settings to overwrite the existing settings.
 Defaults to {}.</p></li>
 <li><p><strong>updated_setting_dir</strong> (<em>str</em>) – Directory to save the updated settings file.
 Defaults to None.</p></li>
@@ -590,17 +589,17 @@ Defaults to None.</p></li>
 <dd class="field-even"><p>The workflow settings.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
+<dd class="field-odd"><p>dict[str, Any]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="main.is_valid_settings">
-<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">is_valid_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow_setting</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#main.is_valid_settings" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">is_valid_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow_setting</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#main.is_valid_settings" title="Link to this definition"></a></dt>
 <dd><p>Check if the workflow settings are valid.
 :param workflow_setting: The workflow settings.
-:type workflow_setting: dict</p>
+:type workflow_setting: dict[str, Any]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True if the settings are valid, False otherwise.</p>
@@ -613,7 +612,7 @@ Defaults to None.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="main.process_data">
-<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">process_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workflow_settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.process_data" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">process_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workflow_settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.process_data" title="Link to this definition"></a></dt>
 <dd><p>Process the input data in this order:
 + detect language (optional)
 + detect date time (optional)
@@ -623,9 +622,10 @@ Defaults to None.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>email_list</strong> (<em>Iterator</em><em>[</em><em>list</em><em>[</em><em>dict</em><em>]</em><em>]</em>) – The list of dictionaries of input data.</p></li>
-<li><p><strong>content.</strong> (<em>&quot;content&quot; field in each dictionary contains the main</em>)</p></li>
-<li><p><strong>workflow_settings</strong> (<em>dict</em>) – The workflow settings.</p></li>
+<li><p><strong>email_list</strong> (<em>Iterator</em><em>[</em><em>list</em><em>[</em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em><em>]</em>) – The list of dictionaries
+of input data. “content” field in each dictionary contains
+the main content.</p></li>
+<li><p><strong>workflow_settings</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – The workflow settings.</p></li>
 </ul>
 </dd>
 </dl>
@@ -633,13 +633,13 @@ Defaults to None.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="main.save_settings_to_file">
-<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">save_settings_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow_settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.save_settings_to_file" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">save_settings_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow_settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.save_settings_to_file" title="Link to this definition"></a></dt>
 <dd><p>Save the workflow settings to a file.
 If dir_path is None, save to the current directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>workflow_settings</strong> (<em>dict</em>) – The workflow settings.</p></li>
+<li><p><strong>workflow_settings</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – The workflow settings.</p></li>
 <li><p><strong>dir_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to save the settings file.
 Defaults to None.</p></li>
 </ul>
@@ -668,11 +668,11 @@ Defaults to False.</p></li>
 <span id="parse-module"></span><h1>parse module<a class="headerlink" href="#module-parse" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="parse.Pseudonymize">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">parse.</span></span><span class="sig-name descname"><span class="pre">Pseudonymize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pseudo_first_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans_loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TransformerLoader</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacy_loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpacyLoader</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">parse.</span></span><span class="sig-name descname"><span class="pre">Pseudonymize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pseudo_first_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans_loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TransformerLoader</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacy_loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpacyLoader</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="parse.Pseudonymize.choose_per_pseudonym">
-<span class="sig-name descname"><span class="pre">choose_per_pseudonym</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_ne_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.choose_per_pseudonym" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">choose_per_pseudonym</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_ne_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.choose_per_pseudonym" title="Link to this definition"></a></dt>
 <dd><p>Chooses a pseudonym for a PER named entity based on previously used pseudonyms.
 If the name has previously been replaced, the same pseudonym is used again.
 If not, a new pseudonym is taken from the list of available pseudonyms.</p>
@@ -682,9 +682,8 @@ If not, a new pseudonym is taken from the list of available pseudonyms.</p>
 <li><p><strong>name</strong> (<em>str</em>) – Word of the named entity.</p></li>
 <li><p><strong>lang</strong> (<em>str</em><em>, </em><em>optional</em>) – Language to choose pseudonyms from.
 Defaults to “fr”.</p></li>
-<li><p><strong>prev_ne_list</strong> (<em>list</em><em>, </em><em>optional</em>) – List of named entities from previous fields
-in the email.
-Defaults to None.</p></li>
+<li><p><strong>prev_ne_list</strong> (<em>list</em><em>[</em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – List of named entities
+from previous fields in the email. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -698,7 +697,7 @@ Defaults to None.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="parse.Pseudonymize.concatenate">
-<span class="sig-name descname"><span class="pre">concatenate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentences</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.concatenate" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">concatenate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentences</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.concatenate" title="Link to this definition"></a></dt>
 <dd><p>Concatenates a list of sentences to a coherent text.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -715,13 +714,13 @@ Defaults to None.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="parse.Pseudonymize.get_ner">
-<span class="sig-name descname"><span class="pre">get_ner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.get_ner" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_ner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.get_ner" title="Link to this definition"></a></dt>
 <dd><p>Retrieves named entities in a String from transformers model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sentence</strong> (<em>str</em>) – Input text to search for named entities.</p></li>
-<li><p><strong>pipeline_info</strong> (<em>dict</em><em>, </em><em>optional</em>) – Transformers pipeline info.
+<li><p><strong>pipeline_info</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Transformers pipeline info.
 Defaults to None.</p></li>
 </ul>
 </dd>
@@ -736,7 +735,7 @@ Defaults to None.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="parse.Pseudonymize.get_sentences">
-<span class="sig-name descname"><span class="pre">get_sentences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.get_sentences" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_sentences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.get_sentences" title="Link to this definition"></a></dt>
 <dd><p>Splits a text into sentences using spacy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -772,18 +771,18 @@ Defaults to “default”.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="parse.Pseudonymize.init_transformers">
-<span class="sig-name descname"><span class="pre">init_transformers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.init_transformers" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">init_transformers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.init_transformers" title="Link to this definition"></a></dt>
 <dd><p>Initializes transformers NER model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pipeline_info</strong> (<em>dict</em><em>, </em><em>optional</em>) – Transformers pipeline info.</p>
+<dd class="field-odd"><p><strong>pipeline_info</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Transformers pipeline info.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="parse.Pseudonymize.pseudonymize">
-<span class="sig-name descname"><span class="pre">pseudonymize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detected_dates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_emailaddresses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_ne</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_numbers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_ne_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.pseudonymize" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">pseudonymize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'fr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detected_dates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_emailaddresses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_ne</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_numbers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_ne_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.pseudonymize" title="Link to this definition"></a></dt>
 <dd><p>Function that handles the pseudonymization of an email
 and all its steps</p>
 <dl class="field-list simple">
@@ -792,7 +791,7 @@ and all its steps</p>
 <li><p><strong>text</strong> (<em>str</em>) – Text to pseudonymize.</p></li>
 <li><p><strong>language</strong> (<em>str</em><em>, </em><em>optional</em>) – Language of the email. Defaults to “de”.</p></li>
 <li><p><strong>model</strong> (<em>str</em><em>, </em><em>optional</em>) – Model to use for NER. Defaults to “default”.</p></li>
-<li><p><strong>pipeline_info</strong> (<em>dict</em><em>, </em><em>optional</em>) – Pipeline information for NER.
+<li><p><strong>pipeline_info</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – Pipeline information for NER.
 Defaults to None.</p></li>
 <li><p><strong>detected_dates</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Detected dates in the email.
 Defaults to None.</p></li>
@@ -802,8 +801,8 @@ email addresses. Defaults to True.</p></li>
 Defaults to True.</p></li>
 <li><p><strong>pseudo_numbers</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to pseudonymize numbers.
 Defaults to True.</p></li>
-<li><p><strong>prev_ne_list</strong> (<em>list</em><em>, </em><em>optional</em>) – List of named entities from previous
-fields in the email. Defaults to None.</p></li>
+<li><p><strong>prev_ne_list</strong> (<em>list</em><em>[</em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – List of named entities
+from previous fields in the email. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -817,7 +816,7 @@ fields in the email. Defaults to None.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="parse.Pseudonymize.pseudonymize_email_addresses">
-<span class="sig-name descname"><span class="pre">pseudonymize_email_addresses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.pseudonymize_email_addresses" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">pseudonymize_email_addresses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.pseudonymize_email_addresses" title="Link to this definition"></a></dt>
 <dd><p>Replaces words containing &#64; in a String with placeholder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -834,7 +833,7 @@ fields in the email. Defaults to None.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="parse.Pseudonymize.pseudonymize_ne">
-<span class="sig-name descname"><span class="pre">pseudonymize_ne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sentence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sent_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_ne_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.pseudonymize_ne" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">pseudonymize_ne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sentence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'fr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sent_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_ne_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.pseudonymize_ne" title="Link to this definition"></a></dt>
 <dd><p>Pseudonymizes all found named entities in a String.
 Named entities categorized as persons are replaced with a pseudonym.
 Named entities categorized as locations, organizations or miscellaneous
@@ -843,14 +842,15 @@ for reuse in case of multiple occurrences.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ner</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – List of named entities found by the transformers model.</p></li>
+<li><p><strong>ner</strong> (<em>list</em><em>[</em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – List of named entities found by
+the transformers model.</p></li>
 <li><p><strong>sentence</strong> (<em>str</em>) – Input String to replace all named entities in.</p></li>
 <li><p><strong>lang</strong> (<em>str</em><em>, </em><em>optional</em>) – Language to choose pseudonyms from.
 Defaults to “fr”.</p></li>
 <li><p><strong>sent_idx</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of the sentence in the email.
 Defaults to 0.</p></li>
-<li><p><strong>prev_ne_list</strong> (<em>list</em><em>, </em><em>optional</em>) – List of named entities from previous
-fields in the email. Defaults to None.</p></li>
+<li><p><strong>prev_ne_list</strong> (<em>list</em><em>[</em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – List of named entities
+from previous fields in the email. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -864,7 +864,7 @@ fields in the email. Defaults to None.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="parse.Pseudonymize.pseudonymize_numbers">
-<span class="sig-name descname"><span class="pre">pseudonymize_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detected_dates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.pseudonymize_numbers" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">pseudonymize_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detected_dates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.pseudonymize_numbers" title="Link to this definition"></a></dt>
 <dd><p>Replaces numbers that are not dates in a sentence with placeholder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -885,7 +885,7 @@ fields in the email. Defaults to None.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="parse.Pseudonymize.pseudonymize_with_updated_ne">
-<span class="sig-name descname"><span class="pre">pseudonymize_with_updated_ne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ne_sent_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detected_dates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_emailaddresses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_ne</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_numbers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_ne_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.pseudonymize_with_updated_ne" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">pseudonymize_with_updated_ne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentences</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ne_sent_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'fr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detected_dates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_emailaddresses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_ne</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_numbers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_ne_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.pseudonymize_with_updated_ne" title="Link to this definition"></a></dt>
 <dd><p>Pseudonymizes the email with updated named entities.
 This function is used when the named entities have been updated
 in the email and need to be pseudonymized again.</p>
@@ -893,9 +893,9 @@ in the email and need to be pseudonymized again.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sentences</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of sentences to pseudonymize.</p></li>
-<li><p><strong>ne_sent_dict</strong> (<em>dict</em><em>[</em><em>list</em><em>[</em><em>dict</em><em>]</em><em>]</em><em>|</em><em>None</em>) – Dictionary containing named entities.
-If set to none, the previous named entities will be used. This is the case
-for reprocessing emails with new pseudonyms.</p></li>
+<li><p><strong>ne_sent_dict</strong> (<em>dict</em><em>[</em><em>list</em><em>[</em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em><em>]</em><em>|</em><em>None</em>) – Dictionary containing
+named entities. If set to none, the previous named entities will be used.
+This is the case for reprocessing emails with new pseudonyms.</p></li>
 <li><p><strong>language</strong> (<em>str</em><em>, </em><em>optional</em>) – Language of the email. Defaults to “de”.</p></li>
 <li><p><strong>detected_dates</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Detected dates in the email.
 Defaults to None.</p></li>
@@ -905,8 +905,8 @@ email addresses. Defaults to True.</p></li>
 Defaults to True.</p></li>
 <li><p><strong>pseudo_numbers</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to pseudonymize numbers.
 Defaults to True.</p></li>
-<li><p><strong>prev_ne_list</strong> (<em>list</em><em>, </em><em>optional</em>) – List of named entities from previous
-fields in the email. Defaults to None.</p></li>
+<li><p><strong>prev_ne_list</strong> (<em>list</em><em>[</em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – List of named entities
+from previous fields in the email. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -931,17 +931,17 @@ fields in the email. Defaults to None.</p></li>
 <span id="time-detector-module"></span><h1>time_detector module<a class="headerlink" href="#module-time_detector" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="time_detector.TimeDetector">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">time_detector.</span></span><span class="sig-name descname"><span class="pre">TimeDetector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strict_parsing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'non-strict'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacy_loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpacyLoader</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#time_detector.TimeDetector" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">time_detector.</span></span><span class="sig-name descname"><span class="pre">TimeDetector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strict_parsing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'non-strict'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacy_loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SpacyLoader</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#time_detector.TimeDetector" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="time_detector.TimeDetector.add_merged_datetime">
-<span class="sig-name descname"><span class="pre">add_merged_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">merged_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#time_detector.TimeDetector.add_merged_datetime" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_merged_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">merged_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.add_merged_datetime" title="Link to this definition"></a></dt>
 <dd><p>Add a new item to the merged datetime list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>merged_datetime</strong> (<em>list</em>) – The list of merged datetime.</p></li>
-<li><p><strong>new_item</strong> (<em>tuple</em>) – The new item to add.
+<li><p><strong>merged_datetime</strong> (<em>list</em><em>[</em><em>tuple</em><em>[</em><em>str</em><em>, </em><em>datetime</em><em>, </em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – The list of merged datetime.</p></li>
+<li><p><strong>new_item</strong> (<em>tuple</em><em>[</em><em>str</em><em>, </em><em>datetime</em><em>, </em><em>int</em><em>, </em><em>int</em><em>]</em>) – The new item to add.
 It contains the date string, the datetime object,
 the start index and the end index.</p></li>
 </ul>
@@ -950,20 +950,20 @@ the start index and the end index.</p></li>
 <dd class="field-even"><p>The updated list of merged datetime.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list</p>
+<dd class="field-odd"><p>list[tuple[str, datetime, int, int]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="time_detector.TimeDetector.add_pattern">
-<span class="sig-name descname"><span class="pre">add_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#time_detector.TimeDetector.add_pattern" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#time_detector.TimeDetector.add_pattern" title="Link to this definition"></a></dt>
 <dd><p>Add a new pattern to the matcher
 if it’s a non-empty list of dictionaries and not already present.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pattern</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – The pattern to add to the matcher.</p></li>
+<li><p><strong>pattern</strong> (<em>list</em><em>[</em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – The pattern to add to the matcher.</p></li>
 <li><p><strong>mode</strong> (<em>str</em>) – The mode of the pattern, either “strict” or “non-strict”.</p></li>
 </ul>
 </dd>
@@ -972,7 +972,7 @@ if it’s a non-empty list of dictionaries and not already present.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="time_detector.TimeDetector.extract_date_time">
-<span class="sig-name descname"><span class="pre">extract_date_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#time_detector.TimeDetector.extract_date_time" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">extract_date_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#time_detector.TimeDetector.extract_date_time" title="Link to this definition"></a></dt>
 <dd><p>Extract dates from a given text.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -994,7 +994,7 @@ Defaults to “default”.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="time_detector.TimeDetector.extract_date_time_multi_words">
-<span class="sig-name descname"><span class="pre">extract_date_time_multi_words</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.extract_date_time_multi_words" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">extract_date_time_multi_words</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Span</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.extract_date_time_multi_words" title="Link to this definition"></a></dt>
 <dd><p>Extract time from a given text when it is multiple words.
 E.g. 12 mars 2025, 17. April 2024</p>
 <dl class="field-list simple">
@@ -1007,28 +1007,25 @@ Defaults to “default”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>A list of extracted dates and</dt><dd><p>marks of locations in the doc.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p>A list of extracted dates and
+marks of locations in the doc.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple[list, list]</p>
+<dd class="field-odd"><p>tuple[list[tuple[Span, datetime]], list[tuple[int, int]]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="time_detector.TimeDetector.extract_date_time_single_word">
-<span class="sig-name descname"><span class="pre">extract_date_time_single_word</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marked_locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#time_detector.TimeDetector.extract_date_time_single_word" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">extract_date_time_single_word</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marked_locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Token</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.extract_date_time_single_word" title="Link to this definition"></a></dt>
 <dd><p>Extract time from a given text when it is only one word.
 E.g. 2009/02/17, 17:23</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>doc</strong> (<em>Doc</em>) – The spacy doc object.</p></li>
-<li><p><strong>marked_locations</strong> (<em>list</em>) – A list of marked locations of dates
+<li><p><strong>marked_locations</strong> (<em>list</em><em>[</em><em>tuple</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – A list of marked locations of dates
 in multiple word format.</p></li>
 </ul>
 </dd>
@@ -1036,48 +1033,31 @@ in multiple word format.</p></li>
 <dd class="field-even"><p>A list of extracted dates.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list</p>
+<dd class="field-odd"><p>list[tuple[Token, datetime]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="time_detector.TimeDetector.filter_non_numbers">
-<span class="sig-name descname"><span class="pre">filter_non_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.filter_non_numbers" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">filter_non_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.filter_non_numbers" title="Link to this definition"></a></dt>
 <dd><p>Filter out the date time phrases that do not contain numbers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>date_time</strong> (<em>list</em><em>[</em><em>(</em><em>str</em><em>, </em><em>datetime</em><em>, </em><em>int</em><em>, </em><em>int</em><em>)</em><em>]</em>) – The original list.</p>
+<dd class="field-odd"><p><strong>date_time</strong> (<em>list</em><em>[</em><em>tuple</em><em>[</em><em>str</em><em>, </em><em>datetime</em><em>, </em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – The original list.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The filtered list.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[(str, datetime, int, int)]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="time_detector.TimeDetector.find_dates">
-<span class="sig-name descname"><span class="pre">find_dates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.find_dates" title="Link to this definition"></a></dt>
-<dd><p>Find dates in a given text.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The text to find dates in.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of dates found in the text.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[datetime]</p>
+<dd class="field-odd"><p>list[tuple[str, datetime, int, int]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="time_detector.TimeDetector.get_date_time">
-<span class="sig-name descname"><span class="pre">get_date_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.get_date_time" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_date_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.get_date_time" title="Link to this definition"></a></dt>
 <dd><p>Get the date and time from a given text.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1096,7 +1076,7 @@ Defaults to “default</p></li>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[(str, datetime, int, int)]</p>
+<dd class="field-odd"><p>list[tuple[str, datetime, int, int]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1138,12 +1118,12 @@ the words in between them are [“.,”]</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="time_detector.TimeDetector.merge_date_time">
-<span class="sig-name descname"><span class="pre">merge_date_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extracted_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Doc</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.merge_date_time" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">merge_date_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extracted_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Token</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Span</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Doc</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.merge_date_time" title="Link to this definition"></a></dt>
 <dd><p>Merge the extracted date and time if they are mergeable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>extracted_datetime</strong> (<em>list</em>) – The extracted date and time.</p></li>
+<li><p><strong>extracted_datetime</strong> (<em>list</em><em>[</em><em>tuple</em><em>[</em><em>Union</em><em>[</em><em>Token</em><em>, </em><em>Span</em><em>]</em><em>, </em><em>datetime</em><em>]</em><em>]</em>) – The extracted date and time.</p></li>
 <li><p><strong>doc</strong> (<em>Doc</em>) – The spacy doc object.</p></li>
 </ul>
 </dd>
@@ -1155,7 +1135,7 @@ the words in between them are [“.,”]</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[(str, datetime, int, int)]</p>
+<dd class="field-odd"><p>list[tuple[str, datetime, int, int]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1179,12 +1159,12 @@ the words in between them are [“.,”]</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="time_detector.TimeDetector.remove_pattern">
-<span class="sig-name descname"><span class="pre">remove_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#time_detector.TimeDetector.remove_pattern" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">remove_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#time_detector.TimeDetector.remove_pattern" title="Link to this definition"></a></dt>
 <dd><p>Remove pattern from the matcher if it’s present.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pattern</strong> (<em>list</em>) – The pattern to remove from the matcher.</p></li>
+<li><p><strong>pattern</strong> (<em>list</em><em>[</em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – The pattern to remove from the matcher.</p></li>
 <li><p><strong>mode</strong> (<em>str</em>) – The mode of the pattern, either “strict” or “non-strict”.</p></li>
 </ul>
 </dd>
@@ -1193,11 +1173,16 @@ the words in between them are [“.,”]</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="time_detector.TimeDetector.search_dates">
-<span class="sig-name descname"><span class="pre">search_dates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">langs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['es',</span> <span class="pre">'fr']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.search_dates" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">search_dates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">langs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['es',</span> <span class="pre">'fr']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.search_dates" title="Link to this definition"></a></dt>
 <dd><p>Search for dates in a given text.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The text to search for dates in.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – The text to search for dates in.</p></li>
+<li><p><strong>langs</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The list of languages to consider
+when searching for dates.
+Defaults to [“es”, “fr”].</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
@@ -1207,33 +1192,30 @@ the words in between them are [“.,”]</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[(str, datetime)]</p>
+<dd class="field-odd"><p>list[tuple[str, datetime]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="time_detector.TimeDetector.unite_overlapping_words">
-<span class="sig-name descname"><span class="pre">unite_overlapping_words</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multi_word_date_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marked_locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Doc</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.unite_overlapping_words" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">unite_overlapping_words</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multi_word_date_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Span</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marked_locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Doc</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Span</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#time_detector.TimeDetector.unite_overlapping_words" title="Link to this definition"></a></dt>
 <dd><p>Unite overlapping words between two items in the matched multi-word date time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>multi_word_date_time</strong> (<em>list</em>) – A list of multi-word date time.</p></li>
-<li><p><strong>marked_locations</strong> (<em>list</em>) – A list of marked locations of dates
+<li><p><strong>multi_word_date_time</strong> (<em>list</em><em>[</em><em>tuple</em><em>[</em><em>Span</em><em>, </em><em>datetime</em><em>]</em><em>]</em>) – A list of multi-word spans
+and their corresponding date time.</p></li>
+<li><p><strong>marked_locations</strong> (<em>list</em><em>[</em><em>tuple</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – A list of marked locations of dates
 in multiple word format.</p></li>
 <li><p><strong>doc</strong> (<em>Doc</em>) – The spacy doc object.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>A list of updated multi-word date time and</dt><dd><p>a list of marked locations.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p>A list of updated multi-word date time and a list of marked locations.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple[list, list]</p>
+<dd class="field-odd"><p>tuple[list[tuple[Span, datetime]], list[tuple[int, int]]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1245,7 +1227,7 @@ in multiple word format.</p></li>
 <span id="utils-module"></span><h1>utils module<a class="headerlink" href="#module-utils" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.SpacyLoader">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">SpacyLoader</span></span><a class="headerlink" href="#utils.SpacyLoader" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">SpacyLoader</span></span><a class="headerlink" href="#utils.SpacyLoader" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.SpacyLoader.get_default_model">
@@ -1254,18 +1236,18 @@ in multiple word format.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.SpacyLoader.init_spacy">
-<span class="sig-name descname"><span class="pre">init_spacy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.SpacyLoader.init_spacy" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">init_spacy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.SpacyLoader.init_spacy" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.TransformerLoader">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">TransformerLoader</span></span><a class="headerlink" href="#utils.TransformerLoader" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">TransformerLoader</span></span><a class="headerlink" href="#utils.TransformerLoader" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.TransformerLoader.init_transformers">
-<span class="sig-name descname"><span class="pre">init_transformers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.TransformerLoader.init_transformers" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">init_transformers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.TransformerLoader.init_transformers" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1289,7 +1271,7 @@ in multiple word format.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.clean_up_content">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">clean_up_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#utils.clean_up_content" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">clean_up_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#utils.clean_up_content" title="Link to this definition"></a></dt>
 <dd><p>Clean up the content of an email.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1299,7 +1281,7 @@ in multiple word format.</p></li>
 <dd class="field-even"><p>The cleaned up content and a list of cleaned up sentences.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple[str, list]</p>
+<dd class="field-odd"><p>tuple[str, list[str]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1327,14 +1309,15 @@ in multiple word format.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.get_trans_instance">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">get_trans_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trans_loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#utils.TransformerLoader" title="utils.TransformerLoader"><span class="pre">TransformerLoader</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.get_trans_instance" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">get_trans_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trans_loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#utils.TransformerLoader" title="utils.TransformerLoader"><span class="pre">TransformerLoader</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pipeline</span></span></span><a class="headerlink" href="#utils.get_trans_instance" title="Link to this definition"></a></dt>
 <dd><p>Get the transformer instance for a given feature.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>trans_loader</strong> (<a class="reference internal" href="#utils.TransformerLoader" title="utils.TransformerLoader"><em>TransformerLoader</em></a>) – The transformer loader.</p></li>
 <li><p><strong>feature</strong> (<em>str</em>) – The feature to get the transformer instance.</p></li>
-<li><p><strong>pipeline_info</strong> (<em>dict</em>) – The setting info for the transformer, defaults to None.</p></li>
+<li><p><strong>pipeline_info</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – The setting info for the transformer,
+defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1348,14 +1331,14 @@ in multiple word format.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.highlight_ne_sent">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">highlight_ne_sent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ne_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.highlight_ne_sent" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">highlight_ne_sent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ne_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#utils.highlight_ne_sent" title="Link to this definition"></a></dt>
 <dd><p>Highlight named entities in the text using HTML spans.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<em>str</em>) – The text to highlight entities in.</p></li>
-<li><p><strong>ne_list</strong> (<em>list</em>) – A list of named entities to highlight.</p></li>
-<li><p><strong>colors</strong> (<em>dict</em>) – A dictionary mapping entity groups to colors.</p></li>
+<li><p><strong>ne_list</strong> (<em>list</em><em>[</em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – A list of named entities to highlight.</p></li>
+<li><p><strong>colors</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – A dictionary mapping entity groups to colors.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
