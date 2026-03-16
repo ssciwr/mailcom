@@ -12,13 +12,14 @@ import warnings
 from datetime import datetime
 import socket
 import copy
+from typing import Any
 
 
 def get_input_handler(
     in_path: str,
     in_type: str = "dir",
-    col_names: list = ["message"],
-    init_data_fields: list = [
+    col_names: list[str] = ["message"],
+    init_data_fields: list[str] = [
         "content",
         "date",
         "attachment",
@@ -26,7 +27,7 @@ def get_input_handler(
         "subject",
     ],
     unmatched_keyword: str = "unmatched",
-    file_types: list = [".eml", ".html"],
+    file_types: list[str] = [".eml", ".html"],
 ) -> InoutHandler:
     """Get input handler for a file or directory.
 
@@ -34,14 +35,14 @@ def get_input_handler(
         in_path (str): The path to the input data.
         in_type (str, optional): The type of input data. Defaults to "dir".
             Possible values are ["dir", "csv"].
-        col_names (list, optional): The list of column names that
+        col_names (list[str], optional): The list of column names that
             map the init_data_fields.
-        init_data_fields (list, optional): The list of fields
+        init_data_fields (list[str], optional): The list of fields
             should be present in the data dict.
         unmatched_keyword (str, optional): The keyword for
             marking unmatch columns in csv files.
             Defaults to "unmatched".
-        file_types (list, optional): The list of file types
+        file_types (list[str], optional): The list of file types
             to be processed in the directory.
     Returns:
         InoutHandler: The input handler object.
@@ -55,10 +56,10 @@ def get_input_handler(
     return inout_handler
 
 
-def is_valid_settings(workflow_setting: dict) -> bool:
+def is_valid_settings(workflow_setting: dict[str, Any]) -> bool:
     """Check if the workflow settings are valid.
     Args:
-        workflow_setting (dict): The workflow settings.
+        workflow_setting (dict[str, Any]): The workflow settings.
 
     Returns:
         bool: True if the settings are valid, False otherwise.
@@ -74,12 +75,14 @@ def is_valid_settings(workflow_setting: dict) -> bool:
         return False
 
 
-def _update_new_settings(workflow_settings: dict, new_settings: dict) -> bool:
+def _update_new_settings(
+    workflow_settings: dict[str, Any], new_settings: dict[str, Any]
+) -> bool:
     """Update the workflow settings directly with the new settings.
 
     Args:
-        workflow_settings (dict): The workflow settings.
-        new_settings (dict): The new settings.
+        workflow_settings (dict[str, Any]): The workflow settings.
+        new_settings (dict[str, Any]): The new settings.
 
     Returns:
         bool: True if the settings are updated, False otherwise.
@@ -116,12 +119,12 @@ def _update_new_settings(workflow_settings: dict, new_settings: dict) -> bool:
     return updated
 
 
-def save_settings_to_file(workflow_settings: dict, dir_path: str = None):
+def save_settings_to_file(workflow_settings: dict[str, Any], dir_path: str = None):
     """Save the workflow settings to a file.
     If dir_path is None, save to the current directory.
 
     Args:
-        workflow_settings (dict): The workflow settings.
+        workflow_settings (dict[str, Any]): The workflow settings.
         dir_path (str, optional): The path to save the settings file.
             Defaults to None.
     """
@@ -153,10 +156,10 @@ def save_settings_to_file(workflow_settings: dict, dir_path: str = None):
 
 def get_workflow_settings(
     setting_path: str = "default",
-    new_settings: dict = {},
+    new_settings: dict[str, Any] = {},
     updated_setting_dir: str = None,
     save_updated_settings: bool = True,
-) -> dict:
+) -> dict[str, Any]:
     """Get the workflow settings.
     If the setting path is "default", return the default settings.
     If the setting path is not default, read the settings from the file.
@@ -165,20 +168,20 @@ def get_workflow_settings(
     Args:
         setting_path (str): Path to the workflow settings file.
             Defaults to "default".
-        new_settings (dict): New settings to overwrite the existing settings.
+        new_settings (dict[str, Any]): New settings to overwrite the existing settings.
             Defaults to {}.
         updated_setting_dir (str): Directory to save the updated settings file.
             Defaults to None.
         save_updated_settings (bool): Whether to save the updated settings to a file.
 
     Returns:
-        dict: The workflow settings.
+        dict[str, Any]: The workflow settings.
     """
     workflow_settings = {}
     pkg = resources.files("mailcom")
     default_setting_path = Path(pkg / "default_settings.json")
 
-    def load_json(file_path: Path) -> dict:
+    def load_json(file_path: Path) -> dict[str, Any]:
         with open(file_path, "r", encoding="utf-8") as file:
             return json.load(file)
 
@@ -211,7 +214,9 @@ def get_workflow_settings(
     return workflow_settings
 
 
-def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
+def process_data(
+    email_list: Iterator[list[dict[str, Any]]], workflow_settings: dict[str, Any]
+):
     """Process the input data in this order:
     + detect language (optional)
     + detect date time (optional)
@@ -220,9 +225,10 @@ def process_data(email_list: Iterator[list[dict]], workflow_settings: dict):
     + pseudonymize numbers (optional)
 
     Args:
-        email_list (Iterator[list[dict]]): The list of dictionaries of input data.
-        "content" field in each dictionary contains the main content.
-        workflow_settings (dict): The workflow settings.
+        email_list (Iterator[list[dict[str, Any]]]): The list of dictionaries
+            of input data. "content" field in each dictionary contains
+            the main content.
+        workflow_settings (dict[str, Any]): The workflow settings.
     """
     # get workflow settings
     unmatched_keyword = workflow_settings.get("unmatched_keyword", "unmatched")

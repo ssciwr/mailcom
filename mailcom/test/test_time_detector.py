@@ -123,23 +123,6 @@ def test_search_dates_fr(get_time_detector):
             assert results[0][1].date() == date_obj
 
 
-@pytest.mark.datelib
-def test_find_dates(get_time_detector):
-    extra_info = "The date in the email is: "
-    for date_str, date_obj in sample_parsed_dates["absolute"].items():
-        assert get_time_detector.find_dates(extra_info + date_str) == [date_obj]
-    for date_str, date_obj in sample_parsed_dates["relative"].items():
-        if date_str not in ["2 weeks ago", "il y a 2 semaines"]:
-            assert get_time_detector.find_dates(extra_info + date_str) == []
-    for date_str in sample_parsed_dates["invalid"]:
-        assert get_time_detector.find_dates(extra_info + date_str) == []
-    for date_str, date_obj in sample_parsed_dates["confusing"].items():
-        if date_str == "2025-15-10":
-            assert get_time_detector.find_dates(extra_info + date_str) == []
-        else:
-            assert get_time_detector.find_dates(extra_info + date_str) == [date_obj]
-
-
 @pytest.mark.strict
 def test_init_strict_patterns(get_time_detector_strict):
     num_non_strict_patterns = len(get_time_detector_strict.patterns["non-strict"])

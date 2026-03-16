@@ -4,10 +4,11 @@ import eml_parser
 from bs4 import BeautifulSoup
 from dicttoxml import dicttoxml
 import pandas as pd
+from typing import Any
 
 
 class InoutHandler:
-    def __init__(self, init_data_fields: list = None):
+    def __init__(self, init_data_fields: list[str] = None):
         self.email_list = []
         if not init_data_fields:
             self.init_data_fields = [
@@ -20,13 +21,15 @@ class InoutHandler:
         else:
             self.init_data_fields = init_data_fields
 
-    def list_of_files(self, directory_name: str, file_types: list = [".eml", ".html"]):
+    def list_of_files(
+        self, directory_name: str, file_types: list[str] = [".eml", ".html"]
+    ):
         """Method to create a list of Path objects (files) that are present
         in a directory.
 
         Args:
             directory_name (str): The directory where the files are located.
-            file_types (list, optional): The list of file types to be processed.
+            file_types (list[str], optional): The list of file types to be processed.
                 Defaults to [".eml", ".html"].
         """
         if not os.path.exists(
@@ -118,7 +121,7 @@ class InoutHandler:
             iter: Iterator of self.email_list."""
         return iter(self.email_list)
 
-    def validate_data(self, email_dict: dict):
+    def validate_data(self, email_dict: dict[str, Any]):
         """Check if all fields in init_data_fields are present.
         If not, set them to None."""
         for field in self.init_data_fields:
@@ -161,7 +164,7 @@ class InoutHandler:
     def load_csv(
         self,
         infile: str,
-        col_names: list = ["message"],
+        col_names: list[str] = ["message"],
         unmatched_keyword: str = "unmatched",
     ):
         """Load the email list from a csv file.
@@ -175,7 +178,7 @@ class InoutHandler:
 
         Args:
             infile (str): The path of the file to be read.
-            col_names (list): The list of column names that map the init_data_fields.
+            col_names (list[str]): The list of column names that map the init_data_fields.
                 Defaults to ["message"].
             unmatched_keyword (str): The keyword for marking unmatched columns.
         """

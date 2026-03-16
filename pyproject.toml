@@ -35,7 +35,6 @@ dependencies = [
   "langdetect",
   "intervaltree",
   "dateparser",
-  "datefinder",
   "accelerate",
 ]
 
