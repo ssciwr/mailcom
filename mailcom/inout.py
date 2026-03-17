@@ -41,13 +41,9 @@ class InoutHandler:
             mp.resolve() for mp in mypath.glob("**/*") if mp.suffix in file_types
         ]
         if len(self.email_path_list) == 0:
-            raise ValueError(
-                """The directory {} does not contain .eml or .html files.
+            raise ValueError("""The directory {} does not contain .eml or .html files.
                 Please check that the directory is containing the email
-                data files""".format(
-                    mypath
-                )
-            )
+                data files""".format(mypath))
 
     def get_html_text(self, text_check: str) -> str:
         """Clean up a string if it contains html content.

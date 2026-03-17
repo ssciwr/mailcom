@@ -202,12 +202,8 @@ def highlight_ne_sent(
     required_keys = {"word", "start", "end", "entity_group"}
     for ne in ne_list:
         if not required_keys.issubset(ne.keys()):
-            raise ValueError(
-                "Named entity is missing required keys for \
-                 displaying highlighted text: {}".format(
-                    ne
-                )
-            )
+            raise ValueError("Named entity is missing required keys for \
+                 displaying highlighted text: {}".format(ne))
 
     # make sure all entities have a color
     # else assign a default color
