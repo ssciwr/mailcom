@@ -36,6 +36,7 @@ dependencies = [
   "intervaltree",
   "dateparser",
   "accelerate",
+  "pip>=26.0.1",
 ]
 
 [project.optional-dependencies]
