@@ -2689,7 +2689,7 @@ requires-dist = [
     { name = "pre-commit", marker = "extra == 'dev'" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "pytest-cov", marker = "extra == 'dev'" },
-    { name = "spacy" },
+    { name = "spacy", specifier = "<3.8.12" },
     { name = "torch" },
     { name = "transformers" },
 ]
