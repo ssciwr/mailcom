@@ -22,7 +22,7 @@ authors = [
 dynamic = ["version"]
 
 dependencies = [
-  "spacy",
+  "spacy<3.8.12",
   "transformers",
   "eml_parser",
   "bs4",
@@ -36,12 +36,14 @@ dependencies = [
   "intervaltree",
   "dateparser",
   "accelerate",
+  "pip>=26.0.1",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pre-commit",
     "pytest",
+    "pytest-cov",
 ]
 
 [project.urls]
