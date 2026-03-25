@@ -31,4 +31,4 @@ jobs:
         run: uv sync --locked --extra dev
 
       - name: Run tests
-        run: uv run --exact pytest -svv 
+        run: uv run --exact --extra dev pytest -svv
