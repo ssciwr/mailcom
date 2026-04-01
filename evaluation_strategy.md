@@ -46,6 +46,23 @@ None of these options were suitable for our sample data structure, where each em
 
 #### Presidio
 
+We first tried to annonymize the English sample email on the [Presidio demo webpage](https://huggingface.co/spaces/presidio/presidio_demo). None of their provided models were able to cover all name entities and email addresses. For instance:
+* Model `spaCy/en_core_web_lg` overlooked organization and event entities, which should be tagged as ORG and MISC, respectively.
+* Model `flair/ner-english-large` missed the event entity.
+* Model `HuggingFace/obi/deid_roberta_i2b2` did not recognize the second person entity and misclassified the event entity as organization.
+* Model `HuggingFace/StanfordAIMI/stanford-deidentifier-base` mislabeled a normal phrase as an organization and misclassified the event entity as an organization.
+* Model `stanza/en` ignored the organization and event entities.
+
+It seems that Presidio by default does not consider arbitrary numbers as sensitive information, which explains why only numbers in date format were detected by some above mentioned models. We therefore discarded the number comparison in our summary above.
+
+We also installed Presidio to use its annonymizer with the same transformer model that we used in our work for NER, i.e. `xlm-roberta-large-finetuned-conll03-english`. However, the pseudonymized text still could not cover all the expected entities, leaving the second person name and event name unmasked.
+
+It is worth noting that both under-pseudonymization, especially for person names, can lead to significant privacy risks, and over-pseudonymization can reduce the utility of the data.
+
 #### Scrubadub
+
+By default, Scrubadub only detects email addresses and phone numbers. According to their [documentation](https://scrubadub.readthedocs.io/en/stable/usage.html#adding-an-optional-or-external-detector), user can add custom detectors for address and entity detection. However:
+* Adding address detector faced installation issues (Python 3.10 was used)
+* Location and event entity were ignored by spacy entity or name detector
 
 ## Quantitative Evaluation
