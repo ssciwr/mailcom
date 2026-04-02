@@ -66,3 +66,9 @@ By default, Scrubadub only detects email addresses and phone numbers. According 
 * Location and event entity were ignored by spacy entity or name detector
 
 ## Quantitative Evaluation
+
+Since there is no available dataset with ground-truth annotations for email addresses, named entities, and numerical data, we first evaluate each transformation step of `mailcom` separately on relevant benchmark datasets. Details as follows:
+
+- **Email address detection**: TBU.
+- **Name entity detection**: We used Hugging Face Babelscape/wikineural dataset for this evaluation.
+- **Numerical data detection**: ?
