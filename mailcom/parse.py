@@ -354,14 +354,13 @@ class Pseudonymize:
         Returns:
             str: Text with emails replaced by placeholder.
         """
-        split = re.split(r"\s+", sentence)  # split by any whitespace
-        new_list = []
-        for word in split:
-            if "@" in word:
-                new_list.append("[email]")
-            else:
-                new_list.append(word)
-        return " ".join(new_list)
+        # use regex to find email addresses
+        # username@domain.extension
+        # username: letters, numbers, . _ % + -
+        # domain: letters, numbers, . -
+        # extension: letters, at least 2 characters
+        pattern = r"\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b"
+        return re.sub(pattern, "[email]", sentence)
 
     def concatenate(self, sentences: list[str]):
         """Concatenates a list of sentences to a coherent text.

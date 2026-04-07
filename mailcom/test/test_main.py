@@ -388,7 +388,7 @@ def test_process_data_default(get_data, get_settings, get_inout_hl):
     assert email_1.get("detected_datetime").get("content") == []
     assert (
         email_1.get("pseudo_content")
-        == "Claude [email] viendra au bâtiment à [number]h[number]. "
+        == "Claude ([email]) viendra au bâtiment à [number]h[number]. "
         "Nous nous rendrons ensuite au [location]"
     )
     assert email_1.get("sentences").get("content") == [
@@ -396,7 +396,7 @@ def test_process_data_default(get_data, get_settings, get_inout_hl):
         "Nous nous rendrons ensuite au MeetingPoint",
     ]
     assert email_1.get("sentences_after_email").get("content") == [
-        "Alice [email] viendra au bâtiment à 10h00.",
+        "Alice ([email]) viendra au bâtiment à 10h00.",
         "Nous nous rendrons ensuite au MeetingPoint",
     ]
 
@@ -430,7 +430,7 @@ def test_process_data_no_lang(get_data, get_settings, get_inout_hl):
     assert email_1.get("lang").get("content") == "de"
     assert (
         email_1.get("pseudo_content")
-        == "Mika [email] viendra au bâtiment à [number]h[number]. "
+        == "Mika ([email]) viendra au bâtiment à [number]h[number]. "
         "Nous nous rendrons ensuite au [location]"
     )
 
@@ -485,7 +485,7 @@ def test_process_data_no_ne(get_data, get_settings, get_inout_hl):
 
     assert (
         email_1.get("pseudo_content")
-        == "Alice [email] viendra au bâtiment à [number]h[number]. "
+        == "Alice ([email]) viendra au bâtiment à [number]h[number]. "
         "Nous nous rendrons ensuite au MeetingPoint"
     )
 
@@ -518,7 +518,7 @@ def test_process_data_matching_pseudonym(get_data, get_settings, get_inout_hl):
     assert email_1.get("detected_datetime").get("content") == []
     assert (
         email_1.get("pseudo_content")
-        == "Claude [email] viendra au bâtiment à [number]h[number]. "
+        == "Claude ([email]) viendra au bâtiment à [number]h[number]. "
         "Nous nous rendrons ensuite au [location]"
     )
     assert email_1.get("sentences").get("content") == [
@@ -526,7 +526,7 @@ def test_process_data_matching_pseudonym(get_data, get_settings, get_inout_hl):
         "Nous nous rendrons ensuite au MeetingPoint",
     ]
     assert email_1.get("sentences_after_email").get("content") == [
-        "Alice [email] viendra au bâtiment à 10h00.",
+        "Alice ([email]) viendra au bâtiment à 10h00.",
         "Nous nous rendrons ensuite au MeetingPoint",
     ]
 
@@ -615,7 +615,8 @@ def test_process_data_no_numbers(get_data, get_settings, get_inout_hl):
     email_2 = next(emails)
 
     assert (
-        email_1.get("pseudo_content") == "Claude [email] viendra au bâtiment à 10h00. "
+        email_1.get("pseudo_content")
+        == "Claude ([email]) viendra au bâtiment à 10h00. "
         "Nous nous rendrons ensuite au [location]"
     )
 

@@ -354,11 +354,11 @@ def test_pseudonymize_w_prev_ne_list(get_default_fr):
 def test_pseudonymize_email_addresses(get_default_fr):
     sentence = "My email is example@example.com."
     pseudonymized_sentence = get_default_fr.pseudonymize_email_addresses(sentence)
-    assert pseudonymized_sentence == "My email is [email]"
+    assert pseudonymized_sentence == "My email is [email]."
 
     sentence = "Contact us at support@example.com or sales@example.com."
     pseudonymized_sentence = get_default_fr.pseudonymize_email_addresses(sentence)
-    assert pseudonymized_sentence == "Contact us at [email] or [email]"
+    assert pseudonymized_sentence == "Contact us at [email] or [email]."
 
     sentence = "No email addresses here!"
     pseudonymized_sentence = get_default_fr.pseudonymize_email_addresses(sentence)
@@ -367,6 +367,18 @@ def test_pseudonymize_email_addresses(get_default_fr):
     sentence = ""
     pseudonymized_sentence = get_default_fr.pseudonymize_email_addresses(sentence)
     assert pseudonymized_sentence == ""
+
+
+def test_pseudonymize_email_addresses_special_cases(get_default_fr):
+    sentence = (
+        "Contact my.employee@example.com and admin@test.org, "
+        "but not @username or anotheruser@name"
+    )
+    pseudonymized_sentence = get_default_fr.pseudonymize_email_addresses(sentence)
+    assert (
+        pseudonymized_sentence
+        == "Contact [email] and [email], but not @username or anotheruser@name"
+    )
 
 
 def test_choose_per_pseudonym_new_name(get_default_fr):
@@ -459,6 +471,40 @@ def test_pseudonymize_ne_person_prev_ne_list(get_default_fr):
     assert "Camille" not in pseudonymized_sentence
     assert "Dominique" in pseudonymized_sentence
     assert "Florence" in pseudonymized_sentence
+
+
+def test_pseudonymize_ne_person_special_cases(get_default_fr):
+    sentence = "Veuillez envoyer un courriel à Tobi, @Natasha"
+    ner = [
+        {"entity_group": "PER", "word": "Tobi", "start": 31, "end": 35},
+        {"entity_group": "PER", "word": "Natasha", "start": 38, "end": 45},
+    ]
+    pseudonymized_sentence = " ".join(get_default_fr.pseudonymize_ne(ner, sentence))
+    assert "Tobi" not in pseudonymized_sentence
+    assert "Natasha" not in pseudonymized_sentence
+    assert any(
+        pseudo in pseudonymized_sentence
+        for pseudo in get_default_fr.pseudo_first_names["fr"]
+    )
+
+    sentence = "Veuillez envoyer un courriel à Tobi, @natasha234"
+    ner = [
+        {"entity_group": "PER", "word": "Tobi", "start": 31, "end": 35},
+        {"entity_group": "PER", "word": "natasha234", "start": 38, "end": 45},
+    ]
+    pseudonymized_sentence = " ".join(get_default_fr.pseudonymize_ne(ner, sentence))
+    assert "Tobi" not in pseudonymized_sentence
+    assert "natasha234" not in pseudonymized_sentence
+    assert "234" in pseudonymized_sentence
+
+    sentence = "Veuillez envoyer un courriel à Tobi, @sh.nata"
+    ner = [
+        {"entity_group": "PER", "word": "Tobi", "start": 31, "end": 35},
+        {"entity_group": "PER", "word": "sh.nata", "start": 38, "end": 45},
+    ]
+    pseudonymized_sentence = " ".join(get_default_fr.pseudonymize_ne(ner, sentence))
+    assert "Tobi" not in pseudonymized_sentence
+    assert "sh.nata" not in pseudonymized_sentence
 
 
 def test_pseudonymize_ne_location(get_default_fr):
