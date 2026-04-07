@@ -23,6 +23,16 @@ class Pseudonymize:
 
         self.spacy_loader = spacy_loader
 
+        # use regex to find email addresses
+        # local_part@domain.extension
+        # local_part: letters, numbers, . _ % + -
+        # domain: letters, numbers, . -
+        # extension: letters, at least 2 characters
+        # boundary \b to ensure we match whole email addresses only
+        self.email_regex = re.compile(
+            r"\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b"
+        )
+
     def init_spacy(self, language: str, model="default"):
         """Initializes spacy model.
 
@@ -346,7 +356,8 @@ class Pseudonymize:
         return "".join(new_list)
 
     def pseudonymize_email_addresses(self, sentence: str):
-        """Replaces words containing @ in a String with placeholder.
+        """Replaces email addresses in a sentence with placeholder.
+        Email addresses are identified using a regex pattern.
 
         Args:
             sentence (str): Sentence to search for emails.
@@ -357,13 +368,7 @@ class Pseudonymize:
         if "@" not in sentence:
             return sentence
 
-        # use regex to find email addresses
-        # username@domain.extension
-        # username: letters, numbers, . _ % + -
-        # domain: letters, numbers, . -
-        # extension: letters, at least 2 characters
-        pattern = r"\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b"
-        return re.sub(pattern, "[email]", sentence)
+        return self.email_regex.sub("[email]", sentence)
 
     def concatenate(self, sentences: list[str]):
         """Concatenates a list of sentences to a coherent text.
