@@ -354,6 +354,9 @@ class Pseudonymize:
         Returns:
             str: Text with emails replaced by placeholder.
         """
+        if "@" not in sentence:
+            return sentence
+
         # use regex to find email addresses
         # username@domain.extension
         # username: letters, numbers, . _ % + -
