@@ -55,7 +55,7 @@ We first tried to annonymize the English sample email on the [Presidio demo webp
 
 It seems that Presidio by default does not consider arbitrary numbers as sensitive information, which explains why only numbers in date format were detected by some above mentioned models. We therefore discarded the number comparison in our summary above.
 
-We also installed Presidio to use its annonymizer with the same transformer model that we used in our work for NER, i.e. `xlm-roberta-large-finetuned-conll03-english`. However, the pseudonymized text still could not cover all the expected entities, leaving the second person name and event name unmasked.
+We also installed Presidio to use its annonymizer with the same transformer model that we used in our work for NER, i.e. `xlm-roberta-large-finetuned-conll03-english`. However, the pseudonymized text still could not cover all the expected entities, leaving the second person name and event name (MISC) unmasked.
 
 It is worth noting that both under-pseudonymization, especially for person names, can lead to significant privacy risks, and over-pseudonymization can reduce the utility of the data.
 
