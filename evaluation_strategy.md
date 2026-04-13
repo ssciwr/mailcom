@@ -55,7 +55,7 @@ We first tried to annonymize the English sample email on the [Presidio demo webp
 
 It seems that Presidio by default does not consider arbitrary numbers as sensitive information, which explains why only numbers in date format were detected by some above mentioned models. We therefore discarded the number comparison in our summary above.
 
-We also installed Presidio to use its annonymizer with the same transformer model that we used in our work for NER, i.e. `xlm-roberta-large-finetuned-conll03-english`. However, the pseudonymized text still could not cover all the expected entities, leaving the second person name and event name (MISC) unmasked.
+We also installed Presidio to use its annonymizer with the same transformer model that we used in our work for NER, i.e. `xlm-roberta-large-finetuned-conll03-english` (see `docs/source/notebooks/test_other_tools.ipynb` notebook). However, the pseudonymized text still could not cover all the expected entities, leaving the second person name and event name (MISC) unmasked.
 
 It is worth noting that under-pseudonymization, especially for person names, can lead to significant privacy risks, while over-pseudonymization can reduce the utility of the data.
 
@@ -67,21 +67,39 @@ By default, Scrubadub only detects email addresses and phone numbers. According 
 
 ## Quantitative Evaluation
 
-Since there is no available dataset with ground-truth annotations for email addresses, named entities, and numbers, we evaluated each transformation step of `mailcom` separately on relevant benchmark datasets. The evaluation scripts are available in the `docs/source/notebooks/quantitative_eval.ipynb` notebook.
+Since there is no available dataset with ground-truth annotations for email addresses, named entities, and numbers, we evaluated each transformation step of `mailcom` separately on relevant benchmark datasets, including email address detection, NER, and number detection. The evaluation scripts are available in the `docs/source/notebooks/quantitative_eval.ipynb` notebook.
 
-In summry, we obtain the following results for each transformation step:
+Additionally, we compared the results of `mailcom` with `Presidio` for email address detection and NER only, since Presidio and other open-source pseudonymization tools do not explicitly mask all numbers in a text.
+
+In summary, we observed that mailcom yielded comparable results to Presidio for email address detection and outperformed Presidio in NER while using the same transformer model. For number detection, mailcom achieved absolute precision, recall, and F1 score. Below are the detailed evaluation results for each transformation step.
 
 ### Email address detection
 
-Hugging Face `Josephgflowers/PII-NER` dataset
+#### Dataset
 
-- [ ] briefly describe the dataset
-- [ ] report the evaluation results (precision, recall, F1 score) for mailcom
-- [ ] compare with results from Presidio
+We used [Hugging Face `Josephgflowers/PII-NER`](https://huggingface.co/datasets/Josephgflowers/PII-NER) dataset for this evaluation. This dataset is designed for training and evaluating NER models for PII detection. The dataset contains a prompt guiding to extract PII, a multi-paragraph text, and extracted PII entities, such as student name, email address, phone number, driving license, etc. We focused on the email address detection part for our evaluation, hence using only the text and extracted email address entities.
+
+#### Evaluation results
+
+Since we used regular expressions for email address detection, we evaluated the performance of `mailcom` using:
+
+* accuracy: exact match after replacing email addresses by placeholders,
+* precision: the proportion of number of detected email addresses that are correct,
+* recall: the proportion of actual number of email addresses that are detected,
+* F1 score: the harmonic mean of precision and recall.
+
+The evaluation results are as follows:
+
+| Metric    | `mailcom` | `Presidio` |
+|-----------|---------|----------|
+| Accuracy  | 99.95%    | 99.95%     |
+| Precision | 1.0    | 1.0     |
+| Recall    | 1.0    | 0.9995     |
+| F1 Score  | 1.0    | 0.9998     |
 
 ### Name entity detection
 
-Hugging Face `Babelscape/wikineural` dataset
+For this transformation step, we evaluated on the [Hugging Face `Babelscape/wikineural`](https://huggingface.co/datasets/Babelscape/wikineural) dataset. 
 
 ### Number detection
 
