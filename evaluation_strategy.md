@@ -8,15 +8,15 @@ For the qualitative evaluation, we focused on the utility and performance of `ma
 
 ### `mailcom` alone
 
-Our sample data was provided by the reasearch group of Sybille Große and the [email donors](https://mailcom.rose.uni-heidelberg.de/), including a set of four short emails in `eml` format and a `csv` file of 103 email contents.  We applied `mailcom` to this sample data and manually reviewed the outputs to assess the effectiveness of the pseudonymization process. The results are summarized as follows:
-- **Accuracy**: `mailcom` correctly identified and pseudonymized email addresses, numbers, and most of most of named entities, including people names, organization names, and location names. However, there are some misaligned NER cases, which would be elaborated later.
-- **Running Time**: with default settings, we run `mailcom` on an Intel Core Ultra 7 laptop, 32GB RAM (no GPU) and got the following running time (***need to rerun if we use the new version of email detection***):
+Our sample data was provided by the research group of Sybille Große and the [email donors](https://mailcom.rose.uni-heidelberg.de/), including a set of four short emails in `eml` format and a `csv` file of 103 email contents. We applied `mailcom` to this sample data and manually reviewed the outputs to assess the effectiveness of the pseudonymization process. The results are summarized as follows:
+- **Accuracy**: `mailcom` correctly identified and pseudonymized email addresses, numbers, and most of named entities, including people names, organization names, and location names. However, there are some misaligned NER cases, which would be elaborated later.
+- **Running Time**: with default settings, we ran `mailcom` on an Intel Core Ultra 7 laptop, 32GB RAM (no GPU), and obtained the following running time (***need to rerun if we use the new version of email detection***):
     - For the 4 `eml` files: around 6.6 seconds
     - For the 103 email contents in the `csv` file: around 10 minutes 20.3 seconds, i.e ~ 6.02 seconds/row
 
 #### Some misaligned cases
 
-In the Frech and Spanish samples among the four short eml files, we observed misalignments in NER results:
+In the French and Spanish samples among the four short eml files, we observed misalignments in NER results:
 
 * *Location not fully detected*: In the French sample sentence, `"Adresse : 123, rue Principale, 12345 Ville Modèle"`, the default NER model did not recognize `"Principale"` as part of a location entity.
 * *Incorrect MISC tagging*: In another French sample sentence,`"April 2024 um 16:53:37 MESZ"`, the substring `"ESZ"` within `"MESZ"` was incorrectly labeled as MISC. This is attributed to a language mismatch, since the default NER model is trained for English while the input sentence is in German.
@@ -46,7 +46,7 @@ None of these options were suitable for our sample data structure, where each em
 
 #### Presidio
 
-We first tried to annonymize the English sample email on the [Presidio demo webpage](https://huggingface.co/spaces/presidio/presidio_demo). None of their provided models were able to cover all name entities and email addresses. For instance:
+We first tried to anonymize the English sample email on the [Presidio demo webpage](https://huggingface.co/spaces/presidio/presidio_demo). None of their provided models were able to cover all named entities and email addresses. For instance:
 * Model `spaCy/en_core_web_lg` overlooked organization and event entities, which should be tagged as `ORG` and `MISC`, respectively.
 * Model `flair/ner-english-large` missed the event entity.
 * Model `HuggingFace/obi/deid_roberta_i2b2` did not recognize the second person entity and misclassified the event entity as organization.
@@ -55,7 +55,7 @@ We first tried to annonymize the English sample email on the [Presidio demo webp
 
 It seems that Presidio by default does not consider arbitrary numbers as sensitive information, which explains why only numbers in date format were detected by some above mentioned models. We therefore discarded the number comparison in our summary above.
 
-We also installed Presidio to use its annonymizer with the same transformer model that we used in our work for NER, i.e. `xlm-roberta-large-finetuned-conll03-english` (see `docs/source/notebooks/test_other_tools.ipynb` notebook). However, the pseudonymized text still could not cover all the expected entities, leaving the second person name and event name (MISC) unmasked.
+We also installed Presidio to use its anonymizer with the same transformer model that we used in our work for NER, i.e. `xlm-roberta-large-finetuned-conll03-english` (see `docs/source/notebooks/test_other_tools.ipynb` notebook). However, the pseudonymized text still could not cover all the expected entities, leaving the second person name and event name (MISC) unmasked.
 
 It is worth noting that under-pseudonymization, especially for person names, can lead to significant privacy risks, while over-pseudonymization can reduce the utility of the data.
 
@@ -97,7 +97,7 @@ The evaluation results are as follows:
 | Recall    | 1.0    | 0.9995     |
 | F1 Score  | 1.0    | 0.9998     |
 
-### Name entity detection
+### Named entity detection
 
 #### Dataset
 
@@ -139,7 +139,7 @@ Here, the results of `Presidio` are substantially lower than those of `mailcom`.
 
 #### Dataset
 
-Since `mailcom` explicitly masks any digits in text, the dataset for this evaluation should fullfil the same requirement. The two datasets used above detect numbers in specific formats, such as license numbers, phone numbers, etc., but not all digits. 
+Since `mailcom` explicitly masks any digits in text, the dataset for this evaluation should fulfill the same requirement. The two datasets used above detect numbers in specific formats, such as license numbers, phone numbers, etc., but not all digits. 
 
 We therefore used ATIS dataset for this purpose. Each token in the dataset is annotated with a slot label, ensuring that all digits are included.
 
@@ -156,6 +156,6 @@ Thanks to [Yun-Nung (Vivian) Chen](https://github.com/yvchen/JointSLU) for publi
 | Recall    | 1.0    |
 | F1 Score  | 1.0    |
 
-As mailcom explicitly detect any digit character, it achieved absolute accuracy, precision, recall, and F1 score, as expected. We did not compare with `Presidio` for this transformation step since `Presidio` and other open-source pseudonymization tools do not explicitly mask all numbers in a text.
+As `mailcom` explicitly detects any digit character, it achieved absolute accuracy, precision, recall, and F1 score, as expected. We did not compare with `Presidio` for this transformation step since `Presidio` and other open-source pseudonymization tools do not explicitly mask all numbers in a text.
 
 To reproduce the evaluation results, please refer to the `docs/source/notebooks/quantitative_eval.ipynb` notebook.
