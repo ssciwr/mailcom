@@ -30,11 +30,11 @@ We used the four short sample emails to test similar pseudonymization tools.
 
 #### QualiAnon
 
-Have to install Java17 JDK from amazon, Corretto-17.0.8.8.1 version. **TBU.**
+Java17 JDK from amazon, Corretto-17.0.8.8.1 version is required to run `QualiAnon`. However, according to their [video tutorial](https://www.youtube.com/watch?v=RYQn4DjdKmo), QualiAnon is not fully automated. The semi-automated part happens where the program replaces masked tokens after user manually defines type and replacement for these tokens. Besides, QualiAnon supports only docx format at the moment and is not designed for large projects (i.e. more than 100 transcripts). It is also unclear if QualiAnon offers general support for different languages. Therefore, we did not further test QualiAnon for our sample data.
 
 #### Amnesia
 
-Also need to run with Java setup. We tried the [Amnesia playground website](https://amnesia.openaire.eu/demo/mywizard.html) for our sample emails.
+Amnesia also needs to run with Java setup so we tried the [Amnesia playground website](https://amnesia.openaire.eu/demo/mywizard.html) for our sample emails.
 
 Unfortunately, we were unable to use Amnesia for our purpose due to formatting constraints. Specifically, Amnesia requires the input data to be provided as a table with a specific delimiter (e.g. `,`). The tool supports four possible [input table formats](https://www.youtube.com/watch?v=vZbU0n6n01c):
 * Simple table: Columns may contain different data types, with each cell holding a single value, e.g. a name or a number
@@ -71,7 +71,7 @@ Since there is no available dataset with ground-truth annotations for email addr
 
 Additionally, we compared the results of `mailcom` with `Presidio` for email address detection and NER only, since Presidio and other open-source pseudonymization tools do not explicitly mask all numbers in a text.
 
-In summary, we observed that mailcom yielded comparable results to Presidio for email address detection and outperformed Presidio in NER while using the same transformer model. For number detection, mailcom achieved absolute precision, recall, and F1 score. Below are the detailed evaluation results for each transformation step.
+In summary, we observed that mailcom yielded comparable results to `Presidio` for email address detection and outperformed `Presidio` in NER while using the same transformer model. For number detection, `mailcom` achieved absolute accuracy, precision, recall, and F1 score. Below are the detailed evaluation results for each transformation step.
 
 ### Email address detection
 
@@ -99,8 +99,63 @@ The evaluation results are as follows:
 
 ### Name entity detection
 
-For this transformation step, we evaluated on the [Hugging Face `Babelscape/wikineural`](https://huggingface.co/datasets/Babelscape/wikineural) dataset. 
+#### Dataset
+
+For this transformation step, we evaluated on the [Hugging Face `Babelscape/wikineural`](https://huggingface.co/datasets/Babelscape/wikineural) dataset. This dataset contains token-level annotations for named entities, including people names, organization names, location names, and miscellaneous entities, specifically:
+
+```
+{'O': 0, 'B-PER': 1, 'I-PER': 2, 'B-ORG': 3, 'I-ORG': 4, 'B-LOC': 5, 'I-LOC': 6, 'B-MISC': 7, 'I-MISC': 8}
+```
+
+We first extracted the named entities and their types from the dataset, then evaluated the performance of `mailcom` using precision, recall, and F1 score across entity types.
+
+#### Evaluation results
+
+While considering all entity types, `mailcom` achieved the following results:
+
+| Metric    | `mailcom` | `mailcom` on single-sentence input
+|-----------|---------|---------|
+| Precision | 0.7707    | 0.7743    |
+| Recall    | 0.8401    | 0.8431   |
+| F1 Score  | 0.8039    | 0.8072   |
+
+Here, the single-sentence input means that we applied `mailcom` on cases where the `spaCy` sentencizer correctly retains the original sentence, which occurs in around 99.4% of the cases in the dataset.
+
+For remaining cases, where the original sentence is split into two or three sentences, the results are lower, as specified in the notebook. This is due to the misalignment between the original sentence and the sentence after splitting, which leads to incorrect index matching for the detected entities. 
+* An NER is considered as correct if the detected entity type, text, and start and end indices all match the gold entity. Therefore, even if the detected entity type and text are correct, the misalignment in sentence splitting can cause the start and end indices to be incorrect, resulting in a false negative.
+* Some example cases where spaCy sentencizer misaligned the sentences are when the original sentence contains dots in between, such as `No. 1`, `aff.`, `sp.`.
+
+To compare the results with `Presidio` while using the same transformer model for NER, i.e. `xlm-roberta-large-finetuned-conll03-english`, we only considered the entity types that are commonly detected by both `mailcom` and `Presidio`, which are `PER`, `ORG`, and `LOC`.
+
+| Metric    | `mailcom` | `Presidio` |
+|-----------|---------|----------|
+| Precision | 0.8825    | 0.6230     |
+| Recall    | 0.8760    | 0.4985     |
+| F1 Score  | 0.8792    | 0.5538     |
+
+Here, the results of `Presidio` are substantially lower than those of `mailcom`. We did not inspect `Presidio`'s source code and suspect that this discrepancy can be attributed to the default configuration of `Presidio` and the used transformer model. In [one of the evaluations](https://github.com/microsoft/presidio-research/blob/master/notebooks/5_Evaluate_Custom_Presidio_Analyzer.ipynb) published by `Presidio` on their synthetic datasets, using `StanfordAIMI/stanford-deidentifier-base` model, they achieved around 0.87 precision and 0.84 recall. Therefore, comparing `mailcom` and `Presidio` using other transformer models for NER, such as `StanfordAIMI/stanford-deidentifier-base`, can be a future direction to further investigate the performance of both tools.
 
 ### Number detection
 
-ATIS train dataset
+#### Dataset
+
+Since `mailcom` explicitly masks any digits in text, the dataset for this evaluation should fullfil the same requirement. The two datasets used above detect numbers in specific formats, such as license numbers, phone numbers, etc., but not all digits. 
+
+We therefore used ATIS dataset for this purpose. Each token in the dataset is annotated with a slot label, ensuring that all digits are included.
+
+The ATIS train dataset (4978 rows) was used for this evaluation instead of the test dataset (893 rows) to have a larger sample size for evaluation. Since `mailcom`'s number detection does not use any machine learning model, using the train dataset would not cause data leakage issues.
+
+Thanks to [Yun-Nung (Vivian) Chen](https://github.com/yvchen/JointSLU) for publishing this dataset. Download the train dataset [here](https://github.com/yvchen/JointSLU/blob/master/data/atis.train.iob)
+
+#### Evaluation results
+
+| Metric    | `mailcom` |
+|-----------|---------|
+| Accuracy  | 100%    |
+| Precision | 1.0    |
+| Recall    | 1.0    |
+| F1 Score  | 1.0    |
+
+As mailcom explicitly detect any digit character, it achieved absolute accuracy, precision, recall, and F1 score, as expected. We did not compare with `Presidio` for this transformation step since `Presidio` and other open-source pseudonymization tools do not explicitly mask all numbers in a text.
+
+To reproduce the evaluation results, please refer to the `docs/source/notebooks/quantitative_eval.ipynb` notebook.
