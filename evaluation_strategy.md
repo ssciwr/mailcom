@@ -19,7 +19,7 @@ Our sample data was provided by the research group of Sybille Große and the [em
 In the French and Spanish samples among the four short eml files, we observed misalignments in NER results:
 
 * *Location not fully detected*: In the French sample sentence, `"Adresse : 123, rue Principale, 12345 Ville Modèle"`, the default NER model did not recognize `"Principale"` as part of a location entity.
-* *Incorrect MISC tagging*: In another French sample sentence,`"April 2024 um 16:53:37 MESZ"`, the substring `"ESZ"` within `"MESZ"` was incorrectly labeled as MISC. This is attributed to a language mismatch, since the default NER model is trained for English while the input sentence is in German.
+* *Incorrect MISC tagging*: In another French sample sentence,`"April 2024 um 16:53:37 MESZ"`, the substring `"ESZ"` within `"MESZ"` was incorrectly labeled as MISC. This is attributed to a language mismatch, since the email content is in French while the current sentence is in German.
 * *Sentence segmentation issue*: In both the Spanish and French samples, the first sentences were not split as expected. For example, the Spanish text `"El mié., 17 abr. 2024 17:20:18 +0200, Alejandro Rodriguez escribió"` should be treated as a single sentence, but it was incorrectly split into three segments: `"El mié.,"`, `"17 abr."`, and `"2024 17:20:18 +0200, Alejandro Rodriguez escribió"`. 
     * One reason for this is the incorrect sentence splitting by the spaCy models.
     * Another reason is the language mismatch between the used spaCy model and the considered sentences, since some emails have multiple languages. For instance, the French email sample and some French email contents in the `csv` file start with a German sentence.
