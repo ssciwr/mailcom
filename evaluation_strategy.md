@@ -55,7 +55,7 @@ We first tried to anonymize the English sample email on the [Presidio demo webpa
 
 It seems that Presidio by default does not consider arbitrary numbers as sensitive information, which explains why only numbers in date format were detected by some above mentioned models. We therefore discarded the number comparison in our summary above.
 
-We also installed Presidio to use its anonymizer with the same transformer model that we used in our work for NER, i.e. `xlm-roberta-large-finetuned-conll03-english` (see `docs/source/notebooks/test_other_tools.ipynb` notebook). However, the pseudonymized text still could not cover all the expected entities, leaving the second person name and event name (MISC) unmasked.
+We also installed Presidio to use its anonymizer with the same Transformer model that we used in our work for NER, i.e. `xlm-roberta-large-finetuned-conll03-english` (see `docs/source/notebooks/test_other_tools.ipynb` notebook). However, the pseudonymized text still could not cover all the expected entities, leaving the second person name and event name (MISC) unmasked.
 
 It is worth noting that under-pseudonymization, especially for person names, can lead to significant privacy risks, while over-pseudonymization can reduce the utility of the data.
 
@@ -71,7 +71,7 @@ Since there is no available dataset with ground-truth annotations for email addr
 
 Additionally, we compared the results of `mailcom` with `Presidio` for email address detection and NER only, since Presidio and other open-source pseudonymization tools do not explicitly mask all numbers in a text.
 
-In summary, we observed that mailcom yielded comparable results to `Presidio` for email address detection and outperformed `Presidio` in NER while using the same transformer model. For number detection, `mailcom` achieved absolute accuracy, precision, recall, and F1 score. Below are the detailed evaluation results for each transformation step.
+In summary, we observed that mailcom yielded comparable results to `Presidio` for email address detection and outperformed `Presidio` in NER while using the same Transformer model. For number detection, `mailcom` achieved absolute accuracy, precision, recall, and F1 score. Below are the detailed evaluation results for each transformation step.
 
 ### Email address detection
 
@@ -125,7 +125,7 @@ For remaining cases, where the original sentence is split into two or three sent
 * An NER is considered as correct if the detected entity type, text, and start and end indices all match the gold entity. Therefore, even if the detected entity type and text are correct, the misalignment in sentence splitting can cause the start and end indices to be incorrect, resulting in a false negative.
 * Some example cases where spaCy sentencizer misaligned the sentences are when the original sentence contains dots in between, such as `No. 1`, `aff.`, `sp.`.
 
-To compare the results with `Presidio` while using the same transformer model for NER, i.e. `xlm-roberta-large-finetuned-conll03-english`, we only considered the entity types that are commonly detected by both `mailcom` and `Presidio`, which are `PER`, `ORG`, and `LOC`.
+To compare the results with `Presidio` while using the same Transformer model for NER, i.e. `xlm-roberta-large-finetuned-conll03-english`, we only considered the entity types that are commonly detected by both `mailcom` and `Presidio`, which are `PER`, `ORG`, and `LOC`.
 
 | Metric    | `mailcom` | `Presidio` |
 |-----------|---------|----------|
@@ -133,7 +133,7 @@ To compare the results with `Presidio` while using the same transformer model fo
 | Recall    | 0.8760    | 0.4985     |
 | F1 Score  | 0.8792    | 0.5538     |
 
-Here, the results of `Presidio` are substantially lower than those of `mailcom`. We did not inspect `Presidio`'s source code and suspect that this discrepancy can be attributed to the default configuration of `Presidio` and the used transformer model. In [one of the evaluations](https://github.com/microsoft/presidio-research/blob/master/notebooks/5_Evaluate_Custom_Presidio_Analyzer.ipynb) published by `Presidio` on their synthetic datasets, using `StanfordAIMI/stanford-deidentifier-base` model, they achieved around 0.87 precision and 0.84 recall. Therefore, comparing `mailcom` and `Presidio` using other transformer models for NER, such as `StanfordAIMI/stanford-deidentifier-base`, can be a future direction to further investigate the performance of both tools.
+Here, the results of `Presidio` are substantially lower than those of `mailcom`. We did not inspect `Presidio`'s source code and suspect that this discrepancy can be attributed to the default configuration of `Presidio` and the used Transformer model. In [one of the evaluations](https://github.com/microsoft/presidio-research/blob/master/notebooks/5_Evaluate_Custom_Presidio_Analyzer.ipynb) published by `Presidio` on their synthetic datasets, using `StanfordAIMI/stanford-deidentifier-base` model, they achieved around 0.87 precision and 0.84 recall. Therefore, comparing `mailcom` and `Presidio` using other Transformer models for NER, such as `StanfordAIMI/stanford-deidentifier-base`, can be a future direction to further investigate the performance of both tools.
 
 ### Number detection
 
@@ -159,3 +159,7 @@ Thanks to [Yun-Nung (Vivian) Chen](https://github.com/yvchen/JointSLU) for publi
 As `mailcom` explicitly detects any digit character, it achieved absolute accuracy, precision, recall, and F1 score, as expected. We did not compare with `Presidio` for this transformation step since `Presidio` and other open-source pseudonymization tools do not explicitly mask all numbers in a text.
 
 To reproduce the evaluation results, please refer to the `docs/source/notebooks/quantitative_eval.ipynb` notebook.
+
+## Future development
+
+Our future work includes developing a ground-truth annotated dataset and parallelizing the pseudonymization process to further evaluate and improve `mailcom`'s performance.
