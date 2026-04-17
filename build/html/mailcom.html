@@ -817,7 +817,8 @@ from previous fields in the email. Defaults to None.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="parse.Pseudonymize.pseudonymize_email_addresses">
 <span class="sig-name descname"><span class="pre">pseudonymize_email_addresses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parse.Pseudonymize.pseudonymize_email_addresses" title="Link to this definition"></a></dt>
-<dd><p>Replaces words containing &#64; in a String with placeholder.</p>
+<dd><p>Replaces email addresses in a sentence with placeholder.
+Email addresses are identified using a regex pattern.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>sentence</strong> (<em>str</em>) – Sentence to search for emails.</p>
