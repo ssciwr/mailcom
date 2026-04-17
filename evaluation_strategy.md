@@ -10,9 +10,9 @@ For the qualitative evaluation, we focused on the utility and performance of `ma
 
 Our sample data was provided by the research group of Sybille Große and the [email donors](https://mailcom.rose.uni-heidelberg.de/), including a set of four short emails in `eml` format and a `csv` file of 103 email contents. We applied `mailcom` to this sample data and manually reviewed the outputs to assess the effectiveness of the pseudonymization process. The results are summarized as follows:
 - **Accuracy**: `mailcom` correctly identified and pseudonymized email addresses, numbers, and most of named entities, including people names, organization names, and location names. However, there are some misaligned NER cases, which would be elaborated later.
-- **Running Time**: with default settings, we ran `mailcom` on an Intel Core Ultra 7 laptop, 32GB RAM (no GPU), and obtained the following running time (***need to rerun if we use the new version of email detection***):
-    - For the 4 `eml` files: around 6.6 seconds
-    - For the 103 email contents in the `csv` file: around 10 minutes 20.3 seconds, i.e ~ 6.02 seconds/row
+- **Running Time**: with default settings, we ran `mailcom` on an Intel Core Ultra 7 laptop, 32GB RAM (no GPU), and obtained the following running time:
+    - For the 4 `eml` files: around 6.7 seconds
+    - For the 103 email contents in the `csv` file: around 5 minutes 59.5 seconds, i.e ~ 3.49 seconds/row
 
 #### Some misaligned cases
 
