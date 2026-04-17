@@ -315,6 +315,48 @@ def get_data():
     ]
 
 
+@pytest.fixture()
+def get_data_result():
+    return [
+        {
+            "lang": "fr",
+            "detected_datetime": [],
+            "sentences": [
+                "Alice (alice@gmail.com) viendra au bâtiment à 10h00.",
+                "Nous nous rendrons ensuite au MeetingPoint",
+            ],
+            "sentences_after_email": [
+                "Alice ([email]) viendra au bâtiment à 10h00.",
+                "Nous nous rendrons ensuite au MeetingPoint",
+            ],
+            "pseudo_content_fr": "Claude ([email]) viendra au bâtiment à "
+            "[number]h[number]. "
+            "Nous nous rendrons ensuite au [location]",
+            "pseudo_content_de": "Mika ([email]) viendra au bâtiment à "
+            "[number]h[number]. "
+            "Nous nous rendrons ensuite au [location]",
+        },
+        {
+            "lang": "es",
+            "detected_datetime": ["28.03.2025 a las 10:30"],
+            "sentences": [
+                "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30.",
+                "Compruébelo en el archivo adjunto",
+            ],
+            "sentences_after_email": [
+                "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30.",
+                "Compruébelo en el archivo adjunto",
+            ],
+            "pseudo_content_es": "Esta foto fue tomada por José el "
+            "28.03.2025 a las 10:30. "
+            "Compruébelo en el archivo adjunto",
+            "pseudo_content_de": "Esta foto fue tomada por Mika el "
+            "28.03.2025 a las 10:30. "
+            "Compruébelo en el archivo adjunto",
+        },
+    ]
+
+
 def _modify_data(base_data: list, updates: list, remove_indices=None):
     data = copy.deepcopy(base_data)
 
@@ -375,7 +417,7 @@ def get_inout_hl():
     return InoutHandler()
 
 
-def test_process_data_default(get_data, get_settings, get_inout_hl):
+def test_process_data_default(get_data, get_settings, get_inout_hl, get_data_result):
     get_inout_hl.email_list = get_data
     main.process_data(get_inout_hl.get_email_list(), get_settings)
 
@@ -383,42 +425,33 @@ def test_process_data_default(get_data, get_settings, get_inout_hl):
     email_1 = next(emails)
     email_2 = next(emails)
 
+    email_1_result = get_data_result[0]
+    email_2_result = get_data_result[1]
+
     assert email_1.get("cleaned_content") == email_1.get("content")
-    assert email_1.get("lang").get("content") == "fr"
-    assert email_1.get("detected_datetime").get("content") == []
-    assert (
-        email_1.get("pseudo_content")
-        == "Claude [email] viendra au bâtiment à [number]h[number]. "
-        "Nous nous rendrons ensuite au [location]"
+    assert email_1.get("lang").get("content") == email_1_result.get("lang")
+    assert email_1.get("detected_datetime").get("content") == email_1_result.get(
+        "detected_datetime"
     )
-    assert email_1.get("sentences").get("content") == [
-        "Alice (alice@gmail.com) viendra au bâtiment à 10h00.",
-        "Nous nous rendrons ensuite au MeetingPoint",
-    ]
-    assert email_1.get("sentences_after_email").get("content") == [
-        "Alice [email] viendra au bâtiment à 10h00.",
-        "Nous nous rendrons ensuite au MeetingPoint",
-    ]
+    assert email_1.get("pseudo_content") == email_1_result.get("pseudo_content_fr")
+    assert email_1.get("sentences").get("content") == email_1_result.get("sentences")
+    assert email_1.get("sentences_after_email").get("content") == email_1_result.get(
+        "sentences_after_email"
+    )
 
     assert email_2.get("cleaned_content") == email_2.get("content")
-    assert email_2.get("lang").get("content") == "es"
-    assert email_2.get("detected_datetime").get("content") == ["28.03.2025 a las 10:30"]
-    assert (
-        email_2.get("pseudo_content")
-        == "Esta foto fue tomada por José el 28.03.2025 a las 10:30. "
-        "Compruébelo en el archivo adjunto"
+    assert email_2.get("lang").get("content") == email_2_result.get("lang")
+    assert email_2.get("detected_datetime").get("content") == email_2_result.get(
+        "detected_datetime"
     )
-    assert email_2.get("sentences").get("content") == [
-        "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30.",
-        "Compruébelo en el archivo adjunto",
-    ]
-    assert email_2.get("sentences_after_email").get("content") == [
-        "Esta foto fue tomada por Alice el 28.03.2025 a las 10:30.",
-        "Compruébelo en el archivo adjunto",
-    ]
+    assert email_2.get("pseudo_content") == email_2_result.get("pseudo_content_es")
+    assert email_2.get("sentences").get("content") == email_2_result.get("sentences")
+    assert email_2.get("sentences_after_email").get("content") == email_2_result.get(
+        "sentences_after_email"
+    )
 
 
-def test_process_data_no_lang(get_data, get_settings, get_inout_hl):
+def test_process_data_no_lang(get_data, get_settings, get_inout_hl, get_data_result):
     get_settings["default_lang"] = "de"
     get_inout_hl.email_list = get_data
     main.process_data(get_inout_hl.get_email_list(), get_settings)
@@ -427,19 +460,14 @@ def test_process_data_no_lang(get_data, get_settings, get_inout_hl):
     email_1 = next(emails)
     email_2 = next(emails)
 
+    email_1_result = get_data_result[0]
+    email_2_result = get_data_result[1]
+
     assert email_1.get("lang").get("content") == "de"
-    assert (
-        email_1.get("pseudo_content")
-        == "Mika [email] viendra au bâtiment à [number]h[number]. "
-        "Nous nous rendrons ensuite au [location]"
-    )
+    assert email_1.get("pseudo_content") == email_1_result.get("pseudo_content_de")
 
     assert email_2.get("lang").get("content") == "de"
-    assert (
-        email_2.get("pseudo_content")
-        == "Esta foto fue tomada por Mika el 28.03.2025 a las 10:30. "
-        "Compruébelo en el archivo adjunto"
-    )
+    assert email_2.get("pseudo_content") == email_2_result.get("pseudo_content_de")
 
 
 def test_process_data_no_datetime(get_data, get_settings, get_inout_hl):
@@ -485,7 +513,7 @@ def test_process_data_no_ne(get_data, get_settings, get_inout_hl):
 
     assert (
         email_1.get("pseudo_content")
-        == "Alice [email] viendra au bâtiment à [number]h[number]. "
+        == "Alice ([email]) viendra au bâtiment à [number]h[number]. "
         "Nous nous rendrons ensuite au MeetingPoint"
     )
 
@@ -518,7 +546,7 @@ def test_process_data_matching_pseudonym(get_data, get_settings, get_inout_hl):
     assert email_1.get("detected_datetime").get("content") == []
     assert (
         email_1.get("pseudo_content")
-        == "Claude [email] viendra au bâtiment à [number]h[number]. "
+        == "Claude ([email]) viendra au bâtiment à [number]h[number]. "
         "Nous nous rendrons ensuite au [location]"
     )
     assert email_1.get("sentences").get("content") == [
@@ -526,7 +554,7 @@ def test_process_data_matching_pseudonym(get_data, get_settings, get_inout_hl):
         "Nous nous rendrons ensuite au MeetingPoint",
     ]
     assert email_1.get("sentences_after_email").get("content") == [
-        "Alice [email] viendra au bâtiment à 10h00.",
+        "Alice ([email]) viendra au bâtiment à 10h00.",
         "Nous nous rendrons ensuite au MeetingPoint",
     ]
 
@@ -615,7 +643,8 @@ def test_process_data_no_numbers(get_data, get_settings, get_inout_hl):
     email_2 = next(emails)
 
     assert (
-        email_1.get("pseudo_content") == "Claude [email] viendra au bâtiment à 10h00. "
+        email_1.get("pseudo_content")
+        == "Claude ([email]) viendra au bâtiment à 10h00. "
         "Nous nous rendrons ensuite au [location]"
     )
 
