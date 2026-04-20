@@ -1,0 +1,1405 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quantitative Evaluation for mailcom &mdash; mailcom  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            mailcom
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../readme_link.html">mailcom: pseudonymization tool for textual data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demo.html">Demonstration notebook for the mailcom package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">mailcom package modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license_link.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mailcom</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Quantitative Evaluation for <code class="docutils literal notranslate"><span class="pre">mailcom</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ssciwr/mailcom/blob/main/docs/source/notebooks/quantitative_eval.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Quantitative-Evaluation-for-mailcom">
+<h1>Quantitative Evaluation for <code class="docutils literal notranslate"><span class="pre">mailcom</span></code><a class="headerlink" href="#Quantitative-Evaluation-for-mailcom" title="Link to this heading"></a></h1>
+<section id="Install-packages-if-needed">
+<h2>Install packages if needed<a class="headerlink" href="#Install-packages-if-needed" title="Link to this heading"></a></h2>
+<p>Recommended: create a clean environment and and install necessary packages.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># install Hugging Face datasets if needed</span>
+<span class="o">%</span><span class="k">pip</span> install datasets
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># install mailcom/refine_email_checking if needed</span>
+<span class="o">%</span><span class="k">pip</span> install git+https://github.com/ssciwr/mailcom.git@refine_email_checking
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Import-necessary-packages">
+<h2>Import necessary packages<a class="headerlink" href="#Import-necessary-packages" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dataset</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">mailcom</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">eval_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./eval&quot;</span><span class="p">)</span>
+<span class="n">eval_folder</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Email-address-detection">
+<h2>Email address detection<a class="headerlink" href="#Email-address-detection" title="Link to this heading"></a></h2>
+<section id="Prepare-data">
+<h3>Prepare data<a class="headerlink" href="#Prepare-data" title="Link to this heading"></a></h3>
+<p>We used Hugging Face <code class="docutils literal notranslate"><span class="pre">Josephgflowers/PII-NER</span></code> dataset for this evaluation.</p>
+<p>Since we only focus on email address detection, we first filtered the dataset to obtain a subset of sentences that contain email addresses. We then applied the <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> transformation to these sentences and compared the detected email addresses with the ground-truth annotations provided in the dataset.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load the dataset</span>
+<span class="n">pii_ner_ds</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;Josephgflowers/PII-NER&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pii_ner_ds</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a copy of the dataset that contains only the original text and the extracted email addresses</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_text_emails</span><span class="p">(</span><span class="n">row</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">assistant_output</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;assistant&quot;</span><span class="p">])</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span>
+        <span class="n">emails</span> <span class="o">=</span> <span class="n">assistant_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span>
+        <span class="n">emails</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span> <span class="s2">&quot;emails&quot;</span><span class="p">:</span> <span class="n">emails</span><span class="p">}</span>
+
+<span class="n">email_ds</span> <span class="o">=</span> <span class="n">pii_ner_ds</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">extract_text_emails</span><span class="p">,</span> <span class="n">remove_columns</span><span class="o">=</span><span class="n">pii_ner_ds</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">column_names</span><span class="p">)</span>
+<span class="n">email_ds</span> <span class="o">=</span> <span class="n">email_ds</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;emails&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;@&quot;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+<span class="n">email_ds</span> <span class="c1"># 2216 items</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># no need to run this if using mailcom/refine_email_checking branch</span>
+<span class="c1"># email in this dataset usually followed by a comma</span>
+<span class="c1"># for simplicity, we added spaces before and after the email addresses to separate email addresses from punctuations</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_spaces_around_emails</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">emails</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">emails</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">email</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span>
+
+<span class="n">email_ds</span> <span class="o">=</span> <span class="n">email_ds</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">add_spaces_around_emails</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;emails&quot;</span><span class="p">])})</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Delete bad items from the dataset</span>
+<span class="c1"># 3 items where email addresses have ’ (non-standard ASCII apostrophe, 8217) instead of &#39; (standard ASCII apostrophe, 39)</span>
+<span class="c1"># 14 items where email addresses have space in the middle</span>
+<span class="c1"># 1 item where the email address is incorrect,</span>
+<span class="c1"># -- text starts with &quot;As a resident of 707 Kade&quot;,</span>
+<span class="c1"># -- email &quot;nishithchawla@bhavsar-buch.com&quot; (the correct email is &quot;nsithchawla@bhavsar-buch.com&quot;)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_valid_email</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">invalid_emails</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">email</span><span class="p">)</span> <span class="ow">or</span>\
+          <span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="mi">8217</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">email</span><span class="p">))</span> <span class="ow">or</span>\
+              <span class="p">(</span><span class="n">email</span> <span class="o">==</span> <span class="s2">&quot;nishithchawla@bhavsar-buch.com&quot;</span> <span class="ow">and</span> <span class="n">text</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;As a resident of 707 Kade&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">invalid_emails</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_valid_item</span><span class="p">(</span><span class="n">emails</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">emails</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid_email</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+<span class="n">email_ds</span> <span class="o">=</span> <span class="n">email_ds</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">is_valid_item</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;emails&quot;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]))</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">email_ds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2198</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Expected 2198 items after filtering, but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">email_ds</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="n">email_ds</span> <span class="c1"># 2198 items</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save the filtered dataset to a csv file for evaluation</span>
+<span class="n">email_ds_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">email_ds</span><span class="p">)</span>
+<span class="n">email_ds_df</span><span class="p">[</span><span class="s2">&quot;emails&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_ds_df</span><span class="p">[</span><span class="s2">&quot;emails&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">)</span>
+<span class="n">email_ds_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;eval/email_detection_eval.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Run-mailcom-on-the-dataset">
+<h3>Run <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> on the dataset<a class="headerlink" href="#Run-mailcom-on-the-dataset" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load workflow configuration</span>
+<span class="n">new_settings</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;default_lang&quot;</span><span class="p">:</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="c1"># only English in the dataset</span>
+    <span class="s2">&quot;pseudo_fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="c1"># we don&#39;t consider subject here</span>
+    <span class="s2">&quot;pseudo_emailaddresses&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="c1"># we only pseudo email addresses</span>
+    <span class="s2">&quot;pseudo_ne&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;pseudo_numbers&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;datetime_detection&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># save the updated configuration to a file for reproducibility purposes</span>
+<span class="n">new_settings_dir</span> <span class="o">=</span> <span class="n">eval_folder</span>
+<span class="n">workflow_settings</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_workflow_settings</span><span class="p">(</span><span class="n">new_settings</span><span class="o">=</span><span class="n">new_settings</span><span class="p">,</span>
+                                                  <span class="n">updated_setting_dir</span><span class="o">=</span> <span class="n">new_settings_dir</span><span class="p">,</span>
+                                                  <span class="n">save_updated_settings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load csv file into input handler</span>
+<span class="n">input_csv</span> <span class="o">=</span> <span class="s2">&quot;eval/email_detection_eval.csv&quot;</span>
+<span class="c1"># the columns of the csv that should be passed through the processing pipeline/retained in the pipeline</span>
+<span class="n">matching_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+<span class="c1"># the predefined keys that should be used to match these columns, in the correct order</span>
+<span class="n">pre_defined_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+<span class="c1"># what to call any columns that are not matched to pre-defined keys</span>
+<span class="c1"># get this from the workflow settings</span>
+<span class="n">unmatched_keyword</span> <span class="o">=</span> <span class="n">workflow_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;csv_col_unmatched_keyword&quot;</span><span class="p">)</span>
+
+<span class="n">input_handler</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_input_handler</span><span class="p">(</span><span class="n">in_path</span><span class="o">=</span><span class="n">input_csv</span><span class="p">,</span> <span class="n">in_type</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span>
+                                          <span class="n">col_names</span><span class="o">=</span><span class="n">matching_columns</span><span class="p">,</span>
+                                          <span class="n">init_data_fields</span><span class="o">=</span><span class="n">pre_defined_keys</span><span class="p">,</span>
+                                          <span class="n">unmatched_keyword</span><span class="o">=</span><span class="n">unmatched_keyword</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># process the input data</span>
+<span class="n">mailcom</span><span class="o">.</span><span class="n">process_data</span><span class="p">(</span><span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">(),</span> <span class="n">workflow_settings</span><span class="p">)</span> <span class="c1"># 22.3s on laptop</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># convert the processed data into a dataframe</span>
+<span class="n">email_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># only keep the content,  pseudo_content, and sentences columns</span>
+<span class="n">filtered_email_df</span> <span class="o">=</span> <span class="n">email_df</span><span class="p">[[</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;pseudo_content&quot;</span><span class="p">,</span> <span class="s2">&quot;sentences&quot;</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># add pseudo_content to the original dataset</span>
+<span class="n">org_email_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">input_csv</span><span class="p">)</span>
+<span class="c1"># convert the emails column from string to list</span>
+<span class="n">org_email_df</span><span class="p">[</span><span class="s2">&quot;emails&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">org_email_df</span><span class="p">[</span><span class="s2">&quot;emails&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">)</span>
+
+<span class="c1"># check before merging</span>
+<span class="p">(</span><span class="n">org_email_df</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">==</span>
+ <span class="n">filtered_email_df</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># merge the pseudo_content into the original datasetn_df[</span>
+<span class="n">merged_email_df</span> <span class="o">=</span> <span class="n">org_email_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">filtered_email_df</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="s2">&quot;one_to_one&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">merged_email_df</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">org_email_df</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">filtered_email_df</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expected unchanged number of items after merging, but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">merged_email_df</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">merged_email_df</span> <span class="o">=</span> <span class="n">merged_email_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
+<span class="n">merged_email_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">prev_email_checking</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># set to True if using mailcom/main branch and refine_email_checking has not been merged yet</span>
+
+<span class="c1"># create expected content column as ground truth for evaluation</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">clean_sentence</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">prev_email_checking</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">prev_email_checking</span><span class="p">:</span>
+        <span class="c1"># no need to clean the sentence if using regex for email checking</span>
+        <span class="k">return</span> <span class="n">sentence</span>
+    <span class="c1"># normalize whitespace to make it match the way mailcom clean the sentences</span>
+    <span class="n">normalized_sentence</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="n">sentence</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">normalized_sentence</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">replace_email_with_placeholder</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">email_list</span><span class="p">):</span>
+    <span class="n">replaced_sents</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">:</span>
+        <span class="n">replaced_sent</span> <span class="o">=</span> <span class="n">clean_sentence</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">prev_email_checking</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">email_list</span><span class="p">:</span>
+            <span class="n">replaced_sent</span> <span class="o">=</span> <span class="n">replaced_sent</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="s2">&quot;[email]&quot;</span><span class="p">)</span>
+        <span class="n">replaced_sents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">replaced_sent</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">replaced_sents</span><span class="p">)</span>
+
+<span class="n">merged_email_df</span><span class="p">[</span><span class="s2">&quot;expected_content&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merged_email_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">replace_email_with_placeholder</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">),</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;emails&quot;</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">merged_email_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># calculate the exact match accuracy between the pseudo_content and the expected_content</span>
+<span class="n">merged_email_df</span><span class="p">[</span><span class="s2">&quot;exact_match&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merged_email_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;pseudo_content&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;expected_content&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># calculate tp, fp, fn</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_tp_fp_fn</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+    <span class="n">pred_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\[email\]&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;pseudo_content&quot;</span><span class="p">]))</span>
+    <span class="n">gold_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\[email\]&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;expected_content&quot;</span><span class="p">]))</span>
+
+    <span class="n">true_positives</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">pred_count</span><span class="p">,</span> <span class="n">gold_count</span><span class="p">)</span>
+    <span class="n">false_positives</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">pred_count</span> <span class="o">-</span> <span class="n">gold_count</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">false_negatives</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">gold_count</span> <span class="o">-</span> <span class="n">pred_count</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s2">&quot;tp&quot;</span><span class="p">:</span> <span class="n">true_positives</span><span class="p">,</span> <span class="s2">&quot;fp&quot;</span><span class="p">:</span> <span class="n">false_positives</span><span class="p">,</span> <span class="s2">&quot;fn&quot;</span><span class="p">:</span> <span class="n">false_negatives</span><span class="p">})</span>
+
+<span class="n">metrics_df</span> <span class="o">=</span> <span class="n">merged_email_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">calculate_tp_fp_fn</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">merged_email_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">merged_email_df</span><span class="p">,</span> <span class="n">metrics_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">merged_email_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save the results to a csv file for further analysis</span>
+<span class="n">merged_email_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;eval/email_detection_results.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">cal_eval_metrics</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="n">total_tp</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;tp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">total_fp</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;fp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">total_fn</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;fn&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="n">precision</span> <span class="o">=</span> <span class="n">total_tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">total_tp</span> <span class="o">+</span> <span class="n">total_fp</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">total_tp</span> <span class="o">+</span> <span class="n">total_fp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">recall</span> <span class="o">=</span> <span class="n">total_tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">total_tp</span> <span class="o">+</span> <span class="n">total_fn</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">total_tp</span> <span class="o">+</span> <span class="n">total_fn</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">f1</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">precision</span> <span class="o">*</span> <span class="n">recall</span> <span class="o">/</span> <span class="p">(</span><span class="n">precision</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">precision</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;exact_match&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exact match accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Micro Precision: </span><span class="si">{</span><span class="n">precision</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Micro Recall: </span><span class="si">{</span><span class="n">recall</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Micro F1 Score: </span><span class="si">{</span><span class="n">f1</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cal_eval_metrics</span><span class="p">(</span><span class="n">merged_email_df</span><span class="p">)</span>
+<span class="c1"># Results when using simple check &quot;@&quot; in sentence</span>
+<span class="c1"># Exact match accuracy: 0.7302</span>
+<span class="c1"># Micro Precision: 0.7741</span>
+<span class="c1"># Micro Recall: 1.0000</span>
+<span class="c1"># Micro F1 Score: 0.8727</span>
+<span class="c1"># recall &gt; precision, as mailcom also marks some mentioning form, e.g. @username as email addresses.</span>
+
+<span class="c1"># Results when using regex for email checking</span>
+<span class="c1"># Exact match accuracy: 0.9995</span>
+<span class="c1"># Micro Precision: 1.0000</span>
+<span class="c1"># Micro Recall: 1.0000</span>
+<span class="c1"># Micro F1 Score: 1.0000</span>
+<span class="c1"># There is only one failed case:</span>
+<span class="c1"># -- sentence: With an email address that reflects her professional prowess-bhamini.gulati@shukla.biz-she navigates the digital realm with ease.</span>
+<span class="c1"># -- expected content: With an email address that reflects her professional prowess-[email]-she navigates the digital realm with ease.</span>
+<span class="c1"># -- pseudo content: With an email address that reflects her professional [email]-she navigates the digital realm with ease.</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="NER-detection">
+<h2>NER detection<a class="headerlink" href="#NER-detection" title="Link to this heading"></a></h2>
+<section id="id1">
+<h3>Prepare data<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>We use Hugging Face <code class="docutils literal notranslate"><span class="pre">Babelscape/wikineural</span></code> dataset (<code class="docutils literal notranslate"><span class="pre">test_en</span></code>, <code class="docutils literal notranslate"><span class="pre">11,597</span></code> rows) for this evaluation.</p>
+<p>The dataset contains tokens and their corresponding NER tags.</p>
+<p><code class="docutils literal notranslate"><span class="pre">{'O':</span> <span class="pre">0,</span> <span class="pre">'B-PER':</span> <span class="pre">1,</span> <span class="pre">'I-PER':</span> <span class="pre">2,</span> <span class="pre">'B-ORG':</span> <span class="pre">3,</span> <span class="pre">'I-ORG':</span> <span class="pre">4,</span> <span class="pre">'B-LOC':</span> <span class="pre">5,</span> <span class="pre">'I-LOC':</span> <span class="pre">6,</span> <span class="pre">'B-MISC':</span> <span class="pre">7,</span> <span class="pre">'I-MISC':</span> <span class="pre">8}</span></code></p>
+<p>We first converted the tokens into sentence and extract the named entities based on the NER tags. We then applied the <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> transformation to these sentences and compared the detected named entities with the ground-truth annotations provided in the dataset.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load the dataset</span>
+<span class="n">ner_ds</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;Babelscape/wikineural&quot;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;test_en&quot;</span><span class="p">)</span>
+<span class="n">ner_ds</span> <span class="c1"># 11597 items</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># NER tags</span>
+<span class="n">ner_tags_def</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;B-PER&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;I-PER&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;B-ORG&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;I-ORG&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;B-LOC&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;I-LOC&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;B-MISC&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;I-MISC&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
+<span class="c1"># convert key-value to value-key for easier mapping</span>
+<span class="n">ner_tags</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ner_tags_def</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<span class="n">ner_tags</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># map int in ner_tags to their corresponding string labels</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">map_ner_tags</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+    <span class="n">ner_tags_int</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;ner_tags&quot;</span><span class="p">]</span>
+    <span class="n">ner_tags_str</span> <span class="o">=</span> <span class="p">[</span><span class="n">ner_tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">ner_tags_int</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;ner_tags_str&quot;</span><span class="p">:</span> <span class="n">ner_tags_str</span><span class="p">}</span>
+
+<span class="n">ner_ds_mapped</span> <span class="o">=</span> <span class="n">ner_ds</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">map_ner_tags</span><span class="p">)</span>
+<span class="n">ner_ds_mapped</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># regex to clean up spaces surrounding non-word chars</span>
+<span class="n">multiple_spaces</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">)</span>
+
+<span class="n">space_before_punc</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s([?.!,;:%])&quot;</span><span class="p">)</span>
+
+<span class="n">space_after_open_bracket</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([(\[{])\s&quot;</span><span class="p">)</span>
+<span class="n">space_before_close_bracket</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s([)\]}])&quot;</span><span class="p">)</span>
+
+<span class="n">apostrophe_between_words</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\w)\s&#39;\s(\w)&quot;</span><span class="p">)</span>
+<span class="n">apostrophe_between_words_special</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\w)\s’\s(\w)&quot;</span><span class="p">)</span>
+
+<span class="n">space_in_quotes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;([&quot;“‘])\s(.*?)\s([&quot;”’])&#39;</span><span class="p">)</span> <span class="c1"># assuming that single quotes are used as apostrophes, not quotation marks</span>
+
+<span class="c1"># for each row, convert tokens into sentence or phrase and extract NE</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_tokens_to_phrase</span><span class="p">(</span><span class="n">tokens</span><span class="p">):</span>
+    <span class="n">sentence</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+
+    <span class="c1"># post processing, order is important!</span>
+    <span class="c1"># replace multiple spaces with a single space</span>
+    <span class="n">sentence</span> <span class="o">=</span> <span class="n">multiple_spaces</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">sentence</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="c1"># remove space before punctuations</span>
+    <span class="n">sentence</span> <span class="o">=</span> <span class="n">space_before_punc</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1&quot;</span><span class="p">,</span> <span class="n">sentence</span><span class="p">)</span>
+    <span class="c1"># fix space after opening brackets</span>
+    <span class="n">sentence</span> <span class="o">=</span> <span class="n">space_after_open_bracket</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1&quot;</span><span class="p">,</span> <span class="n">sentence</span><span class="p">)</span>
+    <span class="c1"># fix space before closing brackets</span>
+    <span class="n">sentence</span> <span class="o">=</span> <span class="n">space_before_close_bracket</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1&quot;</span><span class="p">,</span> <span class="n">sentence</span><span class="p">)</span>
+    <span class="c1"># fix apostrophes between words</span>
+    <span class="n">sentence</span> <span class="o">=</span> <span class="n">apostrophe_between_words</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1&#39;\2&quot;</span><span class="p">,</span> <span class="n">sentence</span><span class="p">)</span>
+    <span class="n">sentence</span> <span class="o">=</span> <span class="n">apostrophe_between_words_special</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1’\2&quot;</span><span class="p">,</span> <span class="n">sentence</span><span class="p">)</span>
+    <span class="c1"># fix space in quotes</span>
+    <span class="n">sentence</span> <span class="o">=</span> <span class="n">space_in_quotes</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\1\2\3&#39;</span><span class="p">,</span> <span class="n">sentence</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sentence</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_token_offsets</span><span class="p">(</span><span class="n">sentence</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="n">offsets</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">current_pos</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+        <span class="n">start_idx</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">current_pos</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start_idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Token &#39;</span><span class="si">{</span><span class="n">token</span><span class="si">}</span><span class="s2">&#39; not found in sentence starting from position </span><span class="si">{</span><span class="n">current_pos</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">end_idx</span> <span class="o">=</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+        <span class="n">offsets</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">))</span>
+        <span class="n">current_pos</span> <span class="o">=</span> <span class="n">end_idx</span>
+    <span class="k">return</span> <span class="n">offsets</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">build_entity</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">entity_type</span><span class="p">,</span>
+        <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">convert_tokens_to_phrase</span><span class="p">(</span><span class="n">tokens</span><span class="p">),</span>
+        <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
+        <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="n">end</span>
+    <span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_tokens_to_sentence_and_extract_ne</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span>
+    <span class="n">ner_tags_list</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;ner_tags_str&quot;</span><span class="p">]</span>
+
+    <span class="c1"># convert tokens to sentence</span>
+    <span class="n">sentence</span> <span class="o">=</span> <span class="n">convert_tokens_to_phrase</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+
+    <span class="n">entities</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># list of dict</span>
+    <span class="n">current_entity</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">current_entity_type</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">token_offsets</span> <span class="o">=</span> <span class="n">get_token_offsets</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">tokens</span><span class="p">)</span>
+    <span class="n">start_pos</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">end_pos</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">():</span>
+        <span class="k">nonlocal</span> <span class="n">current_entity</span><span class="p">,</span> <span class="n">current_entity_type</span><span class="p">,</span> <span class="n">start_pos</span><span class="p">,</span> <span class="n">end_pos</span>
+        <span class="k">if</span> <span class="n">current_entity</span><span class="p">:</span>
+            <span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">build_entity</span><span class="p">(</span><span class="n">current_entity</span><span class="p">,</span> <span class="n">current_entity_type</span><span class="p">,</span> <span class="n">start_pos</span><span class="p">,</span> <span class="n">end_pos</span><span class="p">))</span>
+            <span class="n">current_entity</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">current_entity_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">token</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">ner_tags_list</span><span class="p">,</span> <span class="n">token_offsets</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;O&quot;</span><span class="p">:</span> <span class="c1"># reset case</span>
+            <span class="n">flush</span><span class="p">()</span>
+            <span class="k">continue</span>
+
+        <span class="n">prefix</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">ent_type</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">prefix</span> <span class="o">==</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span>
+            <span class="n">flush</span><span class="p">()</span> <span class="c1"># store the previous entity before starting a new one</span>
+            <span class="n">current_entity_type</span> <span class="o">=</span> <span class="n">ent_type</span>
+            <span class="n">current_entity</span> <span class="o">=</span> <span class="p">[</span><span class="n">token</span><span class="p">]</span>
+            <span class="n">start_pos</span> <span class="o">=</span> <span class="n">start</span>
+            <span class="n">end_pos</span> <span class="o">=</span> <span class="n">end</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">prefix</span> <span class="o">==</span> <span class="s2">&quot;I&quot;</span> <span class="ow">and</span> <span class="n">current_entity_type</span> <span class="o">==</span> <span class="n">ent_type</span><span class="p">:</span>
+            <span class="c1"># continue the current entity</span>
+            <span class="n">current_entity</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+            <span class="n">end_pos</span> <span class="o">=</span> <span class="n">end</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># handle unexpected cases (e.g., I- tag without a preceding B- tag or mismatched entity types)</span>
+        <span class="n">flush</span><span class="p">()</span>
+
+    <span class="c1"># Check if there&#39;s an entity at the end of the sentence</span>
+    <span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;sentence&quot;</span><span class="p">:</span> <span class="n">sentence</span><span class="p">,</span> <span class="s2">&quot;entities&quot;</span><span class="p">:</span> <span class="n">entities</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ner_ds_extracted</span> <span class="o">=</span> <span class="n">ner_ds_mapped</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">convert_tokens_to_sentence_and_extract_ne</span><span class="p">)</span>
+<span class="n">ner_ds_extracted</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># only keep sentence and entities columns</span>
+<span class="n">ner_ds_filtered</span> <span class="o">=</span> <span class="n">ner_ds_extracted</span><span class="o">.</span><span class="n">remove_columns</span><span class="p">([</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">ner_ds_extracted</span><span class="o">.</span><span class="n">column_names</span> <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">,</span> <span class="s2">&quot;sentence&quot;</span><span class="p">,</span> <span class="s2">&quot;entities&quot;</span><span class="p">]])</span>
+<span class="n">ner_ds_filtered</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># convert dataset to dataframe and serialize the list of dics as JSON strings</span>
+<span class="c1"># to make sure that there is comma between dicts after saving to csv</span>
+<span class="n">df_ner_ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">ner_ds_filtered</span><span class="p">)</span>
+<span class="n">df_ner_ds</span><span class="p">[</span><span class="s2">&quot;entities&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_ner_ds</span><span class="p">[</span><span class="s2">&quot;entities&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">)</span>
+<span class="n">df_ner_ds</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_ner_ds</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">)</span>
+<span class="n">df_ner_ds</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save the processed dataset to a csv file for evaluation</span>
+<span class="n">df_ner_ds</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;eval/ner_detection_eval.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="id2">
+<h3>Run <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> on the dataset<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load workflow configuration</span>
+<span class="n">new_settings</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;default_lang&quot;</span><span class="p">:</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="c1"># only English in the dataset</span>
+    <span class="s2">&quot;pseudo_fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="c1"># we don&#39;t consider subject here</span>
+    <span class="s2">&quot;pseudo_emailaddresses&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;pseudo_ne&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="c1"># we want to pseudo NE for this evaluation</span>
+    <span class="s2">&quot;pseudo_numbers&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;datetime_detection&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># save the updated configuration to a file for reproducibility purposes</span>
+<span class="n">new_settings_dir</span> <span class="o">=</span> <span class="n">eval_folder</span>
+<span class="n">workflow_settings</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_workflow_settings</span><span class="p">(</span><span class="n">new_settings</span><span class="o">=</span><span class="n">new_settings</span><span class="p">,</span>
+                                                  <span class="n">updated_setting_dir</span><span class="o">=</span> <span class="n">new_settings_dir</span><span class="p">,</span>
+                                                  <span class="n">save_updated_settings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load csv file into input handler</span>
+<span class="n">input_csv</span> <span class="o">=</span> <span class="s2">&quot;eval/ner_detection_eval.csv&quot;</span>
+<span class="c1"># the columns of the csv that should be passed through the processing pipeline/retained in the pipeline</span>
+<span class="n">matching_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sentence&quot;</span><span class="p">]</span>
+<span class="c1"># the predefined keys that should be used to match these columns, in the correct order</span>
+<span class="n">pre_defined_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+<span class="c1"># what to call any columns that are not matched to pre-defined keys</span>
+<span class="c1"># get this from the workflow settings</span>
+<span class="n">unmatched_keyword</span> <span class="o">=</span> <span class="n">workflow_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;csv_col_unmatched_keyword&quot;</span><span class="p">)</span>
+
+<span class="n">input_handler</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_input_handler</span><span class="p">(</span><span class="n">in_path</span><span class="o">=</span><span class="n">input_csv</span><span class="p">,</span> <span class="n">in_type</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span>
+                                          <span class="n">col_names</span><span class="o">=</span><span class="n">matching_columns</span><span class="p">,</span>
+                                          <span class="n">init_data_fields</span><span class="o">=</span><span class="n">pre_defined_keys</span><span class="p">,</span>
+                                          <span class="n">unmatched_keyword</span><span class="o">=</span><span class="n">unmatched_keyword</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># process the input data</span>
+<span class="n">mailcom</span><span class="o">.</span><span class="n">process_data</span><span class="p">(</span><span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">(),</span> <span class="n">workflow_settings</span><span class="p">)</span>
+<span class="c1"># took around 2 minutes 35.2 seconds on SSC14 (desktop)</span>
+<span class="c1"># on laptop, 32 GB RAM, no GPU, it took 16 minutes 48.3 seconds (other applications were running too)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># convert the processed data into a dataframe</span>
+<span class="n">ner_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">())</span>
+<span class="n">ner_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># only keep the content,  pseudo_content, and sentences columns</span>
+<span class="n">filtered_ner_df</span> <span class="o">=</span> <span class="n">ner_df</span><span class="p">[[</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;pseudo_content&quot;</span><span class="p">,</span> <span class="s2">&quot;sentences&quot;</span><span class="p">,</span> <span class="s2">&quot;ne_list&quot;</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># add pseudo_content to the original dataset</span>
+<span class="n">org_ner_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">input_csv</span><span class="p">)</span>
+<span class="c1"># deserialize JSON back to Python objects for entities and tokens columns</span>
+<span class="n">org_ner_df</span><span class="p">[</span><span class="s2">&quot;entities&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">org_ner_df</span><span class="p">[</span><span class="s2">&quot;entities&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
+<span class="n">org_ner_df</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">org_ner_df</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
+
+<span class="c1"># check before merging</span>
+<span class="p">(</span><span class="n">org_ner_df</span><span class="p">[</span><span class="s2">&quot;sentence&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">==</span>
+ <span class="n">filtered_ner_df</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># merge the pseudo_content into the original dataset</span>
+<span class="n">merged_ner_df</span> <span class="o">=</span> <span class="n">org_ner_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">filtered_ner_df</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s2">&quot;sentence&quot;</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="s2">&quot;one_to_one&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">merged_ner_df</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">org_ner_df</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">filtered_ner_df</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expected unchanged number of items after merging, but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">merged_ner_df</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">merged_ner_df</span> <span class="o">=</span> <span class="n">merged_ner_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
+<span class="n">merged_ner_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># calculate tp, fp, fn for each row</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_tp_fp_fn</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+    <span class="n">gold_data</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;entities&quot;</span><span class="p">]</span>
+    <span class="n">pred_data</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
+    <span class="c1"># normalize data to get tuple of (type, text, start, end)</span>
+    <span class="n">norm_gold_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">gold_data</span>
+    <span class="p">}</span>
+    <span class="n">norm_pred_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;entity_group&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;word&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">pred_data</span>
+    <span class="p">}</span>
+
+    <span class="n">tp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">norm_gold_data</span> <span class="o">&amp;</span> <span class="n">norm_pred_data</span><span class="p">)</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">norm_pred_data</span> <span class="o">-</span> <span class="n">norm_gold_data</span><span class="p">)</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">norm_gold_data</span> <span class="o">-</span> <span class="n">norm_pred_data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s2">&quot;tp&quot;</span><span class="p">:</span> <span class="n">tp</span><span class="p">,</span> <span class="s2">&quot;fp&quot;</span><span class="p">:</span> <span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;fn&quot;</span><span class="p">:</span> <span class="n">fn</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">cal_eval_metrics</span><span class="p">(</span><span class="n">dataframe</span><span class="p">):</span>
+    <span class="c1"># add tp, fp, fn columns to the dataframe</span>
+    <span class="n">metrics_df</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">calculate_tp_fp_fn</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">result_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">metrics_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># calculate precision, recall, and F1 score for all rows</span>
+    <span class="n">tp</span> <span class="o">=</span> <span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;tp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;fp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;fn&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="n">precision</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">recall</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">f1_score</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">precision</span> <span class="o">*</span> <span class="n">recall</span> <span class="o">/</span> <span class="p">(</span><span class="n">precision</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">precision</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision: </span><span class="si">{</span><span class="n">precision</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recall: </span><span class="si">{</span><span class="n">recall</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;F1 Score: </span><span class="si">{</span><span class="n">f1_score</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result_df</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">result_df</span> <span class="o">=</span> <span class="n">cal_eval_metrics</span><span class="p">(</span><span class="n">merged_ner_df</span><span class="p">)</span>
+<span class="n">result_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="c1"># Precision: 0.7707</span>
+<span class="c1"># Recall: 0.8401</span>
+<span class="c1"># F1 Score: 0.8039</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save the results to a csv file for further analysis</span>
+<span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;entities&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;entities&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">)</span>
+<span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">)</span>
+<span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">)</span>
+<span class="n">result_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;eval/ner_detection_results.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># originally, each content only has one sentence</span>
+<span class="c1"># check if sentensizing work as expected</span>
+<span class="n">merged_ner_df</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="p">[])))</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+<span class="c1"># sentences -- count</span>
+<span class="c1"># 1 -- 11531</span>
+<span class="c1"># 2 -- 60</span>
+<span class="c1"># 3 -- 6</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># check if non-single sentence cases affect the evaluation results</span>
+<span class="n">single_sentence_df</span> <span class="o">=</span> <span class="n">merged_ner_df</span><span class="p">[</span><span class="n">merged_ner_df</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">single_result_df</span> <span class="o">=</span> <span class="n">cal_eval_metrics</span><span class="p">(</span><span class="n">single_sentence_df</span><span class="p">)</span>
+<span class="n">single_result_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="c1"># Precision: 0.7743</span>
+<span class="c1"># Recall: 0.8431</span>
+<span class="c1"># F1 Score: 0.8072</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># check double sentence cases</span>
+<span class="n">double_sentence_df</span> <span class="o">=</span> <span class="n">merged_ner_df</span><span class="p">[</span><span class="n">merged_ner_df</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)]</span>
+<span class="n">double_result_df</span> <span class="o">=</span> <span class="n">cal_eval_metrics</span><span class="p">(</span><span class="n">double_sentence_df</span><span class="p">)</span>
+<span class="n">double_result_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="c1"># Precision: 0.3150</span>
+<span class="c1"># Recall: 0.3883</span>
+<span class="c1"># F1 Score: 0.3478</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># check triple sentence cases</span>
+<span class="n">triple_sentence_df</span> <span class="o">=</span> <span class="n">merged_ner_df</span><span class="p">[</span><span class="n">merged_ner_df</span><span class="p">[</span><span class="s2">&quot;sentences&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)]</span>
+<span class="n">triple_result_df</span> <span class="o">=</span> <span class="n">cal_eval_metrics</span><span class="p">(</span><span class="n">triple_sentence_df</span><span class="p">)</span>
+<span class="n">triple_result_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="c1"># Precision: 0.0000</span>
+<span class="c1"># Recall: 0.0000</span>
+<span class="c1"># F1 Score: 0.0000</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Post-analysis">
+<h3>Post analysis<a class="headerlink" href="#Post-analysis" title="Link to this heading"></a></h3>
+<p>Since Presidio does not consider MISC, recalculate the metrics by excluding MISC from both the ground-truth and the detected entities.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load the results saved above</span>
+<span class="n">result_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;eval/ner_detection_results.csv&quot;</span><span class="p">)</span>
+<span class="c1"># deserialize JSON back to Python objects for entities and ne_list columns</span>
+<span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;entities&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;entities&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
+<span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
+<span class="n">result_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">considered_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;PER&quot;</span><span class="p">,</span> <span class="s2">&quot;ORG&quot;</span><span class="p">,</span> <span class="s2">&quot;LOC&quot;</span><span class="p">]</span> <span class="c1"># we only consider these 3 types as Presidio does not consider MISC</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># calculate tp, fp, fn for each row</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_tp_fp_fn</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+    <span class="n">gold_data</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;entities&quot;</span><span class="p">]</span>
+    <span class="n">pred_data</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
+    <span class="c1"># normalize data to get tuple of (type, text, start, end)</span>
+    <span class="n">norm_gold_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">gold_data</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">considered_types</span>
+    <span class="p">}</span>
+    <span class="n">norm_pred_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;entity_group&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;word&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">pred_data</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;entity_group&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">considered_types</span>
+    <span class="p">}</span>
+
+    <span class="n">tp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">norm_gold_data</span> <span class="o">&amp;</span> <span class="n">norm_pred_data</span><span class="p">)</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">norm_pred_data</span> <span class="o">-</span> <span class="n">norm_gold_data</span><span class="p">)</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">norm_gold_data</span> <span class="o">-</span> <span class="n">norm_pred_data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s2">&quot;tp_filtered&quot;</span><span class="p">:</span> <span class="n">tp</span><span class="p">,</span> <span class="s2">&quot;fp_filtered&quot;</span><span class="p">:</span> <span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;fn_filtered&quot;</span><span class="p">:</span> <span class="n">fn</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">cal_eval_metrics</span><span class="p">(</span><span class="n">dataframe</span><span class="p">):</span>
+    <span class="c1"># add tp, fp, fn columns to the dataframe</span>
+    <span class="n">metrics_df</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">calculate_tp_fp_fn</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">result_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">metrics_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># calculate precision, recall, and F1 score for all rows</span>
+    <span class="n">tp</span> <span class="o">=</span> <span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;tp_filtered&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;fp_filtered&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">result_df</span><span class="p">[</span><span class="s2">&quot;fn_filtered&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="n">precision</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">recall</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">f1_score</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">precision</span> <span class="o">*</span> <span class="n">recall</span> <span class="o">/</span> <span class="p">(</span><span class="n">precision</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">precision</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision - filtered: </span><span class="si">{</span><span class="n">precision</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recall -filtered: </span><span class="si">{</span><span class="n">recall</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;F1 Score - filtered: </span><span class="si">{</span><span class="n">f1_score</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result_df</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">post_result_df</span> <span class="o">=</span> <span class="n">cal_eval_metrics</span><span class="p">(</span><span class="n">result_df</span><span class="p">)</span>
+<span class="n">post_result_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="c1"># Precision - filtered: 0.8825</span>
+<span class="c1"># Recall -filtered: 0.8760</span>
+<span class="c1"># F1 Score - filtered: 0.8792</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Numerical-data-detection">
+<h2>Numerical data detection<a class="headerlink" href="#Numerical-data-detection" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>Prepare data<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>Since <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> explicitly masks any digits in text, the dataset for this evaluation should fulfill the same requirement. The two datasets used above detect numbers in specific formats, such as license numbers, phone numbers, etc., but not all digits.</p>
+<p>We therefore used ATIS dataset for this purpose. Each token in the dataset is annotated with a slot label, ensuring that all digits are included.</p>
+<p>The ATIS train dataset (4978 rows) was used for this evaluation instead of the test dataset (893 rows) to have a larger sample size for evaluation. Since <code class="docutils literal notranslate"><span class="pre">mailcom</span></code>’s number detection does not use any machine learning model, using the train dataset would not cause data leakage issues.</p>
+<p>Thanks to <a class="reference external" href="https://github.com/yvchen/JointSLU">Yun-Nung (Vivian) Chen</a> for publishing this dataset. Download the train dataset <a class="reference external" href="https://github.com/yvchen/JointSLU/blob/master/data/atis.train.iob">here</a></p>
+<p><strong>Note</strong>: <em>We evaluated ``mailcom`` on this dataset without comparing with other tools since the other tools do not explicitly mask all digits in text.</em></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load dataset</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_atis_dataset</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+    <span class="n">sentences</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">slots</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="c1"># the line format is BOS tokens EOS slot_labels</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;BOS&quot;</span><span class="p">)</span>
+            <span class="n">sentence</span><span class="p">,</span> <span class="n">slot_labels</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;EOS&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">sentence</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">slot_labels</span> <span class="o">=</span> <span class="n">slot_labels</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="n">sentences</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+            <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+            <span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot_labels</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="c1"># remove the leading and trailing O labels, which correspond to the BOS and EOS tokens</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;sentence&quot;</span><span class="p">:</span> <span class="n">sentences</span><span class="p">,</span> <span class="s2">&quot;tokens&quot;</span><span class="p">:</span> <span class="n">tokens</span><span class="p">,</span> <span class="s2">&quot;slot_labels&quot;</span><span class="p">:</span> <span class="n">slots</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">atis_df</span> <span class="o">=</span> <span class="n">load_atis_dataset</span><span class="p">(</span><span class="s2">&quot;eval/atis.train.iob&quot;</span><span class="p">)</span>
+<span class="n">atis_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># find slot labels that contain digits</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">has_digits</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">token</span><span class="p">)</span>
+
+<span class="c1"># filter rows containing digits in the dataset and also yield the unique slot labels that contain digits</span>
+<span class="n">non_o_digit_slots</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">o_digit_slots</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">non_o_digit_row_indices</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">o_digit_row_indices</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># row indices that contain digits marked as &quot;O&quot;</span>
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">atis_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span>
+    <span class="n">slot_labels</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;slot_labels&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">token</span><span class="p">,</span> <span class="n">slot</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">slot_labels</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">has_digits</span><span class="p">(</span><span class="n">token</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">slot</span> <span class="o">==</span> <span class="s2">&quot;O&quot;</span><span class="p">:</span>
+                <span class="n">o_digit_slots</span><span class="p">[</span><span class="n">slot</span><span class="p">]</span> <span class="o">=</span> <span class="n">o_digit_slots</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">o_digit_row_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">non_o_digit_slots</span><span class="p">[</span><span class="n">slot</span><span class="p">]</span> <span class="o">=</span> <span class="n">non_o_digit_slots</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">non_o_digit_row_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+<span class="n">non_o_digit_slots</span><span class="p">,</span> <span class="n">o_digit_slots</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">non_o_digit_df</span> <span class="o">=</span> <span class="n">atis_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">non_o_digit_row_indices</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">non_o_digit_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">o_digit_df</span> <span class="o">=</span> <span class="n">atis_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">o_digit_row_indices</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">o_digit_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># extract number-related tokens from sentences in the filtered datasets</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_numbers</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">slot_labels_rows</span><span class="p">,</span> <span class="n">slot_labels_keys</span><span class="p">):</span>
+    <span class="n">extracted_numbers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">token</span><span class="p">,</span> <span class="n">slot</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">slot_labels_rows</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slot_labels_keys</span> <span class="ow">and</span> <span class="n">has_digits</span><span class="p">(</span><span class="n">token</span><span class="p">):</span>
+            <span class="n">extracted_numbers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+
+    <span class="c1"># sort by token length in descending order</span>
+    <span class="c1"># to make sure that number replacement work correctly</span>
+    <span class="n">extracted_numbers</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">extracted_numbers</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># add column &quot;numbers&quot; to the two filtered dataframes</span>
+<span class="n">non_o_digit_df</span><span class="p">[</span><span class="s2">&quot;numbers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">non_o_digit_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">extract_numbers</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;slot_labels&quot;</span><span class="p">],</span> <span class="n">non_o_digit_slots</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">non_o_digit_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">o_digit_df</span><span class="p">[</span><span class="s2">&quot;numbers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">o_digit_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">extract_numbers</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;slot_labels&quot;</span><span class="p">],</span> <span class="n">o_digit_slots</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">o_digit_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># combine to get the final dataset for evaluation</span>
+<span class="n">digit_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">non_o_digit_df</span><span class="p">,</span> <span class="n">o_digit_df</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">digit_df</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">non_o_digit_df</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">o_digit_df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">789</span>
+<span class="n">digit_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># convert string to json format</span>
+<span class="n">digit_df</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">digit_df</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">)</span>
+<span class="n">digit_df</span><span class="p">[</span><span class="s2">&quot;slot_labels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">digit_df</span><span class="p">[</span><span class="s2">&quot;slot_labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">)</span>
+<span class="n">digit_df</span><span class="p">[</span><span class="s2">&quot;numbers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">digit_df</span><span class="p">[</span><span class="s2">&quot;numbers&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># filter duplicated sentences in the dataset</span>
+<span class="n">digit_df</span> <span class="o">=</span> <span class="n">digit_df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sentence&quot;</span><span class="p">,</span> <span class="s2">&quot;tokens&quot;</span><span class="p">,</span> <span class="s2">&quot;slot_labels&quot;</span><span class="p">,</span> <span class="s2">&quot;numbers&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">digit_df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">665</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Expected 665 unique sentences, but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">digit_df</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="n">digit_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save the processed dataset to a csv file for evaluation</span>
+<span class="n">digit_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;eval/number_detection_eval.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="id4">
+<h3>Run <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> on the dataset<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load workflow configuration</span>
+<span class="n">new_settings</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;default_lang&quot;</span><span class="p">:</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="c1"># only English in the dataset</span>
+    <span class="s2">&quot;pseudo_fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="c1"># we don&#39;t consider subject here</span>
+    <span class="s2">&quot;pseudo_emailaddresses&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;pseudo_ne&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;pseudo_numbers&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="c1"># we want to pseudo numbers for this evaluation</span>
+    <span class="s2">&quot;datetime_detection&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># save the updated configuration to a file for reproducibility purposes</span>
+<span class="n">new_settings_dir</span> <span class="o">=</span> <span class="n">eval_folder</span>
+<span class="n">workflow_settings</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_workflow_settings</span><span class="p">(</span><span class="n">new_settings</span><span class="o">=</span><span class="n">new_settings</span><span class="p">,</span>
+                                                  <span class="n">updated_setting_dir</span><span class="o">=</span> <span class="n">new_settings_dir</span><span class="p">,</span>
+                                                  <span class="n">save_updated_settings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load csv file into input handler</span>
+<span class="n">input_csv</span> <span class="o">=</span> <span class="s2">&quot;eval/number_detection_eval.csv&quot;</span>
+<span class="c1"># the columns of the csv that should be passed through the processing pipeline/retained in the pipeline</span>
+<span class="n">matching_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sentence&quot;</span><span class="p">]</span>
+<span class="c1"># the predefined keys that should be used to match these columns, in the correct order</span>
+<span class="n">pre_defined_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+<span class="c1"># what to call any columns that are not matched to pre-defined keys</span>
+<span class="c1"># get this from the workflow settings</span>
+<span class="n">unmatched_keyword</span> <span class="o">=</span> <span class="n">workflow_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;csv_col_unmatched_keyword&quot;</span><span class="p">)</span>
+
+<span class="n">input_handler</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_input_handler</span><span class="p">(</span><span class="n">in_path</span><span class="o">=</span><span class="n">input_csv</span><span class="p">,</span> <span class="n">in_type</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span>
+                                          <span class="n">col_names</span><span class="o">=</span><span class="n">matching_columns</span><span class="p">,</span>
+                                          <span class="n">init_data_fields</span><span class="o">=</span><span class="n">pre_defined_keys</span><span class="p">,</span>
+                                          <span class="n">unmatched_keyword</span><span class="o">=</span><span class="n">unmatched_keyword</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># process the input data</span>
+<span class="n">mailcom</span><span class="o">.</span><span class="n">process_data</span><span class="p">(</span><span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">(),</span> <span class="n">workflow_settings</span><span class="p">)</span>
+<span class="c1"># took around 1.9s on laptop</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># convert the processed data into a dataframe</span>
+<span class="n">number_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">())</span>
+<span class="n">number_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># only keep the content,  pseudo_content, and sentences columns</span>
+<span class="n">filtered_number_df</span> <span class="o">=</span> <span class="n">number_df</span><span class="p">[[</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;pseudo_content&quot;</span><span class="p">,</span> <span class="s2">&quot;sentences&quot;</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># add pseudo_content to the original dataset</span>
+<span class="n">org_number_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">input_csv</span><span class="p">)</span>
+<span class="n">org_number_df</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">org_number_df</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
+<span class="n">org_number_df</span><span class="p">[</span><span class="s2">&quot;slot_labels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">org_number_df</span><span class="p">[</span><span class="s2">&quot;slot_labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
+<span class="n">org_number_df</span><span class="p">[</span><span class="s2">&quot;numbers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">org_number_df</span><span class="p">[</span><span class="s2">&quot;numbers&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
+
+<span class="c1"># check before merging</span>
+<span class="p">(</span><span class="n">org_number_df</span><span class="p">[</span><span class="s2">&quot;sentence&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">==</span>
+ <span class="n">filtered_number_df</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># merge the pseudo_content into the original datasetn_df[</span>
+<span class="n">merged_number_df</span> <span class="o">=</span> <span class="n">org_number_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">filtered_number_df</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s2">&quot;sentence&quot;</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="s2">&quot;one_to_one&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">merged_number_df</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">org_number_df</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">filtered_number_df</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expected unchanged number of items after merging, but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">merged_number_df</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">merged_number_df</span> <span class="o">=</span> <span class="n">merged_number_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
+<span class="n">merged_number_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create expected content column as ground truth for evaluation</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">number_to_placeholder</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
+    <span class="n">characters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+    <span class="n">new_characters</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">char</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">characters</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">characters</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                <span class="n">new_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;[number]&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_characters</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">replace_number_with_placeholder</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">numbers_list</span><span class="p">):</span>
+    <span class="n">replaced_sentence</span> <span class="o">=</span> <span class="n">sentence</span>
+    <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="n">numbers_list</span><span class="p">:</span>
+        <span class="n">replaced_sentence</span> <span class="o">=</span> <span class="n">replaced_sentence</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="n">number_to_placeholder</span><span class="p">(</span><span class="n">number</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">replaced_sentence</span>
+
+<span class="n">merged_number_df</span><span class="p">[</span><span class="s2">&quot;expected_content&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merged_number_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">replace_number_with_placeholder</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;sentence&quot;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;numbers&quot;</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">merged_number_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># calculate the exact match accuracy between the pseudo_content and the expected_content</span>
+<span class="n">merged_number_df</span><span class="p">[</span><span class="s2">&quot;exact_match&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merged_number_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;pseudo_content&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;expected_content&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># calculate tp, fp, fn</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_tp_fp_fn</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+    <span class="n">pred_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\[number\]&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;pseudo_content&quot;</span><span class="p">]))</span>
+    <span class="n">gold_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\[number\]&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;expected_content&quot;</span><span class="p">]))</span>
+
+    <span class="n">true_positives</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">pred_count</span><span class="p">,</span> <span class="n">gold_count</span><span class="p">)</span>
+    <span class="n">false_positives</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">pred_count</span> <span class="o">-</span> <span class="n">gold_count</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">false_negatives</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">gold_count</span> <span class="o">-</span> <span class="n">pred_count</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s2">&quot;tp&quot;</span><span class="p">:</span> <span class="n">true_positives</span><span class="p">,</span> <span class="s2">&quot;fp&quot;</span><span class="p">:</span> <span class="n">false_positives</span><span class="p">,</span> <span class="s2">&quot;fn&quot;</span><span class="p">:</span> <span class="n">false_negatives</span><span class="p">})</span>
+
+<span class="n">metrics_df</span> <span class="o">=</span> <span class="n">merged_number_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">calculate_tp_fp_fn</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">merged_number_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">merged_number_df</span><span class="p">,</span> <span class="n">metrics_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">merged_number_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save the results to a csv file for further analysis</span>
+<span class="n">merged_number_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;eval/number_detection_results.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">cal_eval_metrics</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="n">total_tp</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;tp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">total_fp</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;fp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">total_fn</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;fn&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="n">precision</span> <span class="o">=</span> <span class="n">total_tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">total_tp</span> <span class="o">+</span> <span class="n">total_fp</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">total_tp</span> <span class="o">+</span> <span class="n">total_fp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">recall</span> <span class="o">=</span> <span class="n">total_tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">total_tp</span> <span class="o">+</span> <span class="n">total_fn</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">total_tp</span> <span class="o">+</span> <span class="n">total_fn</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">f1</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">precision</span> <span class="o">*</span> <span class="n">recall</span> <span class="o">/</span> <span class="p">(</span><span class="n">precision</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">precision</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;exact_match&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exact match accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Micro Precision: </span><span class="si">{</span><span class="n">precision</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Micro Recall: </span><span class="si">{</span><span class="n">recall</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Micro F1 Score: </span><span class="si">{</span><span class="n">f1</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cal_eval_metrics</span><span class="p">(</span><span class="n">merged_number_df</span><span class="p">)</span>
+<span class="c1"># Exact match accuracy: 1.0000</span>
+<span class="c1"># Micro Precision: 1.0000</span>
+<span class="c1"># Micro Recall: 1.0000</span>
+<span class="c1"># Micro F1 Score: 1.0000</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Scientific Software Center, Heidelberg University.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
