@@ -105,6 +105,10 @@ pseudo_first_names = {
     }
 ```
 
+## Evaluation
+
+We evaluated the utility and performance of `mailcom`, compared to other open-source pseudonymization tools, on sample emails and public benchmark datasets. The evaluation details are summarized in `evaluation_strategy.md`. The corresponding evaluation scripts are available in the `docs/source/notebooks/quantitative_eval.ipynb` and `docs/source/notebooks/test_other_tools.ipynb` notebooks.
+
 ## Citation
 To reference the `mailcom` package in any publication, please use the information provided in the [citation file](CITATION.cff).
 
