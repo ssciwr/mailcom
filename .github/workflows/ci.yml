@@ -10,11 +10,11 @@ jobs:
       fail-fast: false
     steps:
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python-version }}
     - name: Getting repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Install dependencies and package
       env:
@@ -31,7 +31,7 @@ jobs:
       run: python -m pytest -svv --cov=mailcom --cov-report=xml:mailcom/coverage_re/coverage.xml
 
     - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v4.0.1
+      uses: codecov/codecov-action@v7
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         directory: ./mailcom/coverage_re/
