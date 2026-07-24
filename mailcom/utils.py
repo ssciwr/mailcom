@@ -129,10 +129,12 @@ class TransformerLoader:
                 "model": "xlm-roberta-large-finetuned-conll03-english",
                 "revision": "18f95e9",
                 "aggregation_strategy": "simple",
+                "device": "cpu",
             },
             "lang_detector": {
                 "task": "text-classification",
                 "model": "papluca/xlm-roberta-base-language-detection",
+                "device": "cpu",
             },
         }
 
@@ -143,6 +145,9 @@ class TransformerLoader:
             pipeline_info = self.trans_default_model.get(feature)
         if not pipeline_info:
             raise ValueError("Invalid feature: {}".format(feature))
+
+        if isinstance(pipeline_info, dict):
+            pipeline_info.setdefault("device", "cpu")
 
         try:
             self.trans_instances[feature] = pipeline(**pipeline_info)
