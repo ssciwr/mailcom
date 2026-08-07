@@ -1,26 +1,48 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
+title: 'mailcom: Pseudonymization tool for textual data'
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
 authors:
-- family-names: "Le"
-  given-names: "Kim Tuyen"
-  orcid: ""
-- family-names: "Ulusoy"
-  given-names: "Inga"
-  orcid: "https://orcid.org/0000-0001-7294-4148"
-- family-names: "Fleischle"
-  given-names: "Felix"
-  orcid: ""
-- family-names: "Schoeller"
-  given-names: "Thore"
-  orcid: ""
-- family-names: "Gaertner"
-  given-names: "Laura"
-  orcid: ""
-- family-names: "Grosse"
-  given-names: "Sybille"
-  orcid: ""
-title: "tba"
-version: 0.1.0
-doi: tba
-date-released: tba
-url: "https://github.com/ssciwr/mailcom"
+  - given-names: Kim Tuyen
+    family-names: Le
+  - family-names: Gärtner
+    given-names: Laura
+  - family-names: Fleischle
+    given-names: Felix
+  - family-names: Schöller
+    given-names: Thore
+  - family-names: Große
+    given-names: Sybille
+  - family-names: Ulusoy
+    given-names: Inga
+    orcid: 'https://orcid.org/0000-0001-7294-4148'
+identifiers:
+  - type: doi
+    value: 10.1016/j.softx.2026.102703
+repository-code: 'https://github.com/ssciwr/mailcom'
+abstract: >-
+  The rapid growth of data and its use has heightened
+  concerns about data privacy. To support research on data
+  that contains sensitive attributes, we developed the
+  mailcom package for pseudonymization. mailcom is built
+  entirely on open-source libraries and is designed for
+  configurability and extensibility. Several languages are
+  supported by default, with the option to add additional
+  languages. Since pseudonymized outputs still require human
+  review to guarantee full anonymization, the package serves
+  as a scalable pre-processing layer that reduces manual
+  work while establishing a principled baseline of privacy
+  protection, enabling reproducible research on digital text
+  under current data-ethics and governance standards.
+keywords:
+  - Pseudonymization
+  - Sensitive data
+  - Natural language processing
+  - Named entity recognition
+  - Digital humanities
+license: MIT
