@@ -141,20 +141,20 @@
 <p>By using <code class="docutils literal notranslate"><span class="pre">pseudo_ne</span></code>, the replacement of recognized entities by a pseudonym or placeholder is triggered. A person’s name, i.e. “Michael” is replaced by “James”, a location like “Paris” is replaced by [location], an organization such as “GitHub” is replaced by [organization], and other entities like “iPhone 15” are replaced by [misc].</p>
 <p>All these three options related to replacement of identifying information can be triggered separately, but are set to <code class="docutils literal notranslate"><span class="pre">true</span></code> by default.</p>
 <p>An example for the transformers pipeline is this, with the default options:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;ner&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;task&quot;</span><span class="p">:</span> <span class="s2">&quot;token-classification&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;xlm-roberta-large-finetuned-conll03-english&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;revision&quot;</span><span class="p">:</span> <span class="s2">&quot;18f95e9&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;aggregation_strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">"ner"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"task"</span><span class="p">:</span> <span class="s2">"token-classification"</span><span class="p">,</span>
+    <span class="s2">"model"</span><span class="p">:</span> <span class="s2">"xlm-roberta-large-finetuned-conll03-english"</span><span class="p">,</span>
+    <span class="s2">"revision"</span><span class="p">:</span> <span class="s2">"18f95e9"</span><span class="p">,</span>
+    <span class="s2">"aggregation_strategy"</span><span class="p">:</span> <span class="s2">"simple"</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>The task is <code class="docutils literal notranslate"><span class="pre">token-classification</span></code>, which is NER (for a description of the available tasks, see <a class="reference internal" href="#(https://huggingface.co/docs/transformers/en/main_classes/pipelines)"><span class="xref myst">here</span></a>). The default model is Hugging Face’s default model for this task and default revision number as of January 2025. The aggregation strategy determines how the tokens are aggregated after the pipeline; with <code class="docutils literal notranslate"><span class="pre">simple</span></code> the text is basically reconstructed as it was and the beginning and end of each recognized NER is given in accordance. The options <code class="docutils literal notranslate"><span class="pre">task</span></code> and <code class="docutils literal notranslate"><span class="pre">aggregation_strategy</span></code> are not likely to be changed by the user, however you may want to use a different model and revision number, which is possible using the <code class="docutils literal notranslate"><span class="pre">ner_pipeline</span></code> keyword.</p>
 <p>The keyword <code class="docutils literal notranslate"><span class="pre">spacy_model</span></code> sets the model to use for the sentencizing and pattern recognition. It is important that the initial text is split into sentences with a high accuracy, since this directly affects the subsequent NER accuracy. If the keyword is set to <code class="docutils literal notranslate"><span class="pre">default</span></code>, the models that spaCy uses as default for the given language is used. Some of the default models are:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;es&quot;</span><span class="p">:</span> <span class="s2">&quot;es_core_news_md&quot;</span>
-<span class="s2">&quot;fr&quot;</span><span class="p">:</span> <span class="s2">&quot;fr_core_news_md&quot;</span>
-<span class="s2">&quot;de&quot;</span><span class="p">:</span> <span class="s2">&quot;de_core_news_md&quot;</span>
-<span class="s2">&quot;pt&quot;</span><span class="p">:</span> <span class="s2">&quot;pt_core_news_md&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">"es"</span><span class="p">:</span> <span class="s2">"es_core_news_md"</span>
+<span class="s2">"fr"</span><span class="p">:</span> <span class="s2">"fr_core_news_md"</span>
+<span class="s2">"de"</span><span class="p">:</span> <span class="s2">"de_core_news_md"</span>
+<span class="s2">"pt"</span><span class="p">:</span> <span class="s2">"pt_core_news_md"</span>
 </pre></div>
 </div>
 <p>Other models can directly be passed using this keyword, see the <a class="reference external" href="https://spacy.io/models">spaCy reference</a>. To extend the available languages in <code class="docutils literal notranslate"><span class="pre">mailcom</span></code>, this list needs to be extended. Please also note that not all spaCy models have pipelines with the necessary components.</p>
@@ -191,31 +191,31 @@
 <p>The input data can be provided as <code class="docutils literal notranslate"><span class="pre">eml</span></code> or <code class="docutils literal notranslate"><span class="pre">html</span></code> files, or as a <code class="docutils literal notranslate"><span class="pre">csv</span></code> file. For reading a <code class="docutils literal notranslate"><span class="pre">csv</span></code> file, more information about the column names needs to be provided. This is explained in the <a class="reference internal" href="#docs/source/notebooks/demo.ipynb"><span class="xref myst">demo notebook</span></a> (click here to <a class="reference external" href="https://colab.research.google.com/github/ssciwr/mailcom/blob/main/docs/source/notebooks/demo.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>).</p>
 <p>First and last names are replaced by pseudonyms. To make the pseudonimized text read more smoothly, names that are common for a specific language can be chosen; but basically any names can be set for any language using the <code class="docutils literal notranslate"><span class="pre">pseudo_first_names</span></code> keyword. The default option is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pseudo_first_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;es&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s2">&quot;José&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Angel&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Alex&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Ariel&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Cruz&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Fran&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Arlo&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Adri&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Marce&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Mati&quot;</span>
+        <span class="s2">"es"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">"José"</span><span class="p">,</span>
+            <span class="s2">"Angel"</span><span class="p">,</span>
+            <span class="s2">"Alex"</span><span class="p">,</span>
+            <span class="s2">"Ariel"</span><span class="p">,</span>
+            <span class="s2">"Cruz"</span><span class="p">,</span>
+            <span class="s2">"Fran"</span><span class="p">,</span>
+            <span class="s2">"Arlo"</span><span class="p">,</span>
+            <span class="s2">"Adri"</span><span class="p">,</span>
+            <span class="s2">"Marce"</span><span class="p">,</span>
+            <span class="s2">"Mati"</span>
         <span class="p">],</span>
-        <span class="s2">&quot;fr&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s2">&quot;Claude&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Dominique&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Claude&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Camille&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Charlie&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Florence&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Francis&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Maxime&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Remy&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Cécile&quot;</span>
+        <span class="s2">"fr"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">"Claude"</span><span class="p">,</span>
+            <span class="s2">"Dominique"</span><span class="p">,</span>
+            <span class="s2">"Claude"</span><span class="p">,</span>
+            <span class="s2">"Camille"</span><span class="p">,</span>
+            <span class="s2">"Charlie"</span><span class="p">,</span>
+            <span class="s2">"Florence"</span><span class="p">,</span>
+            <span class="s2">"Francis"</span><span class="p">,</span>
+            <span class="s2">"Maxime"</span><span class="p">,</span>
+            <span class="s2">"Remy"</span><span class="p">,</span>
+            <span class="s2">"Cécile"</span>
         <span class="p">],</span>
-        <span class="s2">&quot;de&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Mika&quot;</span><span class="p">]</span>
+        <span class="s2">"de"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Mika"</span><span class="p">]</span>
     <span class="p">}</span>
 </pre></div>
 </div>

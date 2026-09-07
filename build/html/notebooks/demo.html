@@ -128,7 +128,7 @@ numbers with <code class="docutils literal notranslate"><span class="pre">[numbe
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># if running on google colab</span>
 <span class="c1"># flake8-noqa-cell</span>
 
-<span class="k">if</span> <span class="s2">&quot;google.colab&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_ipython</span><span class="p">()):</span>
+<span class="k">if</span> <span class="s2">"google.colab"</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_ipython</span><span class="p">()):</span>
     <span class="c1"># install this from pypi</span>
     <span class="o">%</span><span class="k">pip</span> install git+https://github.com/ssciwr/mailcom.git -qqq
     <span class="c1"># download the sample data</span>
@@ -137,7 +137,7 @@ numbers with <code class="docutils literal notranslate"><span class="pre">[numbe
     <span class="o">!</span>wget<span class="w"> </span>-O<span class="w"> </span>default_settings.json<span class="w"> </span>https://raw.githubusercontent.com/ssciwr/mailcom/main/mailcom/default_settings.json
     <span class="c1"># download the sample eml/html files</span>
     <span class="c1"># optional: download the sample data</span>
-    <span class="o">!</span>wget<span class="w"> </span>-O<span class="w"> </span><span class="s2">&quot;Bonjour_Agathe.eml&quot;</span><span class="w"> </span><span class="s2">&quot;https://raw.githubusercontent.com/ssciwr/mailcom/main/mailcom/test/data/Bonjour%20Agathe.eml&quot;</span>
+    <span class="o">!</span>wget<span class="w"> </span>-O<span class="w"> </span><span class="s2">"Bonjour_Agathe.eml"</span><span class="w"> </span><span class="s2">"https://raw.githubusercontent.com/ssciwr/mailcom/main/mailcom/test/data/Bonjour%20Agathe.eml"</span>
     <span class="o">!</span>wget<span class="w"> </span>-O<span class="w"> </span>only_html.eml<span class="w"> </span>https://raw.githubusercontent.com/ssciwr/mailcom/main/mailcom/test/data/only_html.eml
 </pre></div>
 </div>
@@ -164,10 +164,10 @@ numbers with <code class="docutils literal notranslate"><span class="pre">[numbe
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># a dictionary matching colors to the different entity types</span>
 <span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;LOC&quot;</span><span class="p">:</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ORG&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;MISC&quot;</span><span class="p">:</span> <span class="s2">&quot;yellow&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PER&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span>
+    <span class="s2">"LOC"</span><span class="p">:</span> <span class="s2">"green"</span><span class="p">,</span>
+    <span class="s2">"ORG"</span><span class="p">:</span> <span class="s2">"blue"</span><span class="p">,</span>
+    <span class="s2">"MISC"</span><span class="p">:</span> <span class="s2">"yellow"</span><span class="p">,</span>
+    <span class="s2">"PER"</span><span class="p">:</span> <span class="s2">"red"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -195,7 +195,7 @@ numbers with <code class="docutils literal notranslate"><span class="pre">[numbe
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get workflow settings from a configuration file</span>
 <span class="c1"># you can either leave this at the default settings or modify the file directly</span>
-<span class="n">setting_path</span> <span class="o">=</span> <span class="s2">&quot;default_settings.json&quot;</span>
+<span class="n">setting_path</span> <span class="o">=</span> <span class="s2">"default_settings.json"</span>
 <span class="n">workflow_settings</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_workflow_settings</span><span class="p">(</span><span class="n">setting_path</span><span class="o">=</span><span class="n">setting_path</span><span class="p">)</span>
 <span class="c1"># print the workflow settings for visual inspection</span>
 <span class="n">pp</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">workflow_settings</span><span class="p">)</span>
@@ -295,22 +295,22 @@ combined with the <code class="docutils literal notranslate"><span class="pre">d
 <section id="Selected-models-and-model-pipelines">
 <h3>Selected models and model pipelines<a class="headerlink" href="#Selected-models-and-model-pipelines" title="Link to this heading"></a></h3>
 <p>The transformers pipeline specifies which tasks the LLMs should carry out, and which models and revision numbers should be used. Here is an example for the transformers pipeline, with the default options:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;ner&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;task&quot;</span><span class="p">:</span> <span class="s2">&quot;token-classification&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;xlm-roberta-large-finetuned-conll03-english&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;revision&quot;</span><span class="p">:</span> <span class="s2">&quot;18f95e9&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;aggregation_strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">"ner"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"task"</span><span class="p">:</span> <span class="s2">"token-classification"</span><span class="p">,</span>
+    <span class="s2">"model"</span><span class="p">:</span> <span class="s2">"xlm-roberta-large-finetuned-conll03-english"</span><span class="p">,</span>
+    <span class="s2">"revision"</span><span class="p">:</span> <span class="s2">"18f95e9"</span><span class="p">,</span>
+    <span class="s2">"aggregation_strategy"</span><span class="p">:</span> <span class="s2">"simple"</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>The task is <code class="docutils literal notranslate"><span class="pre">token-classification</span></code>, which is NER (for a description of the available tasks, see <a class="reference external" href="https://huggingface.co/docs/transformers/en/main_classes/pipelines">here</a>). The default model is Hugging Face’s default model for this task and default revision number as of January 2025. The aggregation strategy determines how the tokens are aggregated after the pipeline; with <code class="docutils literal notranslate"><span class="pre">simple</span></code> the text is basically reconstructed as it was and the beginning and end of each recognized NER is given in
 accordance. The options <code class="docutils literal notranslate"><span class="pre">task</span></code> and <code class="docutils literal notranslate"><span class="pre">aggregation_strategy</span></code> are not likely to be changed by the user, however you may want to use a different model and revision number, which is possible using the <code class="docutils literal notranslate"><span class="pre">ner_pipeline</span></code> keyword.</p>
 <p>The keyword <code class="docutils literal notranslate"><span class="pre">spacy_model</span></code> sets the model to use for the sentencizing and pattern recognition. It is important that the initial text is split into sentences with a high accuracy, since this directly affects the subsequent NER accuracy. If the keyword is set to <code class="docutils literal notranslate"><span class="pre">default</span></code>, the models that spaCy uses as default for the given language is used. Some of the default models are:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;es&quot;</span><span class="p">:</span> <span class="s2">&quot;es_core_news_md&quot;</span>
-<span class="s2">&quot;fr&quot;</span><span class="p">:</span> <span class="s2">&quot;fr_core_news_md&quot;</span>
-<span class="s2">&quot;de&quot;</span><span class="p">:</span> <span class="s2">&quot;de_core_news_md&quot;</span>
-<span class="s2">&quot;pt&quot;</span><span class="p">:</span> <span class="s2">&quot;pt_core_news_md&quot;</span>
-<span class="s2">&quot;en&quot;</span><span class="p">:</span> <span class="s2">&quot;en_core_web_md&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">"es"</span><span class="p">:</span> <span class="s2">"es_core_news_md"</span>
+<span class="s2">"fr"</span><span class="p">:</span> <span class="s2">"fr_core_news_md"</span>
+<span class="s2">"de"</span><span class="p">:</span> <span class="s2">"de_core_news_md"</span>
+<span class="s2">"pt"</span><span class="p">:</span> <span class="s2">"pt_core_news_md"</span>
+<span class="s2">"en"</span><span class="p">:</span> <span class="s2">"en_core_web_md"</span>
 </pre></div>
 </div>
 <p>Other models can directly be passed using this keyword, see the <a class="reference external" href="https://spacy.io/models">spaCy reference</a>. Please also note that not all spaCy models have pipelines with the necessary components.</p>
@@ -319,39 +319,39 @@ accordance. The options <code class="docutils literal notranslate"><span class="
 <h3>Pre-set pseudonyms<a class="headerlink" href="#Pre-set-pseudonyms" title="Link to this heading"></a></h3>
 <p>First and last names are replaced by pseudonyms. To make the pseudonimized text read more smoothly, names that are common for a specific language can be chosen; but basically any names can be set for any language using the <code class="docutils literal notranslate"><span class="pre">pseudo_first_names</span></code> keyword. The default option is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pseudo_first_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;es&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s2">&quot;Marta&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Alejandro&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Isabel&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Sergio&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Raquel&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Carlos&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Dayana&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Ferran&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Elena&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;José&quot;</span>
+        <span class="s2">"es"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">"Marta"</span><span class="p">,</span>
+            <span class="s2">"Alejandro"</span><span class="p">,</span>
+            <span class="s2">"Isabel"</span><span class="p">,</span>
+            <span class="s2">"Sergio"</span><span class="p">,</span>
+            <span class="s2">"Raquel"</span><span class="p">,</span>
+            <span class="s2">"Carlos"</span><span class="p">,</span>
+            <span class="s2">"Dayana"</span><span class="p">,</span>
+            <span class="s2">"Ferran"</span><span class="p">,</span>
+            <span class="s2">"Elena"</span><span class="p">,</span>
+            <span class="s2">"José"</span>
         <span class="p">],</span>
-        <span class="s2">&quot;fr&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s2">&quot;Julien&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Manon&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Stéphane&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Nathalie&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Georges&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Denise&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Idriss&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Aïcha&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Hugo&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Léa&quot;</span>
+        <span class="s2">"fr"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">"Julien"</span><span class="p">,</span>
+            <span class="s2">"Manon"</span><span class="p">,</span>
+            <span class="s2">"Stéphane"</span><span class="p">,</span>
+            <span class="s2">"Nathalie"</span><span class="p">,</span>
+            <span class="s2">"Georges"</span><span class="p">,</span>
+            <span class="s2">"Denise"</span><span class="p">,</span>
+            <span class="s2">"Idriss"</span><span class="p">,</span>
+            <span class="s2">"Aïcha"</span><span class="p">,</span>
+            <span class="s2">"Hugo"</span><span class="p">,</span>
+            <span class="s2">"Léa"</span>
         <span class="p">],</span>
-        <span class="s2">&quot;de&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Mika&quot;</span><span class="p">]</span>
+        <span class="s2">"de"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Mika"</span><span class="p">]</span>
     <span class="p">}</span>
 </pre></div>
 </div>
 <p>Set a new default by updating the dictionary as this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pseudo_first_names</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;en&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s2">&quot;James&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Elizabeth&quot;</span><span class="p">,</span>
+        <span class="s2">"en"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">"James"</span><span class="p">,</span>
+            <span class="s2">"Elizabeth"</span><span class="p">,</span>
         <span class="p">],</span>
 <span class="p">}</span>
 </pre></div>
@@ -366,12 +366,12 @@ accordance. The options <code class="docutils literal notranslate"><span class="
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># update some fields while loading the settings</span>
 <span class="c1"># example here: language that is not included by default</span>
-<span class="n">new_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;default_lang&quot;</span><span class="p">:</span> <span class="s2">&quot;el&quot;</span><span class="p">,</span> <span class="s2">&quot;spacy_model&quot;</span><span class="p">:</span> <span class="s2">&quot;el_core_news_sm&quot;</span><span class="p">}</span>
+<span class="n">new_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"default_lang"</span><span class="p">:</span> <span class="s2">"el"</span><span class="p">,</span> <span class="s2">"spacy_model"</span><span class="p">:</span> <span class="s2">"el_core_news_sm"</span><span class="p">}</span>
 <span class="c1"># or: use dynamic language detection</span>
-<span class="n">new_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;default_lang&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;spacy_model&quot;</span><span class="p">:</span> <span class="s2">&quot;en_core_web_md&quot;</span><span class="p">}</span>
+<span class="n">new_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"default_lang"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">"spacy_model"</span><span class="p">:</span> <span class="s2">"en_core_web_md"</span><span class="p">}</span>
 
 <span class="c1"># save the updated configuration to a file for reproducibility purposes</span>
-<span class="n">new_settings_dir</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>
+<span class="n">new_settings_dir</span> <span class="o">=</span> <span class="s2">"."</span>
 <span class="n">workflow_settings</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_workflow_settings</span><span class="p">(</span><span class="n">new_settings</span><span class="o">=</span><span class="n">new_settings</span><span class="p">,</span>
                                                   <span class="n">updated_setting_dir</span><span class="o">=</span> <span class="n">new_settings_dir</span><span class="p">,</span>
                                                   <span class="n">save_updated_settings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -422,12 +422,12 @@ the processing.</p>
 </tbody>
 </table>
 <p>We then need to pass the column names that should be retained to the processing function; columns that should be dropped should be excluded from this list:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">matching_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;number of attachments&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment type&quot;</span><span class="p">,</span> <span class="s2">&quot;subject&quot;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">matching_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"message"</span><span class="p">,</span> <span class="s2">"date"</span><span class="p">,</span> <span class="s2">"number of attachments"</span><span class="p">,</span> <span class="s2">"attachment type"</span><span class="p">,</span> <span class="s2">"subject"</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>In this example, the “file” column will be dropped and not be included.</p>
 <p>We then need to tell <code class="docutils literal notranslate"><span class="pre">mailcom</span></code>, what the columns should be matched in the processing dictionary, in the correct order:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pre_defined_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;subject&quot;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pre_defined_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"content"</span><span class="p">,</span> <span class="s2">"date"</span><span class="p">,</span> <span class="s2">"attachment"</span><span class="p">,</span> <span class="s2">"attachment_type"</span><span class="p">,</span> <span class="s2">"subject"</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>In this case, the content of the column “message” will be mapped to “content”, “date” to “date”, “number of attachments” to “attachment”, “attachment type” to “attachment_type”, and “subject” to “subject”. Only “content” and “subject” will be pseudonimized. The final data structure will look like this:</p>
@@ -481,11 +481,11 @@ City on April 10, 2021.’]</p></td>
 <section id="Column-mismatch">
 <h4>Column mismatch<a class="headerlink" href="#Column-mismatch" title="Link to this heading"></a></h4>
 <p>If the columns in the <code class="docutils literal notranslate"><span class="pre">csv</span></code> don’t align with the pre-defined keys, any unmatched keys will be assigned the value specified in <code class="docutils literal notranslate"><span class="pre">unmatched_keyword</span></code> during processing, for instance:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">matching_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">matching_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"message"</span><span class="p">,</span> <span class="s2">"date"</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>where the <code class="docutils literal notranslate"><span class="pre">csv</span></code> contains the columns “message” and “time”. There is a mismatch between the provided column names in <code class="docutils literal notranslate"><span class="pre">matching_columns</span></code>, and the actual columns in the <code class="docutils literal notranslate"><span class="pre">csv</span></code> (“date” versus “time”). Now giving the pre-defined keys</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pre_defined_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pre_defined_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"content"</span><span class="p">,</span> <span class="s2">"date"</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>results in <code class="docutils literal notranslate"><span class="pre">mailcom</span></code> not being able to assign “date”, since it is not found in the <code class="docutils literal notranslate"><span class="pre">csv</span></code>. Instead, “date” is then marked with “unmatched” for each entry by default, or any other string that has been defined through the <code class="docutils literal notranslate"><span class="pre">unmatched_keyword</span></code> keyword: | content | date | |———|——| |… | <code class="docutils literal notranslate"><span class="pre">unmatched</span></code> | |… | <code class="docutils literal notranslate"><span class="pre">unmatched</span></code> |</p>
@@ -495,16 +495,16 @@ City on April 10, 2021.’]</p></td>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># path to your csv file - change this to your own file</span>
-<span class="n">input_csv</span> <span class="o">=</span> <span class="s2">&quot;sample_data.csv&quot;</span>
+<span class="n">input_csv</span> <span class="o">=</span> <span class="s2">"sample_data.csv"</span>
 <span class="c1"># the columns of the csv that should be passed through the processing pipeline/retained in the pipeline</span>
-<span class="n">matching_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;subject&quot;</span><span class="p">]</span>
+<span class="n">matching_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"message"</span><span class="p">,</span> <span class="s2">"date"</span><span class="p">,</span> <span class="s2">"attachment"</span><span class="p">,</span> <span class="s2">"attachment_type"</span><span class="p">,</span> <span class="s2">"subject"</span><span class="p">]</span>
 <span class="c1"># the predefined keys that should be used to match these columns, in the correct order</span>
-<span class="n">pre_defined_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment&quot;</span><span class="p">,</span> <span class="s2">&quot;attachment_type&quot;</span><span class="p">,</span> <span class="s2">&quot;subject&quot;</span><span class="p">]</span>
+<span class="n">pre_defined_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"content"</span><span class="p">,</span> <span class="s2">"date"</span><span class="p">,</span> <span class="s2">"attachment"</span><span class="p">,</span> <span class="s2">"attachment_type"</span><span class="p">,</span> <span class="s2">"subject"</span><span class="p">]</span>
 <span class="c1"># what to call any columns that are not matched to pre-defined keys</span>
 <span class="c1"># get this from the workflow settings</span>
-<span class="n">unmatched_keyword</span> <span class="o">=</span> <span class="n">workflow_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;csv_col_unmatched_keyword&quot;</span><span class="p">)</span>
+<span class="n">unmatched_keyword</span> <span class="o">=</span> <span class="n">workflow_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"csv_col_unmatched_keyword"</span><span class="p">)</span>
 
-<span class="n">input_handler</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_input_handler</span><span class="p">(</span><span class="n">in_path</span><span class="o">=</span><span class="n">input_csv</span><span class="p">,</span> <span class="n">in_type</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span>
+<span class="n">input_handler</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_input_handler</span><span class="p">(</span><span class="n">in_path</span><span class="o">=</span><span class="n">input_csv</span><span class="p">,</span> <span class="n">in_type</span><span class="o">=</span><span class="s2">"csv"</span><span class="p">,</span>
                                           <span class="n">col_names</span><span class="o">=</span><span class="n">matching_columns</span><span class="p">,</span>
                                           <span class="n">init_data_fields</span><span class="o">=</span><span class="n">pre_defined_keys</span><span class="p">,</span>
                                           <span class="n">unmatched_keyword</span><span class="o">=</span><span class="n">unmatched_keyword</span><span class="p">)</span>
@@ -531,8 +531,8 @@ City on April 10, 2021.’]</p></td>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import files from input_dir - change this to your own directory</span>
-<span class="n">input_dir</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>
-<span class="n">input_handler</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_input_handler</span><span class="p">(</span><span class="n">in_path</span><span class="o">=</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">in_type</span><span class="o">=</span><span class="s2">&quot;dir&quot;</span><span class="p">)</span>
+<span class="n">input_dir</span> <span class="o">=</span> <span class="s2">"."</span>
+<span class="n">input_handler</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">get_input_handler</span><span class="p">(</span><span class="n">in_path</span><span class="o">=</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">in_type</span><span class="o">=</span><span class="s2">"dir"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -568,21 +568,21 @@ City on April 10, 2021.’]</p></td>
 <span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">input_handler</span><span class="o">.</span><span class="n">get_email_list</span><span class="p">():</span>
     <span class="c1"># get NE for each sentence in the email</span>
     <span class="n">ne_sent_dict</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">workflow_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pseudo_fields&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">workflow_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"pseudo_fields"</span><span class="p">):</span>
         <span class="n">ne_sent_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">ne</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_sent&quot;</span><span class="p">][</span><span class="n">field</span><span class="p">],</span> <span class="n">email</span><span class="p">[</span><span class="s2">&quot;ne_list&quot;</span><span class="p">][</span><span class="n">field</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">ne</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">"ne_sent"</span><span class="p">][</span><span class="n">field</span><span class="p">],</span> <span class="n">email</span><span class="p">[</span><span class="s2">"ne_list"</span><span class="p">][</span><span class="n">field</span><span class="p">]):</span>
             <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ne_sent_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]:</span>
                 <span class="n">ne_sent_dict</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">ne_sent_dict</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ne</span><span class="p">)</span>
 
     <span class="c1"># display original text and highlight found and replaced NEs</span>
     <span class="n">html_content</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">workflow_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pseudo_fields&quot;</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">&quot;sentences_after_email&quot;</span><span class="p">][</span><span class="n">field</span><span class="p">]):</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">workflow_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"pseudo_fields"</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">email</span><span class="p">[</span><span class="s2">"sentences_after_email"</span><span class="p">][</span><span class="n">field</span><span class="p">]):</span>
             <span class="n">ne_list</span> <span class="o">=</span> <span class="n">ne_sent_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sent_idx</span><span class="p">),</span> <span class="p">[])</span>
             <span class="n">highlighted_html</span> <span class="o">=</span> <span class="n">mailcom</span><span class="o">.</span><span class="n">highlight_ne_sent</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">ne_list</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span>
             <span class="n">html_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">highlighted_html</span><span class="p">)</span>
-    <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="s2">&quot;&lt;br&gt;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">html_content</span><span class="p">)))</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="s2">"&lt;br&gt;"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">html_content</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -659,7 +659,7 @@ City on April 10, 2021.’]</p></td>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># set overwrite to True to overwrite the existing file</span>
-<span class="n">mailcom</span><span class="o">.</span><span class="n">write_output_data</span><span class="p">(</span><span class="n">input_handler</span><span class="p">,</span> <span class="s2">&quot;out_demo.csv&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">mailcom</span><span class="o">.</span><span class="n">write_output_data</span><span class="p">(</span><span class="n">input_handler</span><span class="p">,</span> <span class="s2">"out_demo.csv"</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -668,7 +668,7 @@ City on April 10, 2021.’]</p></td>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">mailcom</span><span class="o">.</span><span class="n">write_output_data</span><span class="p">(</span><span class="n">input_handler</span><span class="p">,</span> <span class="s2">&quot;out_demo.xml&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">mailcom</span><span class="o">.</span><span class="n">write_output_data</span><span class="p">(</span><span class="n">input_handler</span><span class="p">,</span> <span class="s2">"out_demo.xml"</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

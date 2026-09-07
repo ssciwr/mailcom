@@ -106,7 +106,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">pip</span> install &quot;presidio_analyzer[transformers]&quot;
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">pip</span> install "presidio_analyzer[transformers]"
 <span class="o">%</span><span class="k">pip</span> install presidio_anonymizer
 <span class="c1"># python -m spacy download en_core_web_sm</span>
 </pre></div>
@@ -132,14 +132,14 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Dear Dr. Emma Müller,</span>
 
 <span class="s2">I hope this email finds you well.</span>
 
-<span class="s2">I&#39;m writing to you today from NextAI AG in Munich, Germany. We&#39;re keen to discuss the exciting developments from the recent Heidelberg AI Summit 2025. Specifically, we were very interested in the presentation on &quot;Next-Generation Robotics&quot; that took place in Room 306 of the main convention center.</span>
+<span class="s2">I'm writing to you today from NextAI AG in Munich, Germany. We're keen to discuss the exciting developments from the recent Heidelberg AI Summit 2025. Specifically, we were very interested in the presentation on "Next-Generation Robotics" that took place in Room 306 of the main convention center.</span>
 
-<span class="s2">Our team at NextAI AG would love to set up a quick call to discuss potential collaborations following the insights shared. We&#39;re thinking of a brief chat around July 15th.</span>
+<span class="s2">Our team at NextAI AG would love to set up a quick call to discuss potential collaborations following the insights shared. We're thinking of a brief chat around July 15th.</span>
 
 <span class="s2">Please let us know if July 15th works for you, or suggest an alternative time.</span>
 
@@ -158,7 +158,7 @@
 <span class="s2">Sincerely,</span>
 <span class="s2">The Heidelberg AI Summit Team</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 </pre></div>
 </div>
 </div>
@@ -168,7 +168,7 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># run with custom model config file</span>
 
-<span class="n">config_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">config_content</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">nlp_engine_name: transformers</span>
 <span class="s2">models:</span>
 <span class="s2">    - lang_code: en</span>
@@ -176,7 +176,7 @@
 <span class="s2">        spacy: en_core_web_sm</span>
 <span class="s2">        transformers: xlm-roberta-large-finetuned-conll03-english</span>
 <span class="s2">      model_kwargs:</span>
-<span class="s2">        revision: &quot;18f95e9&quot;</span>
+<span class="s2">        revision: "18f95e9"</span>
 <span class="s2">ner_model_configuration:</span>
 <span class="s2">labels_to_ignore:</span>
 <span class="s2">- O</span>
@@ -187,14 +187,14 @@
 <span class="s2">    MISC: MISC</span>
 <span class="s2">low_confidence_score_multiplier: 0.4</span>
 <span class="s2">low_score_entity_names: []</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="c1"># save config to a yaml file</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;config.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"config.yaml"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">config_content</span><span class="p">)</span>
 
 <span class="c1"># Create NLP engine based on configuration file</span>
-<span class="n">provider</span> <span class="o">=</span> <span class="n">NlpEngineProvider</span><span class="p">(</span><span class="n">conf_file</span><span class="o">=</span><span class="s2">&quot;config.yaml&quot;</span><span class="p">)</span>
+<span class="n">provider</span> <span class="o">=</span> <span class="n">NlpEngineProvider</span><span class="p">(</span><span class="n">conf_file</span><span class="o">=</span><span class="s2">"config.yaml"</span><span class="p">)</span>
 <span class="n">nlp_engine</span> <span class="o">=</span> <span class="n">provider</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span>
 
 <span class="c1"># Set up the engine, loads the NLP module (spaCy model by default)</span>
@@ -202,7 +202,7 @@
 <span class="n">analyzer</span> <span class="o">=</span> <span class="n">AnalyzerEngine</span><span class="p">(</span><span class="n">nlp_engine</span><span class="o">=</span><span class="n">nlp_engine</span><span class="p">)</span>
 
 <span class="c1"># Call analyzer to get results</span>
-<span class="n">results</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s1">'en'</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 
 <span class="c1"># Analyzer results are passed to the AnonymizerEngine for anonymization</span>
@@ -222,12 +222,12 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># run with transformers model name</span>
 
 <span class="c1"># Define which transformers model to use</span>
-<span class="n">model_config</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;lang_code&quot;</span><span class="p">:</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="s2">&quot;model_name&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;spacy&quot;</span><span class="p">:</span> <span class="s2">&quot;en_core_web_sm&quot;</span><span class="p">,</span>  <span class="c1"># use a small spaCy model for lemmas, tokens etc.</span>
-    <span class="s2">&quot;transformers&quot;</span><span class="p">:</span> <span class="s2">&quot;xlm-roberta-large-finetuned-conll03-english&quot;</span>
+<span class="n">model_config</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">"lang_code"</span><span class="p">:</span> <span class="s2">"en"</span><span class="p">,</span> <span class="s2">"model_name"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"spacy"</span><span class="p">:</span> <span class="s2">"en_core_web_sm"</span><span class="p">,</span>  <span class="c1"># use a small spaCy model for lemmas, tokens etc.</span>
+    <span class="s2">"transformers"</span><span class="p">:</span> <span class="s2">"xlm-roberta-large-finetuned-conll03-english"</span>
     <span class="p">},</span>
-    <span class="s2">&quot;model_kwargs&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;revision&quot;</span><span class="p">:</span> <span class="s2">&quot;18f95e9&quot;</span><span class="p">,</span>
+    <span class="s2">"model_kwargs"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"revision"</span><span class="p">:</span> <span class="s2">"18f95e9"</span><span class="p">,</span>
     <span class="p">}</span>
 <span class="p">}]</span>
 
@@ -238,7 +238,7 @@
 <span class="n">analyzer</span> <span class="o">=</span> <span class="n">AnalyzerEngine</span><span class="p">(</span><span class="n">nlp_engine</span><span class="o">=</span><span class="n">nlp_engine</span><span class="p">)</span>
 
 <span class="c1"># Call analyzer to get results</span>
-<span class="n">results</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s1">'en'</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 
 <span class="c1"># Analyzer results are passed to the AnonymizerEngine for anonymization</span>
@@ -256,7 +256,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Entity: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">entity_type</span><span class="si">}</span><span class="s2">, Start: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">, End: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2">, Score: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Entity: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">entity_type</span><span class="si">}</span><span class="s2">, Start: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">, End: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2">, Score: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">score</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -275,14 +275,14 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Dear Dr. Emma Müller,</span>
 
 <span class="s2">I hope this email finds you well.</span>
 
-<span class="s2">I&#39;m writing to you today from NextAI AG in Munich, Germany. We&#39;re keen to discuss the exciting developments from the recent Heidelberg AI Summit 2025. Specifically, we were very interested in the presentation on &quot;Next-Generation Robotics&quot; that took place in Room 306 of the main convention center.</span>
+<span class="s2">I'm writing to you today from NextAI AG in Munich, Germany. We're keen to discuss the exciting developments from the recent Heidelberg AI Summit 2025. Specifically, we were very interested in the presentation on "Next-Generation Robotics" that took place in Room 306 of the main convention center.</span>
 
-<span class="s2">Our team at NextAI AG would love to set up a quick call to discuss potential collaborations following the insights shared. We&#39;re thinking of a brief chat around July 15th.</span>
+<span class="s2">Our team at NextAI AG would love to set up a quick call to discuss potential collaborations following the insights shared. We're thinking of a brief chat around July 15th.</span>
 
 <span class="s2">Please let us know if July 15th works for you, or suggest an alternative time.</span>
 
@@ -301,7 +301,7 @@
 <span class="s2">Sincerely,</span>
 <span class="s2">The Heidelberg AI Summit Team</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 </pre></div>
 </div>
 </div>
@@ -316,7 +316,7 @@
 <span class="n">scrubber</span><span class="o">.</span><span class="n">add_detector</span><span class="p">(</span><span class="n">scrubadub_spacy</span><span class="o">.</span><span class="n">detectors</span><span class="o">.</span><span class="n">SpacyEntityDetector</span><span class="p">)</span>
 <span class="c1"># scrubber.add_detector(scrubadub_spacy.detectors.SpacyNameDetector)</span>
 
-<span class="c1"># adding the below detectors make the process non-stop running, don&#39;t know why</span>
+<span class="c1"># adding the below detectors make the process non-stop running, don't know why</span>
 <span class="c1"># scrubber.add_detector(scrubadub_stanford.detectors.StanfordEntityDetector)</span>
 </pre></div>
 </div>
@@ -355,12 +355,12 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># run with transformers model name</span>
 
 <span class="c1"># Define which transformers model to use</span>
-<span class="n">model_config</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;lang_code&quot;</span><span class="p">:</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="s2">&quot;model_name&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;spacy&quot;</span><span class="p">:</span> <span class="s2">&quot;en_core_web_md&quot;</span><span class="p">,</span>  <span class="c1"># use a medium spaCy model to match setting of mailcom</span>
-    <span class="s2">&quot;transformers&quot;</span><span class="p">:</span> <span class="s2">&quot;xlm-roberta-large-finetuned-conll03-english&quot;</span>
+<span class="n">model_config</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">"lang_code"</span><span class="p">:</span> <span class="s2">"en"</span><span class="p">,</span> <span class="s2">"model_name"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"spacy"</span><span class="p">:</span> <span class="s2">"en_core_web_md"</span><span class="p">,</span>  <span class="c1"># use a medium spaCy model to match setting of mailcom</span>
+    <span class="s2">"transformers"</span><span class="p">:</span> <span class="s2">"xlm-roberta-large-finetuned-conll03-english"</span>
     <span class="p">},</span>
-    <span class="s2">&quot;model_kwargs&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;revision&quot;</span><span class="p">:</span> <span class="s2">&quot;18f95e9&quot;</span><span class="p">,</span>
+    <span class="s2">"model_kwargs"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"revision"</span><span class="p">:</span> <span class="s2">"18f95e9"</span><span class="p">,</span>
     <span class="p">}</span>
 <span class="p">}]</span>
 
@@ -381,9 +381,9 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load the dataset</span>
-<span class="n">email_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;eval/email_detection_eval.csv&quot;</span><span class="p">)</span>
+<span class="n">email_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"eval/email_detection_eval.csv"</span><span class="p">)</span>
 <span class="c1"># deserialize JSON back to Python objects for emails column</span>
-<span class="n">email_df</span><span class="p">[</span><span class="s2">&quot;emails&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_df</span><span class="p">[</span><span class="s2">&quot;emails&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
+<span class="n">email_df</span><span class="p">[</span><span class="s2">"emails"</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_df</span><span class="p">[</span><span class="s2">"emails"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
 <span class="n">email_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -394,11 +394,11 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Call analyzer to get results</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">analyze_row</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">"text"</span><span class="p">]</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">"en"</span><span class="p">)</span>
     <span class="n">saved_results</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">entity_type</span> <span class="o">==</span> <span class="s2">&quot;EMAIL_ADDRESS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">entity_type</span> <span class="o">==</span> <span class="s2">"EMAIL_ADDRESS"</span><span class="p">:</span>
             <span class="n">saved_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">start</span><span class="p">:</span><span class="n">item</span><span class="o">.</span><span class="n">end</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">saved_results</span>
@@ -410,7 +410,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># add a new column to the dataframe with the analyzer results</span>
-<span class="n">email_df</span><span class="p">[</span><span class="s2">&quot;presidio_emails&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">analyze_row</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># 28m 44.5s on laptop</span>
+<span class="n">email_df</span><span class="p">[</span><span class="s2">"presidio_emails"</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">analyze_row</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># 28m 44.5s on laptop</span>
 </pre></div>
 </div>
 </div>
@@ -421,11 +421,11 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create expected text and actual text after replacing email by [email]</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">replace_emails_with_placeholder</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">emails</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">emails</span><span class="p">:</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="s2">&quot;[email]&quot;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="s2">"[email]"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">text</span>
 
-<span class="n">email_df</span><span class="p">[</span><span class="s2">&quot;expected_text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">replace_emails_with_placeholder</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;emails&quot;</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">email_df</span><span class="p">[</span><span class="s2">&quot;presidio_text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">replace_emails_with_placeholder</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;presidio_emails&quot;</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">email_df</span><span class="p">[</span><span class="s2">"expected_text"</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">replace_emails_with_placeholder</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"text"</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">"emails"</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">email_df</span><span class="p">[</span><span class="s2">"presidio_text"</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">replace_emails_with_placeholder</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"text"</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">"presidio_emails"</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -433,7 +433,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">email_df</span><span class="p">[</span><span class="s2">&quot;exact_match&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;expected_text&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;presidio_text&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">email_df</span><span class="p">[</span><span class="s2">"exact_match"</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">"expected_text"</span><span class="p">]</span> <span class="o">==</span> <span class="n">row</span><span class="p">[</span><span class="s2">"presidio_text"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -443,14 +443,14 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># calculate tp, fp, fn</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_tp_fp_fn</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
-    <span class="n">pred_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\[email\]&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;presidio_text&quot;</span><span class="p">]))</span>
-    <span class="n">gold_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\[email\]&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;expected_text&quot;</span><span class="p">]))</span>
+    <span class="n">pred_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\[email\]"</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">"presidio_text"</span><span class="p">]))</span>
+    <span class="n">gold_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\[email\]"</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">"expected_text"</span><span class="p">]))</span>
 
     <span class="n">true_positives</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">pred_count</span><span class="p">,</span> <span class="n">gold_count</span><span class="p">)</span>
     <span class="n">false_positives</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">pred_count</span> <span class="o">-</span> <span class="n">gold_count</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">false_negatives</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">gold_count</span> <span class="o">-</span> <span class="n">pred_count</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s2">&quot;tp&quot;</span><span class="p">:</span> <span class="n">true_positives</span><span class="p">,</span> <span class="s2">&quot;fp&quot;</span><span class="p">:</span> <span class="n">false_positives</span><span class="p">,</span> <span class="s2">&quot;fn&quot;</span><span class="p">:</span> <span class="n">false_negatives</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s2">"tp"</span><span class="p">:</span> <span class="n">true_positives</span><span class="p">,</span> <span class="s2">"fp"</span><span class="p">:</span> <span class="n">false_positives</span><span class="p">,</span> <span class="s2">"fn"</span><span class="p">:</span> <span class="n">false_negatives</span><span class="p">})</span>
 
 <span class="n">metrics_df</span> <span class="o">=</span> <span class="n">email_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">calculate_tp_fp_fn</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">email_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">email_df</span><span class="p">,</span> <span class="n">metrics_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -462,7 +462,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save the results to a csv file for further analysis</span>
-<span class="n">email_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;eval/presidio_email_detection_results_revision.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">email_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"eval/presidio_email_detection_results_revision.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -471,19 +471,19 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">cal_eval_metrics</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
-    <span class="n">total_tp</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;tp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="n">total_fp</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;fp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="n">total_fn</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;fn&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">total_tp</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"tp"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">total_fp</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"fp"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">total_fn</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"fn"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
     <span class="n">precision</span> <span class="o">=</span> <span class="n">total_tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">total_tp</span> <span class="o">+</span> <span class="n">total_fp</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">total_tp</span> <span class="o">+</span> <span class="n">total_fp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
     <span class="n">recall</span> <span class="o">=</span> <span class="n">total_tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">total_tp</span> <span class="o">+</span> <span class="n">total_fn</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">total_tp</span> <span class="o">+</span> <span class="n">total_fn</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
     <span class="n">f1</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">precision</span> <span class="o">*</span> <span class="n">recall</span> <span class="o">/</span> <span class="p">(</span><span class="n">precision</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">precision</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
 
-    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;exact_match&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exact match accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Micro Precision: </span><span class="si">{</span><span class="n">precision</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Micro Recall: </span><span class="si">{</span><span class="n">recall</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Micro F1 Score: </span><span class="si">{</span><span class="n">f1</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"exact_match"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Exact match accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Micro Precision: </span><span class="si">{</span><span class="n">precision</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Micro Recall: </span><span class="si">{</span><span class="n">recall</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Micro F1 Score: </span><span class="si">{</span><span class="n">f1</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -507,7 +507,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">email_df</span><span class="p">[</span><span class="n">email_df</span><span class="p">[</span><span class="s2">&quot;exact_match&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span><span class="p">]</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">email_df</span><span class="p">[</span><span class="n">email_df</span><span class="p">[</span><span class="s2">"exact_match"</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -521,10 +521,10 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load the dataset</span>
-<span class="n">ner_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;eval/ner_detection_eval.csv&quot;</span><span class="p">)</span>
+<span class="n">ner_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"eval/ner_detection_eval.csv"</span><span class="p">)</span>
 <span class="c1"># deserialize JSON back to Python objects for entities and tokens columns</span>
-<span class="n">ner_df</span><span class="p">[</span><span class="s2">&quot;entities&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ner_df</span><span class="p">[</span><span class="s2">&quot;entities&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
-<span class="n">ner_df</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ner_df</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
+<span class="n">ner_df</span><span class="p">[</span><span class="s2">"entities"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ner_df</span><span class="p">[</span><span class="s2">"entities"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
+<span class="n">ner_df</span><span class="p">[</span><span class="s2">"tokens"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ner_df</span><span class="p">[</span><span class="s2">"tokens"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -533,9 +533,9 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">type_mapping</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;PERSON&quot;</span><span class="p">:</span> <span class="s2">&quot;PER&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;LOCATION&quot;</span><span class="p">:</span> <span class="s2">&quot;LOC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ORGANIZATION&quot;</span><span class="p">:</span> <span class="s2">&quot;ORG&quot;</span><span class="p">,</span>
+    <span class="s2">"PERSON"</span><span class="p">:</span> <span class="s2">"PER"</span><span class="p">,</span>
+    <span class="s2">"LOCATION"</span><span class="p">:</span> <span class="s2">"LOC"</span><span class="p">,</span>
+    <span class="s2">"ORGANIZATION"</span><span class="p">:</span> <span class="s2">"ORG"</span><span class="p">,</span>
 <span class="p">}</span> <span class="c1"># Presidio does not consider MISC type</span>
 </pre></div>
 </div>
@@ -546,8 +546,8 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Call analyzer to get results</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">analyze_row</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;sentence&quot;</span><span class="p">]</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">"sentence"</span><span class="p">]</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">"en"</span><span class="p">)</span>
     <span class="n">saved_results</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">entity_type</span> <span class="ow">in</span> <span class="n">type_mapping</span><span class="p">:</span>
@@ -555,10 +555,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">entity_type</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">entity_type</span>
         <span class="n">saved_results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">entity_type</span><span class="p">,</span>
-            <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
-            <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">end</span><span class="p">,</span>
-            <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">start</span><span class="p">:</span><span class="n">item</span><span class="o">.</span><span class="n">end</span><span class="p">],</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="n">entity_type</span><span class="p">,</span>
+            <span class="s2">"start"</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="s2">"end"</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">end</span><span class="p">,</span>
+            <span class="s2">"text"</span><span class="p">:</span> <span class="n">text</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">start</span><span class="p">:</span><span class="n">item</span><span class="o">.</span><span class="n">end</span><span class="p">],</span>
         <span class="p">})</span>
 
     <span class="k">return</span> <span class="n">saved_results</span>
@@ -570,7 +570,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># add a new column to the dataframe with the analyzer results</span>
-<span class="n">ner_df</span><span class="p">[</span><span class="s2">&quot;presidio_results&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ner_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">analyze_row</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># 19 minutes 4.2 seconds on laptop</span>
+<span class="n">ner_df</span><span class="p">[</span><span class="s2">"presidio_results"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ner_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">analyze_row</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># 19 minutes 4.2 seconds on laptop</span>
 </pre></div>
 </div>
 </div>
@@ -580,22 +580,22 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># calculate tp, fp, fn for each row</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_tp_fp_fn</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
-    <span class="n">gold_data</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;entities&quot;</span><span class="p">]</span>
-    <span class="n">pred_data</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;presidio_results&quot;</span><span class="p">]</span>
+    <span class="n">gold_data</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">"entities"</span><span class="p">]</span>
+    <span class="n">pred_data</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">"presidio_results"</span><span class="p">]</span>
 
     <span class="c1"># normalize data to get tuple of (type, text, start, end)</span>
     <span class="n">norm_gold_data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">gold_data</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">type_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s2">"type"</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">"text"</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">"start"</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">"end"</span><span class="p">])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">gold_data</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="ow">in</span> <span class="n">type_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
     <span class="p">}</span>
     <span class="n">norm_pred_data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">pred_data</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">type_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s2">"type"</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">"text"</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">"start"</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s2">"end"</span><span class="p">])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">pred_data</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="ow">in</span> <span class="n">type_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
     <span class="p">}</span>
 
     <span class="n">tp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">norm_gold_data</span> <span class="o">&amp;</span> <span class="n">norm_pred_data</span><span class="p">)</span>
     <span class="n">fp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">norm_pred_data</span> <span class="o">-</span> <span class="n">norm_gold_data</span><span class="p">)</span>
     <span class="n">fn</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">norm_gold_data</span> <span class="o">-</span> <span class="n">norm_pred_data</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s2">&quot;tp&quot;</span><span class="p">:</span> <span class="n">tp</span><span class="p">,</span> <span class="s2">&quot;fp&quot;</span><span class="p">:</span> <span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;fn&quot;</span><span class="p">:</span> <span class="n">fn</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s2">"tp"</span><span class="p">:</span> <span class="n">tp</span><span class="p">,</span> <span class="s2">"fp"</span><span class="p">:</span> <span class="n">fp</span><span class="p">,</span> <span class="s2">"fn"</span><span class="p">:</span> <span class="n">fn</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
@@ -612,17 +612,17 @@
     <span class="n">result_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">metrics_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-        <span class="n">tp</span> <span class="o">+=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;tp&quot;</span><span class="p">]</span>
-        <span class="n">fp</span> <span class="o">+=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;fp&quot;</span><span class="p">]</span>
-        <span class="n">fn</span> <span class="o">+=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;fn&quot;</span><span class="p">]</span>
+        <span class="n">tp</span> <span class="o">+=</span> <span class="n">row</span><span class="p">[</span><span class="s2">"tp"</span><span class="p">]</span>
+        <span class="n">fp</span> <span class="o">+=</span> <span class="n">row</span><span class="p">[</span><span class="s2">"fp"</span><span class="p">]</span>
+        <span class="n">fn</span> <span class="o">+=</span> <span class="n">row</span><span class="p">[</span><span class="s2">"fn"</span><span class="p">]</span>
 
     <span class="n">precision</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
     <span class="n">recall</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
     <span class="n">f1_score</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">precision</span> <span class="o">*</span> <span class="n">recall</span> <span class="o">/</span> <span class="p">(</span><span class="n">precision</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">precision</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision: </span><span class="si">{</span><span class="n">precision</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recall: </span><span class="si">{</span><span class="n">recall</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;F1 Score: </span><span class="si">{</span><span class="n">f1_score</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Precision: </span><span class="si">{</span><span class="n">precision</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Recall: </span><span class="si">{</span><span class="n">recall</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"F1 Score: </span><span class="si">{</span><span class="n">f1_score</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">result_df</span>
 </pre></div>
@@ -645,7 +645,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save the results to a csv file for further analysis</span>
-<span class="n">result_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;eval/presidio_ner_detection_results_revision.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">result_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"eval/presidio_ner_detection_results_revision.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
