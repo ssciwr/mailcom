@@ -22,7 +22,7 @@ authors = [
 dynamic = ["version"]
 
 dependencies = [
-  "spacy<3.8.17",
+  "spacy<3.8.19",
   "transformers",
   "eml_parser",
   "bs4",
